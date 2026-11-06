@@ -60,6 +60,8 @@
   .thinNote{background:#fdf6ec;border:1px solid var(--accent2);border-radius:8px;padding:9px 12px;font-size:.88rem;line-height:1.45;}
   .endmode [data-check],.endmode [data-sol]{display:none;}
   .modebar{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .group{border:1px solid var(--line);border-radius:8px;padding:10px 12px 12px;margin-top:12px;}
+  .group h3{margin:0 0 2px;font-size:.95rem;color:var(--accent);}
   #printArea{display:none;}
   .fig{margin:8px 0 4px;}
   .fig svg{max-width:100%;height:auto;}
@@ -113,30 +115,54 @@
     <p class="hint" style="margin:10px 0 4px;">By indicator (optional: leave all unchecked to use every indicator in the units you picked):</p>
     <div class="indbox" id="indBox"></div>
     <div class="adv">
-      <label>Number of questions (online practice)
-        <input type="number" id="countIn" min="1" max="60" value="10">
-      </label>
       <label>Order
         <select id="orderIn">
           <option value="unit">Unit order</option>
           <option value="random">Random order</option>
         </select>
       </label>
-      <label>Working space on print sheets
-        <select id="wsIn">
-          <option value="2.3">Extra space</option>
-          <option value="1">Full space</option>
-          <option value="0.5">Half space</option>
-          <option value="0.25">A little space</option>
-          <option value="0">None: use your own paper</option>
-        </select>
-      </label>
-      <label>Checking (online practice)
-        <select id="chkIn">
-          <option value="each">Check each question as I go</option>
-          <option value="end">Check everything at the end</option>
-        </select>
-      </label>
+    </div>
+    <div class="group">
+      <h3>Practice online</h3>
+      <div class="adv">
+        <label>Number of questions (online practice)
+          <input type="number" id="countIn" min="1" max="60" value="10">
+        </label>
+        <label>Checking (online practice)
+          <select id="chkIn">
+            <option value="each">Check each question as I go</option>
+            <option value="end">Check everything at the end</option>
+          </select>
+        </label>
+      </div>
+      <div class="modebar">
+        <button type="button" id="goOnline">Practice online</button>
+      </div>
+    </div>
+    <div class="group">
+      <h3>Print a sheet or exam</h3>
+      <div class="adv">
+        <label>Multiple choice
+          <input type="number" id="mcCountIn" min="0" max="60" value="10">
+        </label>
+        <label>Constructed Response
+          <input type="number" id="ncCountIn" min="0" max="60" value="5">
+        </label>
+        <label><input type="checkbox" id="keyChk" checked> Include answer key</label>
+        <label>Working space on print sheets
+          <select id="wsIn">
+            <option value="2.3">Extra space</option>
+            <option value="1">Full space</option>
+            <option value="0.5">Half space</option>
+            <option value="0.25">A little space</option>
+            <option value="0">None: use your own paper</option>
+          </select>
+        </label>
+      </div>
+      <div class="modebar">
+        <button type="button" id="goSheet" class="amber">Make a practice sheet</button>
+        <button type="button" id="goExam" class="amber">Make a practice exam</button>
+      </div>
     </div>
     <details id="advBox">
       <summary>Advanced options, question levels</summary>
@@ -150,19 +176,7 @@
         <label>Level 3 %<input type="number" id="lv3" min="0" max="100" value="20"></label>
       </div>
     </details>
-    <div class="adv">
-      <label>Multiple choice
-        <input type="number" id="mcCountIn" min="0" max="60" value="10">
-      </label>
-      <label>No choices
-        <input type="number" id="ncCountIn" min="0" max="60" value="5">
-      </label>
-      <label><input type="checkbox" id="keyChk" checked> Include answer key</label>
-    </div>
     <div class="modebar">
-      <button type="button" id="goOnline">Practice online</button>
-      <button type="button" id="goSheet" class="amber">Make a practice sheet</button>
-      <button type="button" id="goExam" class="amber">Make a practice exam</button>
       <button type="button" id="copyLink" class="alt">Copy link to these settings</button>
     </div>
     <p class="hint" id="poolInfo"></p>
@@ -4801,7 +4815,7 @@ function startExam(){
 }
 function startSheet(){
   var s=settings();
-  if(s.mcCount+s.ncCount<1){$("session").innerHTML='<div class="card"><p>Set the Multiple choice and No choices counts to at least one question in total, then make the sheet again.</p></div>';return;}
+  if(s.mcCount+s.ncCount<1){$("session").innerHTML='<div class="card"><p>Set the Multiple choice and Constructed Response counts to at least one question in total, then make the sheet again.</p></div>';return;}
   var res=drawSheetSet(s);
   if(!res.items.length){$("session").innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above ,  or use the Mid-course review or Final review button ,  then start again.")+'</p></div>';return;}
   var unitNames=s.units.map(function(u){return "Unit "+u;}).join(", ");
