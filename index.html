@@ -5112,6 +5112,27 @@ function wRun(text,fmt){
 }
 function makeWalker(st){
   var out=[],cur=null;
+  /* Word-file option lettering: the on-screen sheet marks options with an
+     open circle, but the Word file letters them like the exam paper. The
+     walker records each paper question's option texts (qOpts, in question
+     order) so the sheet answer key can cite the letter beside the answer
+     text it already carries. State is per document: makeWalker is created
+     fresh for every download. */
+  var qOpts=[],inKey=false,optIdx=0,pendLetter=null;
+  function normT(s){return String(s).replace(/\s+/g," ").trim();}
+  function optText(lab){
+    return normT(dText(lab)).replace(/^○\s*/,"").replace(/^[A-D]\.\s+/,"");
+  }
+  function qOptions(pq){
+    var opts=[];
+    (function scan(n){
+      nKids(n).forEach(function(c){
+        if(dTag(c)==="LABEL")opts.push(optText(c));
+        else scan(c);
+      });
+    })(pq);
+    return opts;
+  }
   function flush(){
     if(cur&&cur.runs.length)out.push("<w:p>"+(cur.ppr?"<w:pPr>"+cur.ppr+"</w:pPr>":"")+cur.runs.join("")+"</w:p>");
     cur=null;
@@ -5153,7 +5174,11 @@ function makeWalker(st){
   var BLOCKS={P:1,DIV:1,LABEL:1,LI:1,BLOCKQUOTE:1,SECTION:1,ARTICLE:1,HEADER:1,FOOTER:1,UL:1,OL:1,H3:1,H4:1,H5:1,H6:1,FIGURE:1,FIGCAPTION:1};
   function walk(n,fmt){
     if(!n)return;
-    if(n.nodeType===3){addText(n.nodeValue,fmt);return;}
+    if(n.nodeType===3){
+      var tv=n.nodeValue;
+      if(pendLetter){tv=pendLetter+String(tv||"").replace(/^\s*○\s*/,"");pendLetter=null;}
+      addText(tv,fmt);return;
+    }
     if(n.nodeType!==1)return;
     var tag=dTag(n);
     if(tag==="SCRIPT"||tag==="STYLE"||tag==="SVG"||tag==="INPUT"||tag==="BUTTON"||tag==="TEXTAREA"||tag==="SELECT")return;
@@ -5182,6 +5207,7 @@ function makeWalker(st){
       return;
     }
     if(dHas(n,"keybreak")){
+      inKey=true;
       pushBlock('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
       nKids(n).forEach(function(c){walk(c,fmt);});
       flush();
@@ -5205,6 +5231,38 @@ function makeWalker(st){
       return;
     }
     if(tag==="BR"){addXml("<w:r><w:br/></w:r>");return;}
+    if(dHas(n,"pq")){
+      optIdx=0;
+      if(!inKey)qOpts.push(qOptions(n));
+    }
+    if(tag==="LABEL"&&normT(dText(n)).charAt(0)==="○"){
+      pendLetter="ABCD".charAt(Math.min(optIdx,3))+". ";
+      optIdx++;
+      nKids(n).forEach(function(c){walk(c,fmt);});
+      flush();
+      pendLetter=null;
+      return;
+    }
+    if(inKey&&tag==="P"){
+      var km=/^(\d+)\.\s*Answer:/.exec(normT(dText(n)));
+      if(km){
+        var qnOpts=qOpts[+km[1]-1]||[];
+        var bolds=nKids(n).filter(function(c){var bt=dTag(c);return bt==="B"||bt==="STRONG";});
+        var ansEl=bolds.length>1?bolds[1]:null;
+        var ai=ansEl?qnOpts.indexOf(normT(dText(ansEl))):-1;
+        if(ai>=0){
+          var letter="ABCD".charAt(Math.min(ai,3));
+          flush();
+          cur={runs:[],ppr:""};
+          nKids(n).forEach(function(c){
+            if(c===ansEl)addText(letter+". ",{b:true});
+            walk(c,fmt);
+          });
+          flush();
+          return;
+        }
+      }
+    }
     var f2=null;
     if(tag==="B"||tag==="STRONG"){f2=Object.assign({},fmt,{b:true});}
     else if(tag==="I"||tag==="EM"){f2=Object.assign({},fmt,{i:true});}
