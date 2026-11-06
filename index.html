@@ -68,6 +68,10 @@
   .sheetPrev .ws{border-bottom:1px solid #ddd;}
   .sheetPrev.editing{outline:2px dashed var(--acc);outline-offset:3px;}
   .ws{border:1.5px solid #b9b2a2;border-radius:4px;margin:8px 0 4px;}
+  .wsbox{position:relative;}
+  .wshandle{position:absolute;left:0;right:0;bottom:-8px;height:16px;cursor:ns-resize;display:none;align-items:center;justify-content:center;touch-action:none;}
+  .wshandle span{display:block;width:56px;height:6px;border-radius:3px;background:var(--acc);}
+  .editing .wshandle{display:flex;}
   .recGrid{border-collapse:collapse;margin:8px 0 4px;}
   .recGrid td{border:1px solid #999;padding:6px 12px;font-size:.98rem;white-space:nowrap;}
   .recGrid .lt{margin:0 4px;color:#444;}
@@ -83,6 +87,7 @@
     .keybreak{page-break-before:always;}
     .pq{page-break-inside:avoid;margin-bottom:14px;}
     .solp{page-break-inside:avoid;}
+    .wshandle{display:none !important;}
   }
   .katex{font-size:1.07em;}
 </style>
@@ -95,7 +100,7 @@
   <h1>Math 3208 Review</h1>
   <p class="sub">Fresh practice questions for Mathematics 3208, drawn by unit or by curriculum indicator.
   Most questions are generated new every time, so you can practise the same skill again and get a different question.
-  Work online, print a practice sheet or a no-choices worksheet, or build a practice exam.</p>
+  Work online, print a practice sheet, or build a practice exam.</p>
 
   <div class="card">
     <h2>1. What do you want to practise?</h2>
@@ -108,7 +113,7 @@
     <p class="hint" style="margin:10px 0 4px;">By indicator (optional: leave all unchecked to use every indicator in the units you picked):</p>
     <div class="indbox" id="indBox"></div>
     <div class="adv">
-      <label>Number of questions
+      <label>Number of questions (online practice)
         <input type="number" id="countIn" min="1" max="60" value="10">
       </label>
       <label>Order
@@ -119,6 +124,7 @@
       </label>
       <label>Working space on print sheets
         <select id="wsIn">
+          <option value="2.3">Extra space</option>
           <option value="1">Full space</option>
           <option value="0.5">Half space</option>
           <option value="0.25">A little space</option>
@@ -144,10 +150,18 @@
         <label>Level 3 %<input type="number" id="lv3" min="0" max="100" value="20"></label>
       </div>
     </details>
+    <div class="adv">
+      <label>Multiple choice
+        <input type="number" id="mcCountIn" min="0" max="60" value="5">
+      </label>
+      <label>No choices
+        <input type="number" id="ncCountIn" min="0" max="60" value="5">
+      </label>
+      <label><input type="checkbox" id="keyChk" checked> Include answer key</label>
+    </div>
     <div class="modebar">
       <button type="button" id="goOnline">Practice online</button>
       <button type="button" id="goSheet" class="amber">Make a practice sheet</button>
-      <button type="button" id="goWorksheet" class="amber">Make a worksheet (no choices)</button>
       <button type="button" id="goExam" class="amber">Make a practice exam</button>
       <button type="button" id="copyLink" class="alt">Copy link to these settings</button>
     </div>
@@ -522,7 +536,7 @@ var UNIT_IND={
 /* ============ THE BANK ============ */
 /* Math 3208 Review bank. Built November 2026 on the chassis of the Math 2200
    Review app (itself derived from the Math 3200, 3201 and 2201 Review apps),
-   including the print formats (worksheet and practice exam modes) and the
+   including the print formats (practice sheet and practice exam modes) and the
    option-order standard from the adopted item-writing guide: numeric options
    ascending, other options alphabetical. Entry sources, in the order Jason
    set: the curriculum guide is king; the Mauger practice-set harvest (32 sets,
@@ -2382,6 +2396,7 @@ function cleanTex(t){
 }
 function detexClone(node){
   var c=node.cloneNode(true);
+  Array.prototype.forEach.call(c.querySelectorAll(".wshandle"),function(hd){if(hd.parentNode)hd.parentNode.removeChild(hd);});
   Array.prototype.forEach.call(c.querySelectorAll(".katex"),function(k){
     var a=k.querySelector("annotation");
     k.replaceWith(document.createTextNode(a?cleanTex(a.textContent):""));
@@ -2428,6 +2443,9 @@ function settings(){
   readUnits();readInds();
   return {units:state.units.slice(),inds:state.inds.slice(),midCap:state.midCap,
     count:Math.max(1,Math.min(60,+$("countIn").value||10)),
+    mcCount:Math.max(0,Math.min(60,+$("mcCountIn").value||0)),
+    ncCount:Math.max(0,Math.min(60,+$("ncCountIn").value||0)),
+    wantKey:!($("keyChk")&&$("keyChk").checked===false),
     order:$("orderIn").value,
     ws:($("wsIn")?parseFloat($("wsIn").value):1),
     chk:($("chkIn")?$("chkIn").value:"each"),
@@ -2553,7 +2571,27 @@ function gradeAll(){
 }
 var _probeCache={};
 function probeType(e){if(_probeCache[e.id])return _probeCache[e.id];var t="mc";try{var q=e.gen();if(q&&q.type)t=q.type;}catch(err){}_probeCache[e.id]=t;return t;}
-function worksheetPred(e){return (typeof CR_MARKS!=="undefined"&&CR_MARKS[e.id]!==undefined)||probeType(e)==="num"||probeType(e)==="txt";}
+/* Sheet draw for the single practice-sheet button: exactly the requested
+   number of multiple-choice questions plus exactly the requested number of
+   no-choices questions (numerical and text answers print identically, so
+   they share one count), each part honouring the level mix on its own pool. */
+function drawSheetSet(s){
+  var mc=drawSet(s.units,s.inds,s.mcCount,s.mix,s.order,s.midCap,function(e){return probeType(e)==="mc";});
+  var nc=drawSet(s.units,s.inds,s.ncCount,s.mix,s.order,s.midCap,function(e){return probeType(e)!=="mc";});
+  /* A few entries generate more than one answer type, and the probe that
+     sorts them into a part catches only one of the types. Enforce each
+     part's type on the generated questions themselves: an off-type
+     question is redrawn from its own entry until it fits the part. */
+  function fixType(q,wantMc){
+    var tries=0;
+    while((q.type==="mc")!==wantMc&&tries<40){var nq=q._entry.gen();nq._entry=q._entry;q=nq;tries++;}
+    return q;
+  }
+  var items=mc.items.map(function(q){return fixType(q,true);}).concat(nc.items.map(function(q){return fixType(q,false);}));
+  if(s.order==="unit"){items.sort(function(a,b){return a._entry.unit-b._entry.unit;});}
+  else{items=shuffle(items);}
+  return {items:items,thin:mc.thin||nc.thin||items.length<(s.mcCount+s.ncCount),pool:mc.pool+nc.pool};
+}
 function subsetSumMarks(entries,target){
   var arr=shuffle(entries.slice());var dp={0:[]};
   for(var i=0;i<arr.length;i++){var m=arr[i].marks;var keys=Object.keys(dp).map(Number).sort(function(a,b){return b-a;});
@@ -2631,7 +2669,7 @@ function startExam(){
   ex.crItems.forEach(function(it){n++;var q=it.q;
     paper+='<div class="pq"><p><b>'+n+'.</b> <span style="font-size:.85rem;color:#555;">('+it.marks+' marks)</span></p><div class="prompt">'+stepHTML(q.prompt)+'</div>';
     if(q.figure)paper+='<div class="fig">'+q.figure+'</div>';
-    var h=Math.max(80,Math.round(it.marks*62*wsf));if(wsf>0)paper+='<div class="ws" style="height:'+h+'px"></div>';
+    var h=Math.max(80,Math.round(it.marks*62*wsf));if(wsf>0)paper+=wsBox(h);
     paper+='</div>';});
   paper+='<p style="font-size:.85rem;color:#555;">Built to the 2026-2027 tables of specifications as closely as the question bank allows: selected response '+ex.srMarks+' marks, constructed response '+ex.crMarks+' marks, of which Level 3 carries '+ex.l3Marks+' marks.</p>';
   var key='<h1 style="font-size:1.3rem;">'+title+': Answer Key</h1><p>'+scope+' \u00B7 Total marks: '+ex.total+'</p>';
@@ -2647,60 +2685,115 @@ function startExam(){
   $("printArea").innerHTML=paper;
   $("session").innerHTML='<div class="card"><p>Your '+(single?"practice unit test":"practice exam")+' is ready: '+ex.srItems.length+' selected-response questions and '+ex.crItems.length+' constructed-response questions, '+ex.total+' marks in total. The exam paper and the answer key print separately.</p>'
     +(ex.short?'<p class="thinNote">Heads up: the bank could not fill every exam slot for this selection yet, so this paper runs short of the full blueprint.</p>':"")
-    +'<div class="row"><button type="button" id="printPaperBtn">Print the exam paper</button><button type="button" id="printKeyBtn" class="sec">Print the answer key</button></div>'
+    +'<div class="row"><button type="button" id="editExamBtn">Edit the exam</button><button type="button" id="printPaperBtn">Print the exam paper</button><button type="button" id="printKeyBtn" class="sec">Print the answer key</button><button type="button" id="copyWordBtn" class="sec">Copy for Word</button><button type="button" id="copyDocsBtn" class="sec">Copy for Google Docs</button></div>'
+    +'<p class="hint" id="editHint" hidden>Editing is on: click any text in the exam below and type to change it, or delete a question you do not want. Drag the bar at the bottom of a Section B answer box to make that box taller or shorter. What you see is what prints and what copies.</p>'
+    +'<p class="hint" id="copyStatus" role="status"></p>'
     +'<div class="sheetPrev" id="sheetPrev">'+paper+'<div class="keybreak">'+key+'</div></div></div>';
   typesetMath($("sheetPrev"));typesetMath($("printArea"));
-  $("printPaperBtn").addEventListener("click",function(){$("printArea").innerHTML=paper;typesetMath($("printArea"));window.print();});
-  $("printKeyBtn").addEventListener("click",function(){$("printArea").innerHTML=key;typesetMath($("printArea"));window.print();});
+  $("editExamBtn").addEventListener("click",function(){
+    var prev=$("sheetPrev"),on=prev.getAttribute("contenteditable")==="true";
+    if(on){prev.removeAttribute("contenteditable");prev.classList.remove("editing");$("editExamBtn").textContent="Edit the exam";$("editHint").hidden=true;}
+    else{prev.setAttribute("contenteditable","true");prev.classList.add("editing");$("editExamBtn").textContent="Done editing";$("editHint").hidden=false;setHandles(prev);prev.focus();}
+  });
+  $("copyWordBtn").addEventListener("click",function(){copyFrom($("sheetPrev"),"word",$("copyStatus"));});
+  $("copyDocsBtn").addEventListener("click",function(){copyFrom($("sheetPrev"),"docs",$("copyStatus"));});
+  $("printPaperBtn").addEventListener("click",function(){var pp=previewParts();if(pp){$("printArea").innerHTML=pp.paper;}else{$("printArea").innerHTML=paper;typesetMath($("printArea"));}window.print();});
+  $("printKeyBtn").addEventListener("click",function(){var pp=previewParts();if(pp){$("printArea").innerHTML=pp.key;}else{$("printArea").innerHTML=key;typesetMath($("printArea"));}window.print();});
 }
-var SHEET_MODE="sheet";
-function startSheet(){SHEET_MODE="sheet";startSheetMode();}
-function startWorksheet(){SHEET_MODE="worksheet";startSheetMode();}
-function startSheetMode(){
-  var s=settings();var res=drawSet(s.units,s.inds,s.count,s.mix,s.order,s.midCap,SHEET_MODE==="worksheet"?worksheetPred:null);
+function startSheet(){
+  var s=settings();
+  if(s.mcCount+s.ncCount<1){$("session").innerHTML='<div class="card"><p>Set the Multiple choice and No choices counts to at least one question in total, then make the sheet again.</p></div>';return;}
+  var res=drawSheetSet(s);
   if(!res.items.length){$("session").innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above ,  or use the Mid-course review or Final review button ,  then start again.")+'</p></div>';return;}
   var unitNames=s.units.map(function(u){return "Unit "+u;}).join(", ");
   var html='<div class="nameline"><div>Name:<span></span></div><div>Date:<span></span></div></div>';
   var wsf=(typeof s.ws==="number"&&!isNaN(s.ws))?s.ws:1;
-  html+='<h1 style="font-size:1.3rem;">'+(SHEET_MODE==="worksheet"?"Math 3208: Worksheet":"Math 3208: Practice Sheet")+'</h1><p>'+unitNames+(s.inds.length?(" \u00B7 Indicators: "+s.inds.join(", ")):"")+' \u00B7 '+res.items.length+' questions \u00B7 '+(wsf>0?'Show all workings in the space provided.':'Show all workings on your own paper.')+'</p>';
+  html+='<h1 style="font-size:1.3rem;">'+"Math 3208: Practice Sheet"+'</h1><p>'+unitNames+(s.inds.length?(" \u00B7 Indicators: "+s.inds.join(", ")):"")+' \u00B7 '+res.items.length+' questions \u00B7 '+(wsf>0?'Show all workings in the space provided.':'Show all workings on your own paper.')+'</p>';
   res.items.forEach(function(q,i){
-    var h=Math.round((q._entry.level===3?170:((q.type==="mc"&&SHEET_MODE!=="worksheet")?120:150))*wsf);
+    var h=Math.round((q._entry.level===3?170:(q.type==="mc"?120:150))*wsf);
     html+='<div class="pq"><p><b>'+(i+1)+'.</b> <span style="font-size:.8rem;color:#555;">(Unit '+q._entry.unit+' \u00B7 '+q._entry.indicators.join(", ")+' \u00B7 Level '+q._entry.level+')</span></p><div class="prompt">'+stepHTML(q.prompt)+'</div>';
     if(q.figure)html+='<div class="fig">'+q.figure+'</div>';
-    if(q.type==="mc"&&SHEET_MODE!=="worksheet"){html+='<div class="opts">'+q.options.map(function(o){return '<label style="display:block;margin:4px 0;">\u25CB '+o+'</label>';}).join("")+'</div>';}
-    if(h>0)html+='<div class="ws" style="height:'+h+'px"></div>';
+    if(q.type==="mc"){html+='<div class="opts">'+q.options.map(function(o){return '<label style="display:block;margin:4px 0;">\u25CB '+o+'</label>';}).join("")+'</div>';}
+    html+=wsBox(h);
     html+='</div>';
   });
   html+='<p style="font-size:.85rem;color:#555;">Spotted a problem with a question on this sheet? Write down its unit and question number and let your teacher know.</p>';
+  if(s.wantKey){
   html+='<div class="keybreak"><h1 style="font-size:1.3rem;">Answer Key, with worked solutions</h1>';
   res.items.forEach(function(q,i){
     var ans=q.type==="mc"?esc(q.options[q.correct]):(q.type==="num"?fmt(q.answer):esc(q.answers[0]));
     html+='<div class="solp"><p><b>'+(i+1)+'.</b> Answer: <b>'+ans+'</b></p><div style="line-height:1.5;font-size:.92rem;">'+stepHTML(q.solution)+'</div></div>';
   });
   html+='</div>';
+  }
   $("printArea").innerHTML=html;
-  $("session").innerHTML='<div class="card"><p>Your '+(SHEET_MODE==="worksheet"?"worksheet":"practice sheet")+' is ready ('+res.items.length+' questions, with the answer key on its own pages at the end). It is shown below, exactly as it will print.</p>'
+  $("session").innerHTML='<div class="card"><p>Your practice sheet is ready ('+res.items.length+' questions'+(s.wantKey?', with the answer key on its own pages at the end':'')+'). It is shown below, exactly as it will print.</p>'
     +(res.thin?'<p class="thinNote">Heads up: the question bank is still thin for this selection, so this sheet repeats practice on the same question shape (with new numbers) because there are not yet enough different questions to fill it.</p>':"")
-    +'<div class="row"><button type="button" id="editBtn">Edit the sheet</button><button type="button" id="copyBtn" class="sec">Copy for Google Docs / Word</button><button type="button" id="printBtn" class="sec">Print / save the sheet</button></div>'
-    +'<p class="hint" id="editHint" hidden>Editing is on: click any text in the sheet below and type to change it, or delete a question you do not want. What you see is what prints. Most math is regular text and can be changed directly; typeset expressions are rendered, so if you need different numbers in one of those, regenerate the sheet instead.</p>'
+    +'<div class="row"><button type="button" id="editBtn">Edit the sheet</button><button type="button" id="copyWordBtn" class="sec">Copy for Word</button><button type="button" id="copyDocsBtn" class="sec">Copy for Google Docs</button><button type="button" id="printBtn" class="sec">Print / save the sheet</button></div>'
+    +'<p class="hint" id="editHint" hidden>Editing is on: click any text in the sheet below and type to change it, or delete a question you do not want. Drag the bar at the bottom of an answer box to make that box taller or shorter. What you see is what prints and what copies. Most math is regular text and can be changed directly; typeset expressions are rendered, so if you need different numbers in one of those, regenerate the sheet instead.</p>'
     +'<p class="hint" id="copyStatus" role="status"></p>'
     +'<div class="sheetPrev" id="sheetPrev">'+html+'</div></div>';
   typesetMath($("sheetPrev"));typesetMath($("printArea"));
   $("editBtn").addEventListener("click",function(){
     var prev=$("sheetPrev"),on=prev.getAttribute("contenteditable")==="true";
     if(on){prev.removeAttribute("contenteditable");prev.classList.remove("editing");$("editBtn").textContent="Edit the sheet";$("editHint").hidden=true;}
-    else{prev.setAttribute("contenteditable","true");prev.classList.add("editing");$("editBtn").textContent="Done editing";$("editHint").hidden=false;prev.focus();}
+    else{prev.setAttribute("contenteditable","true");prev.classList.add("editing");$("editBtn").textContent="Done editing";$("editHint").hidden=false;setHandles(prev);prev.focus();}
   });
-  $("copyBtn").addEventListener("click",copySheet);
+  $("copyWordBtn").addEventListener("click",function(){copyFrom($("sheetPrev"),"word",$("copyStatus"));});
+  $("copyDocsBtn").addEventListener("click",function(){copyFrom($("sheetPrev"),"docs",$("copyStatus"));});
   $("printBtn").addEventListener("click",function(){$("printArea").innerHTML=$("sheetPrev").innerHTML;window.print();});
 }
-function copySheet(){
-  var node=$("sheetPrev"),status=$("copyStatus");if(!node)return;
-  function done(ok){status.textContent=ok?"Copied. Open a Google Doc or a Word document and paste (Ctrl+V): the whole sheet lands there as editable text. Edit it there, then print from there.":"Copy did not work in this browser. You can still edit the sheet right here and print it.";}
+/* Answer boxes on sheets and exams: the box markup carries a drag handle
+   on its bottom edge. In edit mode the handle shows; dragging it stamps an
+   explicit height on the box, so the resized box is what prints and what
+   both copy routes carry. */
+function wsBox(h){
+  if(!(h>0))return "";
+  return '<div class="ws wsbox" style="height:'+h+'px"><div class="wshandle" contenteditable="false"><span></span></div></div>';
+}
+function setHandles(root){
+  if(!root||!root.querySelectorAll)return;
+  Array.prototype.forEach.call(root.querySelectorAll(".wshandle"),function(hd){
+    if(hd._wired)return;hd._wired=true;
+    hd.addEventListener("pointerdown",function(ev){
+      ev.preventDefault();ev.stopPropagation();
+      var box=hd.parentNode,y0=ev.clientY,h0=box.offsetHeight||parseInt(box.style.height,10)||0;
+      function move(e){box.style.height=Math.max(24,h0+(e.clientY-y0))+"px";}
+      function up(){document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);}
+      document.addEventListener("pointermove",move);document.addEventListener("pointerup",up);
+    });
+  });
+}
+function previewParts(){
+  var prev=$("sheetPrev");var full=prev?prev.innerHTML:"";
+  var mark='<div class="keybreak">';
+  if(!full||full.indexOf(mark)<0)return null;
+  var ix=full.indexOf(mark);
+  return {paper:full.slice(0,ix),key:mark+full.slice(ix+mark.length)};
+}
+/* Copy routes for sheets and exams. The Google Docs route keeps the
+   long-standing behaviour: the output as flattened plain text. The Word
+   route swaps each rendered equation for the MathML element KaTeX already
+   embeds in it, which Word turns into a native editable equation on
+   paste; the flattened text still rides along as the plain fallback. */
+function mathmlClone(node){
+  var c=node.cloneNode(true);
+  Array.prototype.forEach.call(c.querySelectorAll(".wshandle"),function(hd){if(hd.parentNode)hd.parentNode.removeChild(hd);});
+  Array.prototype.forEach.call(c.querySelectorAll(".katex"),function(k){
+    var mm=k.querySelector("math");
+    if(mm){k.replaceWith(document.importNode(mm,true));}
+    else{var a=k.querySelector("annotation");k.replaceWith(document.createTextNode(a?cleanTex(a.textContent):""));}
+  });
+  c.removeAttribute("contenteditable");c.classList.remove("editing");
+  return c;
+}
+function copyFrom(node,mode,status){
+  if(!node)return;
+  function done(ok){if(status)status.textContent=ok?(mode==="word"?"Copied for Word. Paste into a Word document: the sheet lands there and each equation arrives as an editable Word equation.":"Copied. Open a Google Doc or a Word document and paste (Ctrl+V): the whole sheet lands there as editable text. Edit it there, then print from there."):"Copy did not work in this browser. You can still edit right here and print.";}
   function fallback(){try{var r=document.createRange();r.selectNodeContents(node);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);var ok=document.execCommand("copy");sel.removeAllRanges();done(ok);}catch(e){done(false);}}
   if(navigator.clipboard&&window.ClipboardItem){
     try{
-      var clean=detexClone(node);
+      var clean=mode==="word"?mathmlClone(node):detexClone(node);
       var item=new ClipboardItem({"text/html":new Blob([clean.innerHTML],{type:"text/html"}),"text/plain":new Blob([clean.innerText||clean.textContent||""],{type:"text/plain"})});
       navigator.clipboard.write([item]).then(function(){done(true);},function(){fallback();});
     }catch(e){fallback();}
@@ -2713,6 +2806,9 @@ function settingsToURL(){
   else if(s.units.length)p.set("unit",s.units.join(","));
   if(s.inds.length)p.set("indicator",s.inds.join(","));
   p.set("count",s.count);p.set("order",s.order);
+  if(s.mcCount!==5)p.set("mc",s.mcCount);
+  if(s.ncCount!==5)p.set("nc",s.ncCount);
+  if(!s.wantKey)p.set("key","0");
   if(s.ws!==1)p.set("ws",s.ws);
   if(s.chk==="end")p.set("chk","end");
   if(s.mix.join()!=="20,60,20")p.set("levels",s.mix.join(","));
@@ -2725,6 +2821,9 @@ function applyURL(){
   else if(p.get("unit")){state.units=p.get("unit").split(",").map(Number).filter(function(u){return UNITS[u];});touched=true;}
   if(p.get("indicator")){state.inds=p.get("indicator").split(",").map(function(x){return x.trim();});touched=true;}
   if(p.get("count"))$("countIn").value=p.get("count");
+  if(p.get("mc")!==null)$("mcCountIn").value=p.get("mc");
+  if(p.get("nc")!==null)$("ncCountIn").value=p.get("nc");
+  if(p.get("key")==="0")$("keyChk").checked=false;
   if(p.get("order"))$("orderIn").value=p.get("order");
   if(p.get("ws")!==null&&$("wsIn"))$("wsIn").value=p.get("ws");
   if(p.get("chk")==="end"&&$("chkIn"))$("chkIn").value="end";
@@ -2737,7 +2836,6 @@ $("presetFinal").addEventListener("click",function(){setPreset([5,6,7,8],false,[
 $("presetAll").addEventListener("click",function(){setPreset([1,2,3,4,5,6,7,8,9]);});
 $("goOnline").addEventListener("click",startOnline);
 $("goSheet").addEventListener("click",startSheet);
-$("goWorksheet").addEventListener("click",startWorksheet);
 $("goExam").addEventListener("click",startExam);
 $("copyLink").addEventListener("click",function(){
   var url=location.origin+settingsToURL();
@@ -2748,7 +2846,7 @@ $("copyLink").addEventListener("click",function(){
 var urlTouched=applyURL();
 unitCheckboxes();renderIndicators();updatePoolInfo();
 if(urlTouched&&(new URLSearchParams(location.search).get("unit")||new URLSearchParams(location.search).get("preset")||new URLSearchParams(location.search).get("indicator"))){
-  var _m=(new URLSearchParams(location.search).get("mode"));if(_m==="sheet"){startSheet();}else if(_m==="worksheet"){startWorksheet();}else if(_m==="exam"){startExam();}else{startOnline();}
+  var _m=(new URLSearchParams(location.search).get("mode"));if(_m==="sheet"||_m==="worksheet"){startSheet();}else if(_m==="exam"){startExam();}else{startOnline();}
 }
 </script>
 </body>
