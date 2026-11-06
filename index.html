@@ -4739,6 +4739,7 @@ function startExam(){
   var wsf=(typeof s.ws==="number"&&!isNaN(s.ws))?s.ws:1;
   var scope=single?("Unit "+s.units[0]+" \u00B7 "+UNITS[s.units[0]]):s.units.map(function(u){return "Unit "+u;}).join(", ");
   var title=single?"Math 3208: Practice Unit Test":"Math 3208: Practice Exam";
+  wordName=single?"Math 3208 Practice Unit Test.docx":"Math 3208 Practice Exam.docx";
   var paper='<div class="nameline"><div>Name:<span></span></div><div>Date:<span></span></div></div>';
   paper+='<h1 style="font-size:1.3rem;">'+title+'</h1><p>'+scope+' \u00B7 Total marks: '+ex.total+'</p>';
   paper+='<p style="font-size:.92rem;">Answer all questions. In Section A, choose the best answer for each question and record it on the answer record at the end of Section A. In Section B, show all workings in the space provided; marks are shown beside each question.</p>';
@@ -4771,8 +4772,8 @@ function startExam(){
   $("printArea").innerHTML=paper;
   $("session").innerHTML='<div class="card"><p>Your '+(single?"practice unit test":"practice exam")+' is ready: '+ex.srItems.length+' selected-response questions and '+ex.crItems.length+' constructed-response questions, '+ex.total+' marks in total. The exam paper and the answer key print separately.</p>'
     +(ex.short?'<p class="thinNote">Heads up: the bank could not fill every exam slot for this selection yet, so this paper runs short of the full blueprint.</p>':"")
-    +'<div class="row"><button type="button" id="editExamBtn">Edit the exam</button><button type="button" id="printPaperBtn">Print the exam paper</button><button type="button" id="printKeyBtn" class="sec">Print the answer key</button><button type="button" id="copyWordBtn" class="sec">Copy for Word</button><button type="button" id="copyDocsBtn" class="sec">Copy for Google Docs</button></div>'
-    +'<p class="hint" id="editHint" hidden>Editing is on: click any text in the exam below and type to change it, or delete a question you do not want. Drag the bar at the bottom of a Section B answer box to make that box taller or shorter. What you see is what prints and what copies.</p>'
+    +'<div class="row"><button type="button" id="editExamBtn">Edit the exam</button><button type="button" id="printPaperBtn">Print the exam paper</button><button type="button" id="printKeyBtn" class="sec">Print the answer key</button><button type="button" id="wordBtn" class="sec">Download Word file</button><button type="button" id="copyDocsBtn" class="sec">Copy for Google Docs</button></div>'
+    +'<p class="hint" id="editHint" hidden>Editing is on: click any text in the exam below and type to change it, or delete a question you do not want. Drag the bar at the bottom of a Section B answer box to make that box taller or shorter. What you see is what prints and what the Word file contains.</p>'
     +'<p class="hint" id="copyStatus" role="status"></p>'
     +'<div class="sheetPrev" id="sheetPrev">'+paper+'<div class="keybreak">'+key+'</div></div></div>';
   typesetMath($("sheetPrev"));typesetMath($("printArea"));
@@ -4781,7 +4782,7 @@ function startExam(){
     if(on){prev.removeAttribute("contenteditable");prev.classList.remove("editing");$("editExamBtn").textContent="Edit the exam";$("editHint").hidden=true;}
     else{prev.setAttribute("contenteditable","true");prev.classList.add("editing");$("editExamBtn").textContent="Done editing";$("editHint").hidden=false;setHandles(prev);prev.focus();}
   });
-  $("copyWordBtn").addEventListener("click",function(){copyFrom($("sheetPrev"),"word",$("copyStatus"));});
+  $("wordBtn").addEventListener("click",function(){downloadWordFile($("copyStatus"));});
   $("copyDocsBtn").addEventListener("click",function(){copyFrom($("sheetPrev"),"docs",$("copyStatus"));});
   $("printPaperBtn").addEventListener("click",function(){var pp=previewParts();if(pp){$("printArea").innerHTML=pp.paper;}else{$("printArea").innerHTML=paper;typesetMath($("printArea"));}window.print();});
   $("printKeyBtn").addEventListener("click",function(){var pp=previewParts();if(pp){$("printArea").innerHTML=pp.key;}else{$("printArea").innerHTML=key;typesetMath($("printArea"));}window.print();});
@@ -4792,6 +4793,7 @@ function startSheet(){
   var res=drawSheetSet(s);
   if(!res.items.length){$("session").innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above ,  or use the Mid-course review or Final review button ,  then start again.")+'</p></div>';return;}
   var unitNames=s.units.map(function(u){return "Unit "+u;}).join(", ");
+  wordName="Math 3208 Practice Sheet.docx";
   var html='<div class="nameline"><div>Name:<span></span></div><div>Date:<span></span></div></div>';
   var wsf=(typeof s.ws==="number"&&!isNaN(s.ws))?s.ws:1;
   html+='<h1 style="font-size:1.3rem;">'+"Math 3208: Practice Sheet"+'</h1><p>'+unitNames+(s.inds.length?(" \u00B7 Indicators: "+s.inds.join(", ")):"")+' \u00B7 '+res.items.length+' questions \u00B7 '+(wsf>0?'Show all workings in the space provided.':'Show all workings on your own paper.')+'</p>';
@@ -4815,8 +4817,8 @@ function startSheet(){
   $("printArea").innerHTML=html;
   $("session").innerHTML='<div class="card"><p>Your practice sheet is ready ('+res.items.length+' questions'+(s.wantKey?', with the answer key on its own pages at the end':'')+'). It is shown below, exactly as it will print.</p>'
     +(res.thin?'<p class="thinNote">Heads up: the question bank is still thin for this selection, so this sheet repeats practice on the same question shape (with new numbers) because there are not yet enough different questions to fill it.</p>':"")
-    +'<div class="row"><button type="button" id="editBtn">Edit the sheet</button><button type="button" id="copyWordBtn" class="sec">Copy for Word</button><button type="button" id="copyDocsBtn" class="sec">Copy for Google Docs</button><button type="button" id="printBtn" class="sec">Print / save the sheet</button></div>'
-    +'<p class="hint" id="editHint" hidden>Editing is on: click any text in the sheet below and type to change it, or delete a question you do not want. Drag the bar at the bottom of an answer box to make that box taller or shorter. What you see is what prints and what copies. Most math is regular text and can be changed directly; typeset expressions are rendered, so if you need different numbers in one of those, regenerate the sheet instead.</p>'
+    +'<div class="row"><button type="button" id="editBtn">Edit the sheet</button><button type="button" id="wordBtn" class="sec">Download Word file</button><button type="button" id="copyDocsBtn" class="sec">Copy for Google Docs</button><button type="button" id="printBtn" class="sec">Print / save the sheet</button></div>'
+    +'<p class="hint" id="editHint" hidden>Editing is on: click any text in the sheet below and type to change it, or delete a question you do not want. Drag the bar at the bottom of an answer box to make that box taller or shorter. What you see is what prints and what the Word file contains. Most math is regular text and can be changed directly; typeset expressions are rendered, so if you need different numbers in one of those, regenerate the sheet instead.</p>'
     +'<p class="hint" id="copyStatus" role="status"></p>'
     +'<div class="sheetPrev" id="sheetPrev">'+html+'</div></div>';
   typesetMath($("sheetPrev"));typesetMath($("printArea"));
@@ -4825,7 +4827,7 @@ function startSheet(){
     if(on){prev.removeAttribute("contenteditable");prev.classList.remove("editing");$("editBtn").textContent="Edit the sheet";$("editHint").hidden=true;}
     else{prev.setAttribute("contenteditable","true");prev.classList.add("editing");$("editBtn").textContent="Done editing";$("editHint").hidden=false;setHandles(prev);prev.focus();}
   });
-  $("copyWordBtn").addEventListener("click",function(){copyFrom($("sheetPrev"),"word",$("copyStatus"));});
+  $("wordBtn").addEventListener("click",function(){downloadWordFile($("copyStatus"));});
   $("copyDocsBtn").addEventListener("click",function(){copyFrom($("sheetPrev"),"docs",$("copyStatus"));});
   $("printBtn").addEventListener("click",function(){$("printArea").innerHTML=$("sheetPrev").innerHTML;window.print();});
 }
@@ -4857,86 +4859,430 @@ function previewParts(){
   var ix=full.indexOf(mark);
   return {paper:full.slice(0,ix),key:mark+full.slice(ix+mark.length)};
 }
-/* Copy routes for sheets and exams. The Google Docs route keeps the
-   long-standing behaviour: the output as flattened plain text. The Word
-   route rebuilds each equation in the dialect of Word's own HTML: a
-   complete document whose root declares the mml namespace, with every
-   equation element carrying the mml: prefix and the TeX annotation
-   deleted, so Word converts the paste into native editable equations.
-   The flattened text still rides along as the plain fallback. */
-var MML_NS="http://www.w3.org/1998/Math/MathML";
-/* Rebuild one KaTeX MathML tree inside an XML document with every
-   element prefixed mml:. <semantics> is unwrapped (its presentation
-   children are kept) and <annotation> is deleted outright, so no raw
-   TeX can leak into a paste. DOM work only; mmlString serializes. */
-function mmlBuild(src,xdoc){
-  if(src.nodeType===3)return xdoc.createTextNode(src.nodeValue);
-  if(src.nodeType!==1)return null;
-  var tag=(src.localName||src.tagName||"").toLowerCase(),i,r;
-  if(tag==="annotation"||tag==="annotation-xml")return null;
-  if(tag==="semantics"){
-    var frag=xdoc.createDocumentFragment();
-    for(i=0;i<src.childNodes.length;i++){r=mmlBuild(src.childNodes[i],xdoc);if(r)frag.appendChild(r);}
-    return frag;
-  }
-  var el=xdoc.createElementNS(MML_NS,"mml:"+tag);
-  if(src.attributes)for(i=0;i<src.attributes.length;i++){
-    var at=src.attributes[i];
-    if(at.name==="xmlns"||at.name.indexOf("xmlns:")===0)continue;
-    try{el.setAttribute(at.name,at.value);}catch(e){}
-  }
-  for(i=0;i<src.childNodes.length;i++){r=mmlBuild(src.childNodes[i],xdoc);if(r)el.appendChild(r);}
-  return el;
-}
-function mmlString(mathEl){
-  var xdoc=document.implementation.createDocument(MML_NS,null,null);
-  var conv=mmlBuild(mathEl,xdoc);
-  return conv?new XMLSerializer().serializeToString(conv):"";
-}
-/* Assemble the Word payload: the sheet fragment with its equation slot
-   spans swapped for the serialized mml: strings, wrapped in a complete
-   document that declares the mml namespace on the root element. */
-function buildWordDoc(frag,maths){
-  var out=frag,i;
-  for(i=0;i<maths.length;i++){
-    out=out.replace('<span data-mml-slot="'+i+'"></span>',(function(m){return function(){return m;};})(maths[i]));
-  }
-  return '<html xmlns:mml="'+MML_NS+'"><head><meta charset="utf-8"></head><body>'+out+'</body></html>';
-}
-function mathmlClone(node){
-  var c=node.cloneNode(true),maths=[];
-  Array.prototype.forEach.call(c.querySelectorAll(".wshandle"),function(hd){if(hd.parentNode)hd.parentNode.removeChild(hd);});
-  Array.prototype.forEach.call(c.querySelectorAll(".katex"),function(k){
-    var mm=k.querySelector("math");
-    if(mm){
-      var slot=document.createElement("span");
-      slot.setAttribute("data-mml-slot",String(maths.length));
-      maths.push(mmlString(mm));
-      k.replaceWith(slot);
-    }
-    else{var a=k.querySelector("annotation");k.replaceWith(document.createTextNode(a?cleanTex(a.textContent):""));}
-  });
-  c.removeAttribute("contenteditable");c.classList.remove("editing");
-  c._mmlStrings=maths;
-  return c;
-}
-function wordHtml(node){
-  var clean=mathmlClone(node);
-  return buildWordDoc(clean.innerHTML,clean._mmlStrings||[]);
-}
+/* Copy route for Google Docs: the long-standing behaviour, the output
+   as flattened plain text. The old Word clipboard route is retired:
+   Word does not convert pasted MathML into equations on the target
+   install (proven twice), so Word gets a genuine .docx download
+   instead, built by the Word (.docx) download section below. */
 function copyFrom(node,mode,status){
   if(!node)return;
-  function done(ok){if(status)status.textContent=ok?(mode==="word"?"Copied for Word. Paste into a Word document: the sheet lands there and each equation arrives as an editable Word equation.":"Copied. Open a Google Doc or a Word document and paste (Ctrl+V): the whole sheet lands there as editable text. Edit it there, then print from there."):"Copy did not work in this browser. You can still edit right here and print.";}
+  function done(ok){if(status)status.textContent=ok?"Copied. Open a Google Doc or a Word document and paste (Ctrl+V): the whole sheet lands there as editable text. Edit it there, then print from there.":"Copy did not work in this browser. You can still edit right here and print.";}
   function fallback(){try{var r=document.createRange();r.selectNodeContents(node);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);var ok=document.execCommand("copy");sel.removeAllRanges();done(ok);}catch(e){done(false);}}
   if(navigator.clipboard&&window.ClipboardItem){
     try{
-      var htmlStr,plainStr;
-      if(mode==="word"){htmlStr=wordHtml(node);var dc=detexClone(node);plainStr=dc.innerText||dc.textContent||"";}
-      else{var clean=detexClone(node);htmlStr=clean.innerHTML;plainStr=clean.innerText||clean.textContent||"";}
+      var clean=detexClone(node);var htmlStr=clean.innerHTML;var plainStr=clean.innerText||clean.textContent||"";
       var item=new ClipboardItem({"text/html":new Blob([htmlStr],{type:"text/html"}),"text/plain":new Blob([plainStr],{type:"text/plain"})});
       navigator.clipboard.write([item]).then(function(){done(true);},function(){fallback();});
     }catch(e){fallback();}
   } else fallback();
+}
+/* ============ Word (.docx) download ============
+   The Word route builds a genuine .docx (OOXML) in the browser: the
+   rendered sheet or exam is walked, every KaTeX equation is converted
+   from its embedded MathML to native Word OMML, and the parts are
+   packed with a minimal stored-entry ZIP writer. No libraries. */
+function xesc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function xescA(s){return xesc(s).replace(/"/g,"&quot;");}
+/* ---- MathML -> OMML ----
+   Written against the small slice of DOM both a browser and a test
+   stub provide: nodeType, localName/tagName, childNodes, getAttribute
+   or an attributes list. st.fb counts elements that had to degrade to
+   their converted children, by tag, so coverage can be reported. */
+var BIGOPS={"∫":1,"∮":1,"∯":1,"∰":1,"∑":1,"∏":1,"∐":1,"⋀":1,"⋁":1,"⋂":1,"⋃":1,"⨀":1,"⨁":1,"⨂":1};
+var ACCMAP={"^":"\u0302","~":"\u0303","\u02D9":"\u0307","\u00A8":"\u0308","\u00AF":"\u203E","\u203E":"\u203E","\u20D7":"\u20D7","\u2192":"\u20D7","\u02D8":"\u0306","\u02C7":"\u030C","\u02CB":"\u0300","\u02CA":"\u0301"};
+function nAttr(n,name){
+  if(!n)return null;
+  if(n.getAttribute){try{var v=n.getAttribute(name);if(v!==null&&v!==undefined)return v;}catch(e){}}
+  if(n.attributes)for(var i=0;i<n.attributes.length;i++){if(n.attributes[i].name===name)return n.attributes[i].value;}
+  return null;
+}
+function nTag(n){return String(n.localName||n.tagName||"").toLowerCase();}
+function nKids(n){var out=[];if(n&&n.childNodes)for(var i=0;i<n.childNodes.length;i++)out.push(n.childNodes[i]);return out;}
+function nText(n){
+  if(!n)return "";
+  if(n.nodeType===3)return n.nodeValue||"";
+  var s="";nKids(n).forEach(function(c){s+=nText(c);});return s;
+}
+function fb(st,tag){st.fb[tag]=(st.fb[tag]||0)+1;}
+function mRun(text,opts){
+  opts=opts||{};
+  var t=String(text).replace(/[\u2061\u2062\u2063]/g,"");
+  if(t==="")return "";
+  var rpr=(opts.nor?"<m:rPr><m:nor/></m:rPr>":"")+'<w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math" w:cs="Cambria Math"/></w:rPr>';
+  return "<m:r>"+rpr+'<m:t xml:space="preserve">'+xesc(t)+"</m:t></m:r>";
+}
+function scriptParts(n){
+  var k=nKids(n),tag=nTag(n);
+  if(tag==="msubsup")return {base:k[0],sub:k[1],sup:k[2],undOvr:false};
+  if(tag==="msub")return {base:k[0],sub:k[1],sup:null,undOvr:false};
+  if(tag==="msup")return {base:k[0],sub:null,sup:k[1],undOvr:false};
+  if(tag==="munderover")return {base:k[0],sub:k[1],sup:k[2],undOvr:true};
+  if(tag==="munder")return {base:k[0],sub:k[1],sup:null,undOvr:true};
+  if(tag==="mover")return {base:k[0],sub:null,sup:k[1],undOvr:true};
+  return null;
+}
+function isBigOpBase(base){
+  if(!base||base.nodeType!==1)return false;
+  var t=nTag(base);
+  if(t!=="mo"&&t!=="mi")return false;
+  return !!BIGOPS[nText(base).trim()];
+}
+function naryXml(p,body,st){
+  var chr=nText(p.base).trim();
+  var pr='<m:naryPr><m:chr m:val="'+xescA(chr)+'"/><m:limLoc m:val="'+(p.undOvr?"undOvr":"subSup")+'"/>';
+  if(p.undOvr&&!p.sub)pr+='<m:subHide m:val="1"/>';
+  if(p.undOvr&&!p.sup)pr+='<m:supHide m:val="1"/>';
+  pr+="</m:naryPr>";
+  return "<m:nary>"+pr+"<m:sub>"+(p.sub?mNode(p.sub,st):"")+"</m:sub><m:sup>"+(p.sup?mNode(p.sup,st):"")+"</m:sup><m:e>"+body+"</m:e></m:nary>";
+}
+function mSeqKids(kids,st){
+  var out="";
+  for(var i=0;i<kids.length;i++){
+    var k=kids[i],tag=nTag(k);
+    if(k.nodeType===3){out+=mRun(k.nodeValue);continue;}
+    if(k.nodeType!==1)continue;
+    if(tag==="annotation"||tag==="annotation-xml")continue;
+    var p=(tag==="msubsup"||tag==="msub"||tag==="msup"||tag==="munderover"||tag==="munder"||tag==="mover")?scriptParts(k):null;
+    if(p&&isBigOpBase(p.base)){
+      var body="";
+      while(i+1<kids.length){i++;body+=mNode(kids[i],st);}
+      out+=naryXml(p,body,st);
+      continue;
+    }
+    if(tag==="mo"&&nAttr(k,"fence")==="true"&&i+1<kids.length&&(nTag(kids[i+1])==="mtable"||nTag(kids[i+1])==="mfrac")){
+      var open=nText(k).trim(),inner=mNode(kids[i+1],st);i++;
+      var close=null;
+      if(i+1<kids.length&&nTag(kids[i+1])==="mo"&&nAttr(kids[i+1],"fence")==="true"){close=nText(kids[i+1]).trim();i++;}
+      out+='<m:d><m:dPr><m:begChr m:val="'+xescA(open)+'"/><m:endChr m:val="'+(close===null?"":xescA(close))+'"/></m:dPr><m:e>'+inner+"</m:e></m:d>";
+      continue;
+    }
+    out+=mNode(k,st);
+  }
+  return out;
+}
+function mSeq(n,st){return mSeqKids(nKids(n),st);}
+function mNode(n,st){
+  if(!n)return "";
+  if(n.nodeType===3)return mRun(n.nodeValue);
+  if(n.nodeType!==1)return "";
+  var tag=nTag(n),kids=nKids(n);
+  switch(tag){
+    case "annotation": case "annotation-xml": return "";
+    case "semantics": case "mstyle": case "mpadded": case "merror": case "mrow":
+      return mSeq(n,st);
+    case "mi": case "mo": case "mn": return mRun(nText(n));
+    case "mtext": return mRun(nText(n),{nor:true});
+    case "mspace": return mRun(" ");
+    case "mfrac": {
+      var lt=nAttr(n,"linethickness");
+      var type=(lt!==null&&parseFloat(lt)===0)?"noBar":(nAttr(n,"bevelled")==="true"?"skewed":null);
+      return "<m:f>"+(type?'<m:fPr><m:type m:val="'+type+'"/></m:fPr>':"")+"<m:num>"+mNode(kids[0],st)+"</m:num><m:den>"+mNode(kids[1],st)+"</m:den></m:f>";
+    }
+    case "msqrt":
+      return '<m:rad><m:radPr><m:degHide m:val="1"/></m:radPr><m:deg/><m:e>'+mSeq(n,st)+"</m:e></m:rad>";
+    case "mroot":
+      return "<m:rad><m:deg>"+mNode(kids[1],st)+"</m:deg><m:e>"+mNode(kids[0],st)+"</m:e></m:rad>";
+    case "msub": case "msup": case "msubsup": {
+      var p=scriptParts(n);
+      if(p&&isBigOpBase(p.base))return naryXml(p,"",st);
+      if(tag==="msub")return "<m:sSub><m:e>"+mNode(p.base,st)+"</m:e><m:sub>"+mNode(p.sub,st)+"</m:sub></m:sSub>";
+      if(tag==="msup")return "<m:sSup><m:e>"+mNode(p.base,st)+"</m:e><m:sup>"+mNode(p.sup,st)+"</m:sup></m:sSup>";
+      return "<m:sSubSup><m:e>"+mNode(p.base,st)+"</m:e><m:sub>"+mNode(p.sub,st)+"</m:sub><m:sup>"+mNode(p.sup,st)+"</m:sup></m:sSubSup>";
+    }
+    case "munderover": {
+      var p2=scriptParts(n);
+      if(p2&&isBigOpBase(p2.base))return naryXml(p2,"",st);
+      fb(st,"munderover");
+      return mNode(kids[0],st)+mNode(kids[1],st)+mNode(kids[2],st);
+    }
+    case "munder": {
+      var base=kids[0],under=kids[1];
+      var bt=nText(base).replace(/[\u2061\u2062\u2063]/g,"").trim();
+      if(/^lim/.test(bt))return "<m:limLow><m:e>"+mNode(base,st)+"</m:e><m:lim>"+mNode(under,st)+"</m:lim></m:limLow>";
+      if(isBigOpBase(base))return naryXml(scriptParts(n),"",st);
+      fb(st,"munder");
+      return mNode(base,st)+mNode(under,st);
+    }
+    case "mover": {
+      var base2=kids[0],over=kids[1],ot=nText(over).trim();
+      if(isBigOpBase(base2))return naryXml(scriptParts(n),"",st);
+      if(ot.length<=2&&(nAttr(n,"accent")==="true"||ACCMAP[ot]!==undefined)){
+        var chr=ACCMAP[ot]!==undefined?ACCMAP[ot]:ot;
+        return '<m:acc><m:accPr><m:chr m:val="'+xescA(chr)+'"/></m:accPr><m:e>'+mNode(base2,st)+"</m:e></m:acc>";
+      }
+      fb(st,"mover");
+      return mNode(base2,st)+mNode(over,st);
+    }
+    case "mfenced": {
+      var open=nAttr(n,"open");if(open===null)open="(";
+      var close=nAttr(n,"close");if(close===null)close=")";
+      var sep=nAttr(n,"separators");
+      var ekids=kids.filter(function(c){return c.nodeType===1||(c.nodeType===3&&/\S/.test(c.nodeValue||""));});
+      var pr='<m:dPr><m:begChr m:val="'+xescA(open)+'"/>';
+      var es="";
+      if(sep&&ekids.length>1){
+        var sc=sep.replace(/\s+/g," ").trim().charAt(0)||",";
+        pr+='<m:sepChr m:val="'+xescA(sc)+'"/>';
+        es=ekids.map(function(c){return "<m:e>"+mNode(c,st)+"</m:e>";}).join("");
+      }else{
+        es="<m:e>"+mSeq(n,st)+"</m:e>";
+      }
+      pr+='<m:endChr m:val="'+xescA(close)+'"/></m:dPr>';
+      return "<m:d>"+pr+es+"</m:d>";
+    }
+    case "mtable": {
+      var rows="";
+      kids.forEach(function(tr){
+        if(nTag(tr)!=="mtr")return;
+        var cells="";
+        nKids(tr).forEach(function(td){cells+=mNode(td,st);});
+        rows+="<m:e>"+cells+"</m:e>";
+      });
+      return "<m:eqArr>"+rows+"</m:eqArr>";
+    }
+    case "mtr": case "mtd": return mSeq(n,st);
+    case "mphantom":
+      return '<m:phant><m:phantPr><m:show m:val="0"/></m:phantPr><m:e>'+mSeq(n,st)+"</m:e></m:phant>";
+    case "menclose": {
+      var not=nAttr(n,"notation")||"";
+      if(/(^|\s)(rounded)?box(\s|$)/.test(not))return "<m:borderBox><m:e>"+mSeq(n,st)+"</m:e></m:borderBox>";
+      fb(st,"menclose");
+      return mSeq(n,st);
+    }
+    case "maction": return kids.length?mNode(kids[0],st):"";
+    case "mglyph": fb(st,"mglyph"); return mRun(nAttr(n,"alt")||"");
+    default: fb(st,tag); return mSeq(n,st);
+  }
+}
+function mathToOmml(mathEl,st){
+  st=st||{fb:{}};
+  if(!mathEl)return "";
+  return mSeq(mathEl,st);
+}
+/* ---- Preview DOM -> WordprocessingML body ---- */
+function dTag(n){return String(n.tagName||"").toUpperCase();}
+function dClass(n){return (n.getAttribute?n.getAttribute("class"):null)||"";}
+function dHas(n,c){return (" "+dClass(n)+" ").indexOf(" "+c+" ")>=0;}
+function dText(n){
+  if(!n)return "";
+  if(n.nodeType===3)return n.nodeValue||"";
+  var s="";nKids(n).forEach(function(c){s+=dText(c);});return s;
+}
+function dFind(n,pred){
+  if(!n||n.nodeType!==1)return null;
+  if(pred(n))return n;
+  var kids=nKids(n);
+  for(var i=0;i<kids.length;i++){var r=dFind(kids[i],pred);if(r)return r;}
+  return null;
+}
+function dStyleVal(n,prop){
+  var s=(n.getAttribute?n.getAttribute("style"):null)||"";
+  var m=new RegExp("(?:^|;)\\s*"+prop+"\\s*:\\s*([^;]+)").exec(s);
+  return m?m[1].trim():null;
+}
+function wRun(text,fmt){
+  fmt=fmt||{};
+  var t=String(text);
+  if(t==="")return "";
+  var rpr="";
+  if(fmt.b)rpr+="<w:b/>";
+  if(fmt.i)rpr+="<w:i/>";
+  if(fmt.u)rpr+='<w:u w:val="single"/>';
+  if(fmt.strike)rpr+="<w:strike/>";
+  if(fmt.vert)rpr+='<w:vertAlign w:val="'+fmt.vert+'"/>';
+  if(fmt.sz)rpr+='<w:sz w:val="'+fmt.sz+'"/><w:szCs w:val="'+fmt.sz+'"/>';
+  var parts=t.split("\n"),out="";
+  parts.forEach(function(part,ix){
+    if(ix>0)out+="<w:r><w:br/></w:r>";
+    if(part)out+="<w:r>"+(rpr?"<w:rPr>"+rpr+"</w:rPr>":"")+'<w:t xml:space="preserve">'+xesc(part)+"</w:t></w:r>";
+  });
+  return out;
+}
+function makeWalker(st){
+  var out=[],cur=null;
+  function flush(){
+    if(cur&&cur.runs.length)out.push("<w:p>"+(cur.ppr?"<w:pPr>"+cur.ppr+"</w:pPr>":"")+cur.runs.join("")+"</w:p>");
+    cur=null;
+  }
+  function pushBlock(xml){flush();out.push(xml);}
+  function addXml(xml){if(!xml)return;if(!cur)cur={runs:[],ppr:""};cur.runs.push(xml);}
+  function addText(text,fmt){addXml(wRun(text,fmt));}
+  function mathPara(mathEl){
+    return '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="80" w:after="80"/></w:pPr><m:oMathPara><m:oMath>'+mathToOmml(mathEl,st)+"</m:oMath></m:oMathPara></w:p>";
+  }
+  function tableXml(tbl){
+    var rowsXml="";
+    function cellXml(td){
+      var sub=makeWalker(st),i;
+      var kids=nKids(td);
+      for(i=0;i<kids.length;i++)sub.walk(kids[i],{});
+      return sub.finish().join("");
+    }
+    function doRow(tr){
+      var cells="";
+      nKids(tr).forEach(function(td){
+        var t=dTag(td);
+        if(t!=="TD"&&t!=="TH")return;
+        var inner=cellXml(td);
+        if(!inner)inner="<w:p/>";
+        cells+='<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>'+inner+"</w:tc>";
+      });
+      if(cells)rowsXml+="<w:tr>"+cells+"</w:tr>";
+    }
+    (function scan(n){
+      nKids(n).forEach(function(c){
+        var t=dTag(c);
+        if(t==="TR")doRow(c);
+        else if(t==="TBODY"||t==="THEAD"||t==="TFOOT")scan(c);
+      });
+    })(tbl);
+    return '<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders><w:top w:val="single" w:sz="6" w:space="0" w:color="999999"/><w:left w:val="single" w:sz="6" w:space="0" w:color="999999"/><w:bottom w:val="single" w:sz="6" w:space="0" w:color="999999"/><w:right w:val="single" w:sz="6" w:space="0" w:color="999999"/><w:insideH w:val="single" w:sz="6" w:space="0" w:color="999999"/><w:insideV w:val="single" w:sz="6" w:space="0" w:color="999999"/></w:tblBorders></w:tblPr>'+rowsXml+"</w:tbl>";
+  }
+  var BLOCKS={P:1,DIV:1,LABEL:1,LI:1,BLOCKQUOTE:1,SECTION:1,ARTICLE:1,HEADER:1,FOOTER:1,UL:1,OL:1,H3:1,H4:1,H5:1,H6:1,FIGURE:1,FIGCAPTION:1};
+  function walk(n,fmt){
+    if(!n)return;
+    if(n.nodeType===3){addText(n.nodeValue,fmt);return;}
+    if(n.nodeType!==1)return;
+    var tag=dTag(n);
+    if(tag==="SCRIPT"||tag==="STYLE"||tag==="SVG"||tag==="INPUT"||tag==="BUTTON"||tag==="TEXTAREA"||tag==="SELECT")return;
+    if(dHas(n,"wshandle"))return;
+    if(dHas(n,"katex-display")){
+      var kd=dFind(n,function(e){return dHas(e,"katex");});
+      var md=kd?dFind(kd,function(e){return dTag(e)==="MATH";}):null;
+      if(md)pushBlock(mathPara(md));
+      return;
+    }
+    if(dHas(n,"katex")){
+      var mm=dFind(n,function(e){return dTag(e)==="MATH";});
+      if(mm)addXml("<m:oMath>"+mathToOmml(mm,st)+"</m:oMath>");
+      else{
+        var an=dFind(n,function(e){return nTag(e)==="annotation";});
+        if(an)addXml("<m:oMath>"+mRun(cleanTex(an.textContent||dText(an)))+"</m:oMath>");
+      }
+      return;
+    }
+    if(dHas(n,"wsbox")){
+      var hv=dStyleVal(n,"height"),px=hv?parseInt(hv,10):0;
+      if(px>0){
+        var tw=Math.max(240,Math.round(px*15));
+        pushBlock('<w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="6" w:space="0" w:color="999999"/><w:left w:val="single" w:sz="6" w:space="0" w:color="999999"/><w:bottom w:val="single" w:sz="6" w:space="0" w:color="999999"/><w:right w:val="single" w:sz="6" w:space="0" w:color="999999"/></w:pBdr><w:spacing w:line="'+tw+'" w:lineRule="exact"/></w:pPr></w:p>');
+      }
+      return;
+    }
+    if(dHas(n,"keybreak")){
+      pushBlock('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+      nKids(n).forEach(function(c){walk(c,fmt);});
+      flush();
+      return;
+    }
+    if(dHas(n,"nameline")){
+      flush();
+      nKids(n).forEach(function(c){
+        if(c.nodeType!==1)return;
+        var label=dText(c).replace(/\s+/g," ").trim();
+        if(label)out.push("<w:p>"+wRun(label+" ",fmt)+wRun("________________________",fmt)+"</w:p>");
+      });
+      return;
+    }
+    if(tag==="TABLE"){pushBlock(tableXml(n));return;}
+    if(tag==="H1"||tag==="H2"){
+      flush();
+      cur={runs:[],ppr:'<w:spacing w:before="'+(tag==="H1"?"0":"240")+'" w:after="160"/>'};
+      nKids(n).forEach(function(c){walk(c,{b:true,sz:tag==="H1"?32:26});});
+      flush();
+      return;
+    }
+    if(tag==="BR"){addXml("<w:r><w:br/></w:r>");return;}
+    var f2=null;
+    if(tag==="B"||tag==="STRONG"){f2=Object.assign({},fmt,{b:true});}
+    else if(tag==="I"||tag==="EM"){f2=Object.assign({},fmt,{i:true});}
+    else if(tag==="U"){f2=Object.assign({},fmt,{u:true});}
+    else if(tag==="S"||tag==="STRIKE"||tag==="DEL"){f2=Object.assign({},fmt,{strike:true});}
+    else if(tag==="SUB"){f2=Object.assign({},fmt,{vert:"subscript"});}
+    else if(tag==="SUP"){f2=Object.assign({},fmt,{vert:"superscript"});}
+    else if(tag==="SPAN"&&dHas(n,"rk")){f2=Object.assign({},fmt,{b:true,u:true});}
+    if(f2){nKids(n).forEach(function(c){walk(c,f2);});return;}
+    if(BLOCKS[tag]){
+      nKids(n).forEach(function(c){walk(c,fmt);});
+      flush();
+      return;
+    }
+    nKids(n).forEach(function(c){walk(c,fmt);});
+  }
+  function finish(){
+    flush();
+    if(out.length&&out[out.length-1].indexOf("<w:tbl>")===0)out.push("<w:p/>");
+    return out;
+  }
+  return {walk:walk,finish:finish,pushBlock:pushBlock};
+}
+function docxBodyXml(rootEl,st){
+  st=st||{fb:{}};
+  var w=makeWalker(st);
+  nKids(rootEl).forEach(function(c){w.walk(c,{});});
+  return w.finish().join("");
+}
+/* ---- OOXML parts and the ZIP writer ---- */
+var DOCX_CT='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
+var DOCX_RELS='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+var DOCX_STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="en-CA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>';
+function docxDocumentXml(bodyXml){
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>'+bodyXml+'<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>';
+}
+var CRC_TABLE=null;
+function crc32(bytes){
+  if(!CRC_TABLE){CRC_TABLE=[];for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);CRC_TABLE[n]=c>>>0;}}
+  var crc=0xFFFFFFFF;
+  for(var i=0;i<bytes.length;i++)crc=CRC_TABLE[(crc^bytes[i])&0xFF]^(crc>>>8);
+  return (crc^0xFFFFFFFF)>>>0;
+}
+function zipStore(files){
+  var enc=new TextEncoder(),chunks=[],central=[],offset=0;
+  function u16(v){return [v&0xFF,(v>>>8)&0xFF];}
+  function u32(v){return [v&0xFF,(v>>>8)&0xFF,(v>>>16)&0xFF,(v>>>24)&0xFF];}
+  files.forEach(function(f){
+    var nameB=enc.encode(f.name),data=f.data,crc=crc32(data);
+    var lh=[].concat(u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(crc),u32(data.length),u32(data.length),u16(nameB.length),u16(0));
+    chunks.push(new Uint8Array(lh),nameB,data);
+    var ch=[].concat(u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(crc),u32(data.length),u32(data.length),u16(nameB.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset));
+    central.push(new Uint8Array(ch),nameB);
+    offset+=lh.length+nameB.length+data.length;
+  });
+  var cdStart=offset,cdSize=0;
+  central.forEach(function(c){cdSize+=c.length;});
+  var end=new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cdSize),u32(cdStart),u16(0)));
+  var all=chunks.concat(central,[end]),total=0;
+  all.forEach(function(c){total+=c.length;});
+  var out=new Uint8Array(total),pos=0;
+  all.forEach(function(c){out.set(c,pos);pos+=c.length;});
+  return out;
+}
+function makeWordDocx(rootEl,st){
+  var body=docxBodyXml(rootEl,st);
+  var enc=new TextEncoder();
+  return zipStore([
+    {name:"[Content_Types].xml",data:enc.encode(DOCX_CT)},
+    {name:"_rels/.rels",data:enc.encode(DOCX_RELS)},
+    {name:"word/document.xml",data:enc.encode(docxDocumentXml(body))},
+    {name:"word/styles.xml",data:enc.encode(DOCX_STYLES)}
+  ]);
+}
+var wordName="Math 3208 Practice Sheet.docx";
+function downloadWordFile(statusEl){
+  var prev=$("sheetPrev");
+  if(!prev)return;
+  try{
+    var bytes=makeWordDocx(prev);
+    var blob=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url;a.download=wordName;
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){if(a.parentNode)a.parentNode.removeChild(a);URL.revokeObjectURL(url);},400);
+    if(statusEl)statusEl.textContent="Word file downloaded ("+wordName+"). Open it in Word: every equation in it is a native Word equation, ready to edit or print.";
+  }catch(e){
+    if(statusEl)statusEl.textContent="The Word file could not be built in this browser. You can still edit the sheet here and print it.";
+  }
 }
 function settingsToURL(){
   var s=settings();var p=new URLSearchParams();
