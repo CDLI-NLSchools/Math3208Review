@@ -600,7 +600,7 @@ E("u1-evaluate-operation",1,["1.1"],1,"gen",function(){
     while((gv===0||(fv*100)%gv!==0)&&tries<200);
     if(gv===0||(fv*100)%gv!==0){a1=2;a2=1;b1=1;b2=3;p=2;fv=5;gv=5;}
     var ans=fv/gv;
-    return numq("Let \\(f(x) = "+u1lin(a1,b1)+"\\) and \\(g(x) = "+u1lin(a2,b2)+"). Evaluate \\((f/g)("+p+")\\).",ans,0.011,
+    return numq("Let \\(f(x) = "+u1lin(a1,b1)+"\\) and \\(g(x) = "+u1lin(a2,b2)+"\\). Evaluate \\((f/g)("+p+")\\).",ans,0.011,
       "Evaluate each function at \\(x = "+p+"\\), then divide: \\[ \\begin{aligned} f("+p+") &= "+u1mult(a1,p)+u1sgnT(b1)+" = "+fv+" \\\\ g("+p+") &= "+u1mult(a2,p)+u1sgnT(b2)+" = "+gv+" \\\\ (f/g)("+p+") &= \\frac{"+fv+"}{"+gv+"} = "+fmt(ans)+" \\end{aligned} \\] So \\((f/g)("+p+") = \\) <b>"+fmt(ans)+"</b>.",
       {a1:a1,b1:b1,a2:a2,b2:b2,p:p,shape:shape});
   }
@@ -625,7 +625,7 @@ E("u1-compose-value",1,["1.4"],1,"gen",function(){
     if(dir===1){comp="(f \\circ g)";inner=G(a);ans=F(inner);line1=inG;line2="f("+inner+") &= "+u1mult(a1,inner)+u1sgnT(b1)+" = "+ans;}
     else if(dir===2){comp="(g \\circ f)";inner=F(a);ans=G(inner);line1=inF;line2="g("+inner+") &= "+u1mult(a2,inner)+u1sgnT(b2)+" = "+ans;}
     else{comp="(f \\circ f)";inner=F(a);ans=F(inner);line1=inF;line2="f("+inner+") &= "+u1mult(a1,inner)+u1sgnT(b1)+" = "+ans;}
-    return numq("Let \\(f(x) = "+u1lin(a1,b1)+"\\) and \\(g(x) = "+u1lin(a2,b2)+"). Evaluate \\("+comp+"("+a+")\\).",ans,0.011,
+    return numq("Let \\(f(x) = "+u1lin(a1,b1)+"\\) and \\(g(x) = "+u1lin(a2,b2)+"\\). Evaluate \\("+comp+"("+a+")\\).",ans,0.011,
       "Work from the inside out: \\[ \\begin{aligned} "+line1+" \\\\ "+line2+" \\end{aligned} \\] So \\("+comp+"("+a+") = \\) <b>"+ans+"</b>.",
       {a1:a1,b1:b1,a2:a2,b2:b2,a:a,dir:dir,shape:shape});
   }
@@ -635,7 +635,7 @@ E("u1-compose-value",1,["1.4"],1,"gen",function(){
     var fa=a4*a4+c,ans3,lineA,lineB,comp3;
     if(dir2===1){comp3="(f \\circ g)";ans3=gv3*gv3+c;lineA="g("+a4+") &= "+u1mult(a3,a4)+u1sgnT(b3)+" = "+gv3;lineB="f("+gv3+") &= ("+gv3+")^2"+u1sgnT(c)+" = "+ans3;}
     else{comp3="(g \\circ f)";ans3=a3*fa+b3;lineA="f("+a4+") &= ("+a4+")^2"+u1sgnT(c)+" = "+fa;lineB="g("+fa+") &= "+u1mult(a3,fa)+u1sgnT(b3)+" = "+ans3;}
-    return numq("Let \\(f(x) = "+u1quad(1,0,c)+"\\) and \\(g(x) = "+u1lin(a3,b3)+"). Evaluate \\("+comp3+"("+a4+")\\).",ans3,0.011,
+    return numq("Let \\(f(x) = "+u1quad(1,0,c)+"\\) and \\(g(x) = "+u1lin(a3,b3)+"\\). Evaluate \\("+comp3+"("+a4+")\\).",ans3,0.011,
       "Work from the inside out: \\[ \\begin{aligned} "+lineA+" \\\\ "+lineB+" \\end{aligned} \\] So \\("+comp3+"("+a4+") = \\) <b>"+ans3+"</b>.",
       {c:c,a3:a3,b3:b3,a4:a4,dir:dir2,shape:shape});
   }
@@ -643,21 +643,21 @@ E("u1-compose-value",1,["1.4"],1,"gen",function(){
     var k=ri(0,6),sub=pick([1,2]);
     if(sub===1){
       var t=ri(1,6),m=pick([-2,-1,1,2]),a5=ri(-4,4),b5=t*t-k-m*a5,inner5=m*a5+b5;
-      return numq("Let \\(f(x) = \\sqrt{"+u1lin(1,k)+"}\\) and \\(g(x) = "+u1lin(m,b5)+"). Evaluate \\((f \\circ g)("+a5+")\\).",t,0.011,
+      return numq("Let \\(f(x) = \\sqrt{"+u1lin(1,k)+"}\\) and \\(g(x) = "+u1lin(m,b5)+"\\). Evaluate \\((f \\circ g)("+a5+")\\).",t,0.011,
         "Work from the inside out: \\[ \\begin{aligned} g("+a5+") &= "+u1mult(m,a5)+u1sgnT(b5)+" = "+inner5+" \\\\ f("+inner5+") &= \\sqrt{"+inner5+u1sgnT(k)+"} = \\sqrt{"+(t*t)+"} = "+t+" \\end{aligned} \\] So \\((f \\circ g)("+a5+") = \\) <b>"+t+"</b>.",
         {k:k,t:t,m:m,a5:a5,b5:b5,shape:shape,sub:sub});
     }
     var t2=ri(2,5),k2=ri(0,9),a6=t2*t2-k2;
     if(a6<-4||a6>16){t2=3;k2=1;a6=8;}
     var m2=u1nz(-3,3),b6=ri(-6,6),ans6=m2*t2+b6;
-    return numq("Let \\(f(x) = \\sqrt{"+u1lin(1,k2)+"}\\) and \\(g(x) = "+u1lin(m2,b6)+"). Evaluate \\((g \\circ f)("+a6+")\\).",ans6,0.011,
+    return numq("Let \\(f(x) = \\sqrt{"+u1lin(1,k2)+"}\\) and \\(g(x) = "+u1lin(m2,b6)+"\\). Evaluate \\((g \\circ f)("+a6+")\\).",ans6,0.011,
       "Work from the inside out: \\[ \\begin{aligned} f("+a6+") &= \\sqrt{"+a6+u1sgnT(k2)+"} = \\sqrt{"+(t2*t2)+"} = "+t2+" \\\\ g("+t2+") &= "+u1mult(m2,t2)+u1sgnT(b6)+" = "+ans6+" \\end{aligned} \\] So \\((g \\circ f)("+a6+") = \\) <b>"+ans6+"</b>.",
       {k:k2,t:t2,m:m2,a6:a6,b6:b6,shape:shape,sub:sub});
   }
   var mm=u1nz(-3,3),bb=ri(-6,6),aa=ri(-4,4),gvv=mm*aa+bb,h=ri(-6,6);
   if(h===gvv)h=gvv+3;
   var dd=gvv-h,mlt=u1nz(-6,6),cc=mlt*dd;
-  return numq("Let \\(f(x) = "+u1frac(""+cc,u1lin(1,-h))+"\\) and \\(g(x) = "+u1lin(mm,bb)+"). Evaluate \\((f \\circ g)("+aa+")\\).",mlt,0.011,
+  return numq("Let \\(f(x) = \\)"+u1frac(""+cc,u1lin(1,-h))+"\\) and \\(g(x) = "+u1lin(mm,bb)+"\\). Evaluate \\((f \\circ g)("+aa+")\\).",mlt,0.011,
     "Work from the inside out: \\[ \\begin{aligned} g("+aa+") &= "+u1mult(mm,aa)+u1sgnT(bb)+" = "+gvv+" \\\\ f("+gvv+") &= \\frac{"+cc+"}{"+gvv+u1sgnT(-h)+"} = \\frac{"+cc+"}{"+dd+"} = "+mlt+" \\end{aligned} \\] So \\((f \\circ g)("+aa+") = \\) <b>"+mlt+"</b>.",
     {mm:mm,bb:bb,aa:aa,h:h,cc:cc,shape:shape});
 });
