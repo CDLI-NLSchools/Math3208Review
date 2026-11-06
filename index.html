@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math 3208 Review: Practice Question Bank</title>
+<link rel="icon" type="image/jpeg" href="favicon.jpg">
+<link rel="apple-touch-icon" href="favicon.jpg">
+<style>
+  :root{--ink:#1c2b33;--accent:#0f766e;--accent2:#b45309;--bg:#f7f5f0;--card:#ffffff;--line:#d8d2c4;--good:#15803d;--bad:#b91c1c;}
+  *{box-sizing:border-box;font-family:Verdana,Geneva,sans-serif;}
+  body{margin:0;background:var(--bg);color:var(--ink);}
+  .wrap{max-width:920px;margin:0 auto;padding:20px 16px 40px;}
+  h1{font-size:1.35rem;margin:0 0 4px;}
+  h2{font-size:1.05rem;margin:0 0 10px;}
+  .sub{font-size:.9rem;color:#4b5a61;margin:0 0 16px;line-height:1.45;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px;}
+  .presetrow{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:.9rem;cursor:pointer;}
+  button.alt{background:#fff;color:var(--accent);border:1.5px solid var(--accent);}
+  button.amber{background:var(--accent2);}
+  button:hover{opacity:.88;}
+  button:disabled{opacity:.45;cursor:default;}
+  .grid{display:flex;flex-wrap:wrap;gap:6px 18px;}
+  label.chk{font-size:.9rem;display:inline-flex;align-items:center;gap:6px;padding:3px 0;cursor:pointer;}
+  .indbox{max-height:180px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:#fff;}
+  .indbox label{display:block;font-size:.83rem;padding:2px 0;cursor:pointer;}
+  details{margin-top:10px;}
+  summary{cursor:pointer;font-weight:bold;font-size:.9rem;color:var(--accent);}
+  .adv{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-top:10px;}
+  .adv label{font-size:.85rem;display:flex;flex-direction:column;gap:4px;}
+  input[type=number]{width:76px;padding:7px;border:1px solid var(--line);border-radius:6px;font-size:.9rem;}
+  input[type=text].ans{width:170px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:.95rem;}
+  select{padding:7px;border:1px solid var(--line);border-radius:6px;font-size:.9rem;}
+  .q{margin-bottom:18px;}
+  .qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;}
+  .tag{display:inline-block;font-size:.7rem;font-weight:bold;letter-spacing:.04em;padding:2px 8px;border-radius:20px;color:#fff;background:var(--accent);}
+  .tag.lvl{background:#4b5a61;} .tag.ind{background:var(--accent2);}
+  .prompt{line-height:1.55;font-size:.96rem;}
+  .prompt table{border-collapse:collapse;margin:8px 0;}
+  .prompt th,.prompt td{border:1px solid var(--line);padding:4px 10px;text-align:center;font-size:.9rem;}
+  .opts{margin:10px 0 4px;display:flex;flex-direction:column;gap:6px;}
+  .opts label{font-size:.93rem;display:flex;gap:8px;align-items:flex-start;cursor:pointer;line-height:1.4;}
+  .fb{margin-top:10px;font-size:.9rem;line-height:1.5;display:none;}
+  .fb.show{display:block;}
+  .ok{color:var(--good);font-weight:bold;} .notyet{color:var(--bad);font-weight:bold;}
+  .sol{background:#fdf6ec;border-left:5px solid var(--accent2);padding:10px 12px;margin-top:8px;line-height:1.55;font-size:.9rem;display:none;}
+  .sol.show{display:block;}
+  .reprow{margin-top:8px;}
+  .repbtn{font-size:.82rem;padding:5px 10px;}
+  .rep{display:none;background:#f4f6f5;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.9rem;}
+  .rep.show{display:block;}
+  .rep label{display:block;margin:6px 0;line-height:1.45;}
+  .rep select{margin-left:6px;max-width:100%;}
+  .rep textarea{width:100%;padding:7px;border:1px solid var(--line);border-radius:6px;font-size:.9rem;margin-top:4px;}
+  .repstat{font-size:.86rem;color:#4b5a61;margin-top:6px;line-height:1.45;}
+  .hint{font-size:.82rem;color:#4b5a61;line-height:1.45;}
+  .scoreline{font-size:.95rem;font-weight:bold;margin:6px 0 14px;}
+  .thinNote{background:#fdf6ec;border:1px solid var(--accent2);border-radius:8px;padding:9px 12px;font-size:.88rem;line-height:1.45;}
+  .endmode [data-check],.endmode [data-sol]{display:none;}
+  .modebar{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  #printArea{display:none;}
+  .fig{margin:8px 0 4px;}
+  .fig svg{max-width:100%;height:auto;}
+  .sheetPrev{border:1px solid var(--line);background:#fff;color:#16281f;padding:20px;border-radius:6px;margin-top:12px;}
+  .sheetPrev .pq{margin-bottom:14px;}
+  .sheetPrev .ws{border-bottom:1px solid #ddd;}
+  .sheetPrev.editing{outline:2px dashed var(--acc);outline-offset:3px;}
+  .ws{border:1.5px solid #b9b2a2;border-radius:4px;margin:8px 0 4px;}
+  .recGrid{border-collapse:collapse;margin:8px 0 4px;}
+  .recGrid td{border:1px solid #999;padding:6px 12px;font-size:.98rem;white-space:nowrap;}
+  .recGrid .lt{margin:0 4px;color:#444;}
+  .recGrid .rk{color:#000;font-weight:700;text-decoration:underline;}
+  .solAppendix{columns:2;column-gap:30px;font-size:.85rem;line-height:1.45;}
+  .solAppendix .solp{break-inside:avoid;margin:0 0 9px;}
+  .nameline{display:flex;gap:30px;font-size:.95rem;margin-bottom:14px;}
+  .nameline span{border-bottom:1px solid #444;padding:0 90px 2px 6px;}
+  @media print{
+    #app{display:none !important;}
+    #printArea{display:block !important;}
+    body{background:#fff;}
+    .keybreak{page-break-before:always;}
+    .pq{page-break-inside:avoid;margin-bottom:14px;}
+    .solp{page-break-inside:avoid;}
+  }
+  .katex{font-size:1.07em;}
+</style>
+<link rel="stylesheet" href="katex/katex.min.css">
+<script src="katex/katex.min.js"></script>
+<script src="katex/contrib/auto-render.min.js"></script>
+</head>
+<body>
+<div class="wrap" id="app">
+  <h1>Math 3208 Review</h1>
+  <p class="sub">Fresh practice questions for Mathematics 3208, drawn by unit or by curriculum indicator.
+  Most questions are generated new every time, so you can practise the same skill again and get a different question.
+  Work online, print a practice sheet or a no-choices worksheet, or build a practice exam.</p>
+
+  <div class="card">
+    <h2>1. What do you want to practise?</h2>
+    <div class="presetrow">
+      <button type="button" id="presetMid" class="alt">Mid-course review (Units 1 to 4)</button>
+      <button type="button" id="presetFinal" class="alt">Final review (Units 5 to 8)</button>
+      <button type="button" id="presetAll" class="alt">All units</button>
+    </div>
+    <div class="grid" id="unitGrid"></div>
+    <p class="hint" style="margin:10px 0 4px;">By indicator (optional: leave all unchecked to use every indicator in the units you picked):</p>
+    <div class="indbox" id="indBox"></div>
+    <div class="adv">
+      <label>Number of questions
+        <input type="number" id="countIn" min="1" max="60" value="10">
+      </label>
+      <label>Order
+        <select id="orderIn">
+          <option value="unit">Unit order</option>
+          <option value="random">Random order</option>
+        </select>
+      </label>
+      <label>Working space on print sheets
+        <select id="wsIn">
+          <option value="1">Full space</option>
+          <option value="0.5">Half space</option>
+          <option value="0.25">A little space</option>
+          <option value="0">None: use your own paper</option>
+        </select>
+      </label>
+      <label>Checking (online practice)
+        <select id="chkIn">
+          <option value="each">Check each question as I go</option>
+          <option value="end">Check everything at the end</option>
+        </select>
+      </label>
+    </div>
+    <details id="advBox">
+      <summary>Advanced options, question levels</summary>
+      <p class="hint">Levels follow the published 2026-2027 tables of specifications. Both the mid-course and the
+      end-of-course tables combine to the same mix, so both presets use about 20% Level 1 (quick, one or two
+      steps), 60% Level 2 (application: carry out the prescribed method), 20% Level 3 (higher-end thinking:
+      analyse, justify, evaluate, transfer).</p>
+      <div class="adv">
+        <label>Level 1 %<input type="number" id="lv1" min="0" max="100" value="20"></label>
+        <label>Level 2 %<input type="number" id="lv2" min="0" max="100" value="60"></label>
+        <label>Level 3 %<input type="number" id="lv3" min="0" max="100" value="20"></label>
+      </div>
+    </details>
+    <div class="modebar">
+      <button type="button" id="goOnline">Practice online</button>
+      <button type="button" id="goSheet" class="amber">Make a practice sheet</button>
+      <button type="button" id="goWorksheet" class="amber">Make a worksheet (no choices)</button>
+      <button type="button" id="goExam" class="amber">Make a practice exam</button>
+      <button type="button" id="copyLink" class="alt">Copy link to these settings</button>
+    </div>
+    <p class="hint" id="poolInfo"></p>
+  </div>
+
+  <div id="session"></div>
+</div>
+
+<div id="printArea"></div>
+
+<script>
+"use strict";
+/* ============ helpers ============ */
+function ri(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function rf(a,b){return a+Math.random()*(b-a);}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function sum(a){return a.reduce(function(s,n){return s+n;},0);}
+function mean(a){return sum(a)/a.length;}
+function sorted(a){return a.slice().sort(function(x,y){return x-y;});}
+function median(a){var s=sorted(a),m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+function modes(a){var f={},mx=0,i;for(i=0;i<a.length;i++){f[a[i]]=(f[a[i]]||0)+1;if(f[a[i]]>mx)mx=f[a[i]];}if(mx<=1)return[];return Object.keys(f).filter(function(k){return f[k]===mx;}).map(Number).sort(function(x,y){return x-y;});}
+function rngOf(a){return Math.max.apply(null,a)-Math.min.apply(null,a);}
+function pvar(a){var m=mean(a);return mean(a.map(function(x){return (x-m)*(x-m);}));}
+function psd(a){return Math.sqrt(pvar(a));}
+function fmt(n,d){if(d===undefined)d=2;var s=(Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);if(s.indexOf('.')>=0){s=s.replace(/0+$/,'').replace(/\.$/,'');}return s;}
+function fmtF(n,d){return (Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);}
+function normCdf(z){var t=1/(1+0.2316419*Math.abs(z));var d=0.3989422804014327*Math.exp(-z*z/2);var p=d*t*(0.31938153+t*(-0.35656378+t*(1.78147794+t*(-1.82125598+t*1.33027443))));return z>=0?1-p:p;}
+function zTab(z){z=Math.round(z*100)/100;return Math.round(normCdf(z)*10000)/10000;}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+/* Option order follows the item-writing guide (Sean O'Neill deck, adopted Nov 2026):
+   numeric options ascending, other options alphabetical (natural sort, so numbers
+   inside text still order by value), instead of shuffled. */
+function optPlain(t){
+  var s=String(t).replace(/<[^>]*>/g," ");
+  s=s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g,"$1/$2");
+  s=s.replace(/\\[a-zA-Z]+/g," ").replace(/[{}$\\]/g," ");
+  return s.replace(/\s+/g," ").trim().toLowerCase();
+}
+function optNum(t){
+  var s=optPlain(t).replace(/[$,]/g,"").replace(/%/g,"").replace(/[()]/g,"").trim();
+  var m=s.match(/^(-?\d+(?:\.\d+)?)(?:\s*\/\s*(\d+(?:\.\d+)?))?\s*[a-z°]*$/);
+  if(!m)return null;
+  var v=parseFloat(m[1]);if(m[2]){var d=parseFloat(m[2]);if(!d)return null;v=v/d;}
+  return v;
+}
+function natChunks(x){
+  function signedAt(j){return x[j]==="-"&&j+1<x.length&&/\d/.test(x[j+1])&&(j===0||!/[\d.]/.test(x[j-1]));}
+  var out=[],i=0;
+  while(i<x.length){
+    if(/\d/.test(x[i])||signedAt(i)){
+      var j=i;if(x[j]==="-")j++;
+      while(j<x.length&&/[\d.]/.test(x[j]))j++;
+      out.push({n:parseFloat(x.slice(i,j))});i=j;
+    }else{
+      var k=i;while(k<x.length&&!/\d/.test(x[k])&&!signedAt(k))k++;
+      out.push({s:x.slice(i,k)});i=k;
+    }
+  }
+  return out;
+}
+function natCmp(x,y){
+  var a=natChunks(x),b=natChunks(y);
+  for(var i=0;i<Math.max(a.length,b.length);i++){
+    if(a[i]===undefined)return -1;if(b[i]===undefined)return 1;
+    if(a[i].n!==undefined&&b[i].n!==undefined){if(a[i].n!==b[i].n)return a[i].n<b[i].n?-1:1;}
+    else if(a[i].n!==undefined)return -1;
+    else if(b[i].n!==undefined)return 1;
+    else if(a[i].s!==b[i].s)return a[i].s<b[i].s?-1:1;
+  }
+  return 0;
+}
+function orderOpts(opts){
+  var dec=opts.map(function(o){return {o:o,n:optNum(o.t),p:optPlain(o.t)};});
+  var allNum=dec.every(function(d){return d.n!==null;});
+  dec.sort(function(a,b){return allNum?a.n-b.n:natCmp(a.p,b.p);});
+  return dec.map(function(d){return d.o;});
+}
+function mcq(prompt,correct,distractors,solution,params){
+  var seen={},opts=[{t:String(correct),ok:true}];
+  distractors.forEach(function(d){d=String(d);if(d!==String(correct)&&!seen[d]){seen[d]=1;opts.push({t:d,ok:false});}});
+  opts=orderOpts(opts);var ci=opts.findIndex(function(o){return o.ok;});
+  return {prompt:prompt,type:"mc",options:opts.map(function(o){return o.t;}),correct:ci,solution:solution,_p:params||{}};
+}
+function numq(prompt,answer,tol,solution,params){return {prompt:prompt,type:"num",answer:answer,tol:tol,solution:solution,_p:params||{}};}
+function textq(prompt,answers,solution,params){return {prompt:prompt,type:"text",answers:answers.map(function(a){return a.toLowerCase();}),solution:solution,_p:params||{}};}
+function varset(list){return function(){var f=pick(list);return f();};}
+/* ============ diagram figures (parameterized inline SVG, generated with the question) ============
+   A question object may carry q.figure: an SVG string drawn from the SAME values as the
+   question text, so the diagram always matches the numbers. Renderers insert it under the
+   prompt, online and on the print sheet. Conventions: side i of a triangle is OPPOSITE
+   vertex i; vertices are indexed 0,1,2 = A,B,C slots (letters supplied by the caller). */
+var FIG_INK="#17352a",FIG_SHADE="#cfe4d6",FIG_ACC="#2e7d4f",FIG_ALT="#b3541e";
+function _vsub(p,q){return [p[0]-q[0],p[1]-q[1]];}
+function _vlen(v){return Math.sqrt(v[0]*v[0]+v[1]*v[1]);}
+function _vnorm(v){var l=_vlen(v)||1;return [v[0]/l,v[1]/l];}
+function _fit(pts,W,H,pad){
+  var xs=pts.map(function(p){return p[0];}),ys=pts.map(function(p){return p[1];});
+  var mnx=Math.min.apply(null,xs),mxx=Math.max.apply(null,xs),mny=Math.min.apply(null,ys),mxy=Math.max.apply(null,ys);
+  var w=Math.max(mxx-mnx,0.001),h=Math.max(mxy-mny,0.001);
+  var s=Math.min((W-2*pad)/w,(H-2*pad)/h),cx=(mnx+mxx)/2,cy=(mny+mxy)/2;
+  return function(p){return [W/2+(p[0]-cx)*s, H/2-(p[1]-cy)*s];};
+}
+function _txt(x,y,str,size,bold,anchor){
+  return '<text x="'+fmt(x,1)+'" y="'+fmt(y,1)+'" font-size="'+(size||13)+'" fill="'+FIG_INK+'" stroke="#ffffff" stroke-width="3.5" style="paint-order:stroke" stroke-linejoin="round" text-anchor="'+(anchor||"middle")+'" dominant-baseline="central"'+(bold?' font-weight="bold"':"")+'>'+str+'</text>';
+}
+function _sideOff(P1,P2,ref,dist){ /* unit perpendicular to segment P1P2, pointing AWAY from ref, times dist */
+  var d=[P2[0]-P1[0],P2[1]-P1[1]],dl=_vlen(d)||1,perp=[-d[1]/dl,d[0]/dl];
+  var M=[(P1[0]+P2[0])/2,(P1[1]+P2[1])/2];
+  if(perp[0]*(ref[0]-M[0])+perp[1]*(ref[1]-M[1])>0)perp=[-perp[0],-perp[1]];
+  return [perp[0]*dist,perp[1]*dist];
+}
+function triLayout(a,b,c){var Cx=(b*b+c*c-a*a)/(2*c);return [[0,0],[c,0],[Cx,Math.sqrt(Math.max(b*b-Cx*Cx,0.0001))]];}
+function triDraw(P,o){
+  var G=[(P[0][0]+P[1][0]+P[2][0])/3,(P[0][1]+P[1][1]+P[2][1])/3],out="";
+  out+='<polygon class="tri" points="'+P.map(function(p){return fmt(p[0],1)+","+fmt(p[1],1);}).join(" ")+'" fill="none" stroke="'+FIG_INK+'" stroke-width="2"/>';
+  var seg=[[1,2],[2,0],[0,1]];
+  for(var i=0;i<3;i++){
+    var M=[(P[seg[i][0]][0]+P[seg[i][1]][0])/2,(P[seg[i][0]][1]+P[seg[i][1]][1])/2];
+    var off=_sideOff(P[seg[i][0]],P[seg[i][1]],G,16);
+    if(o.side&&o.side[i])out+=_txt(M[0]+off[0],M[1]+off[1],o.side[i],12,false);
+    var V=P[i],out2=_vnorm(_vsub(V,G));
+    var bis=_vnorm([_vnorm(_vsub(P[(i+1)%3],V))[0]+_vnorm(_vsub(P[(i+2)%3],V))[0],_vnorm(_vsub(P[(i+1)%3],V))[1]+_vnorm(_vsub(P[(i+2)%3],V))[1]]);
+    out+=_txt(V[0]+out2[0]*16,V[1]+out2[1]*16,o.L[i],14,true);
+    if(o.ang&&o.ang[i])out+=_txt(V[0]+bis[0]*25,V[1]+bis[1]*25,o.ang[i],12,false);
+  }
+  return out;
+}
+function bowtieSVG(){ /* AB parallel CD with diagonals AD and BC crossing at E; AE = DE ticked (QE angles test Q19 figure) */
+  var A=[52,126],D=[280,102],E=[166,114],B=[218,32],C=[114,196];
+  function ln(p,q,w){return '<line x1="'+p[0]+'" y1="'+p[1]+'" x2="'+q[0]+'" y2="'+q[1]+'" stroke="'+FIG_INK+'" stroke-width="'+(w||2)+'"/>';}
+  var out=ln(A,B)+ln(B,C)+ln(C,D)+ln(A,D);
+  var u=[0.994,-0.105],pv=[0.105,0.994];
+  [[109,120],[223,108]].forEach(function(M){
+    [-3.2,3.2].forEach(function(off){
+      var cx=M[0]+off*u[0],cy=M[1]+off*u[1];
+      out+='<line x1="'+fmt(cx-5.5*pv[0],1)+'" y1="'+fmt(cy-5.5*pv[1],1)+'" x2="'+fmt(cx+5.5*pv[0],1)+'" y2="'+fmt(cy+5.5*pv[1],1)+'" stroke="'+FIG_INK+'" stroke-width="1.8"/>';
+    });
+  });
+  out+=_txt(33,128,"A",14,true)+_txt(227,18,"B",14,true)+_txt(105,211,"C",14,true)+_txt(297,100,"D",14,true)+_txt(150,95,"E",13,true);
+  return '<svg viewBox="0 0 330 240" width="330" height="240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram: parallel lines AB and CD with diagonals crossing at E, forming two triangles">'+out+'</svg>';
+}
+function triSVG(a,b,c,o){
+  o=o||{};o.L=o.L||["A","B","C"];
+  var pts=triLayout(a,b,c),W=330,H=215;
+  var T=_fit(pts,W,H,42),P=pts.map(T);
+  var body=triDraw(P,o);
+  if(o.ext!==undefined&&o.ext!==null){ /* exterior angle at vertex o.ext: extend the side from the previous vertex through it */
+    var i=o.ext,to=P[i],from=P[(i+2)%3],other=P[(i+1)%3];
+    var dir=_vnorm(_vsub(to,from)),E=[to[0]+dir[0]*44,to[1]+dir[1]*44];
+    body+='<line x1="'+fmt(to[0],1)+'" y1="'+fmt(to[1],1)+'" x2="'+fmt(E[0],1)+'" y2="'+fmt(E[1],1)+'" stroke="'+FIG_INK+'" stroke-width="1.6" stroke-dasharray="5 4"/>';
+    var bis2=_vnorm([dir[0]+_vnorm(_vsub(other,to))[0],dir[1]+_vnorm(_vsub(other,to))[1]]);
+    body+=_txt(to[0]+bis2[0]*27,to[1]+bis2[1]*27,o.extLabel||"?",12,false);
+  }
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Triangle diagram">'+body+'</svg>';
+}
+function angSides(A,B,C){return [20*Math.sin(A*Math.PI/180),20*Math.sin(B*Math.PI/180),20*Math.sin(C*Math.PI/180)];}
+function triAngSVG(A,B,C,o){var s=angSides(A,B,C);return triSVG(s[0],s[1],s[2],o);}
+function twoTriSVG(AB,BC,angB,AC,CD,AD,angDAC,angD){
+  var A=[0,0],C=[AC,0];
+  var Bx=(AB*AB-BC*BC+AC*AC)/(2*AC),By=Math.sqrt(Math.max(AB*AB-Bx*Bx,0.0001)),B=[Bx,By];
+  var Dx=(AD*AD-CD*CD+AC*AC)/(2*AC),Dy=-Math.sqrt(Math.max(AD*AD-Dx*Dx,0.0001)),D=[Dx,Dy];
+  var W=340,H=230,T=_fit([A,B,C,D],W,H,44);
+  var PA=T(A),PB=T(B),PC=T(C),PD=T(D),pts=[PA,PB,PC,PD];
+  var out='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two triangles sharing a diagonal">';
+  out+='<polygon class="tri" points="'+[PA,PB,PC].map(function(p){return fmt(p[0],1)+","+fmt(p[1],1);}).join(" ")+'" fill="none" stroke="'+FIG_INK+'" stroke-width="2"/>';
+  out+='<polygon class="tri2" points="'+[PA,PC,PD].map(function(p){return fmt(p[0],1)+","+fmt(p[1],1);}).join(" ")+'" fill="none" stroke="'+FIG_INK+'" stroke-width="2"/>';
+  function mid(p,q){return [(p[0]+q[0])/2,(p[1]+q[1])/2];}
+  var G1=[(PA[0]+PB[0]+PC[0])/3,(PA[1]+PB[1]+PC[1])/3],G2=[(PA[0]+PC[0]+PD[0])/3,(PA[1]+PC[1]+PD[1])/3];
+  function slab(p,q,ref,str){var M=mid(p,q),off=_sideOff(p,q,ref,15);return _txt(M[0]+off[0],M[1]+off[1],str,12,false);}
+  out+=slab(PA,PB,G1,AB+" m")+slab(PB,PC,G1,BC+" m")+slab(PC,PD,G2,"?");
+  out+=_txt(PB[0],PB[1]+18,angB+"°",12,false);
+  out+=_txt(PA[0]+20,PA[1]+16,angDAC+"°",12,false);
+  out+=_txt(PD[0],PD[1]-14,angD+"°",12,false);
+  out+=_txt(PA[0]-13,PA[1]+4,"A",14,true)+_txt(PB[0],PB[1]-16,"B",14,true)+_txt(PC[0]+13,PC[1]+4,"C",14,true)+_txt(PD[0],PD[1]+16,"D",14,true);
+  return out+'</svg>';
+}
+function transversalSVG(givenPos,givenText,askPos,askText){
+  var W=330,H=215,T=[118,64],B=[212,150];
+  var dir=_vnorm(_vsub(B,T)); /* the transversal truly passes through both intersections */
+  var R=[1,0],L=[-1,0],D=dir,U=[-dir[0],-dir[1]];
+  function bisOf(r1,r2){return _vnorm([r1[0]+r2[0],r1[1]+r2[1]]);}
+  var pos={
+    TR:{v:T,bis:bisOf(R,D)},TL:{v:T,bis:bisOf(L,D)},
+    BR:{v:B,bis:bisOf(R,U)},BL:{v:B,bis:bisOf(L,U)}
+  };
+  function wedge(p){
+    var v=p.v,b=p.bis;
+    var p1=[v[0]+b[0]*30-b[1]*13,v[1]+b[1]*30+b[0]*13],p2=[v[0]+b[0]*30+b[1]*13,v[1]+b[1]*30-b[0]*13];
+    return '<polygon class="wedge" points="'+fmt(v[0],1)+","+fmt(v[1],1)+" "+fmt(p1[0],1)+","+fmt(p1[1],1)+" "+fmt(p2[0],1)+","+fmt(p2[1],1)+'" fill="'+FIG_SHADE+'"/>';
+  }
+  var out='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Parallel lines cut by a transversal">';
+  out+=wedge(pos[givenPos])+wedge(pos[askPos]);
+  out+='<line x1="18" y1="'+T[1]+'" x2="312" y2="'+T[1]+'" stroke="'+FIG_INK+'" stroke-width="2"/>';
+  out+='<line x1="18" y1="'+B[1]+'" x2="312" y2="'+B[1]+'" stroke="'+FIG_INK+'" stroke-width="2"/>';
+  out+='<line class="transv" x1="'+fmt(T[0]-dir[0]*55,1)+'" y1="'+fmt(T[1]-dir[1]*55,1)+'" x2="'+fmt(B[0]+dir[0]*55,1)+'" y2="'+fmt(B[1]+dir[1]*55,1)+'" stroke="'+FIG_INK+'" stroke-width="2"/>';
+  out+='<path d="M 158 '+(T[1]-6)+' l 7 6 l -7 6" fill="none" stroke="'+FIG_INK+'" stroke-width="1.6"/>';
+  out+='<path d="M 158 '+(B[1]-6)+' l 7 6 l -7 6" fill="none" stroke="'+FIG_INK+'" stroke-width="1.6"/>';
+  var g=pos[givenPos],a2=pos[askPos];
+  out+=_txt(g.v[0]+g.bis[0]*46,g.v[1]+g.bis[1]*46,givenText,12.5,false);
+  out+=_txt(a2.v[0]+a2.bis[0]*46,a2.v[1]+a2.bis[1]*46,askText,12.5,false);
+  return out+'</svg>';
+}
+function polySVG(n,highlight){
+  var W=210,H=210,cx=105,cy=105,R=76,pts=[];
+  for(var i=0;i<n;i++){var t=-Math.PI/2+i*2*Math.PI/n;pts.push([cx+R*Math.cos(t),cy+R*Math.sin(t)]);}
+  var out='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Polygon with '+n+' sides">';
+  out+='<polygon class="poly" points="'+pts.map(function(p){return fmt(p[0],1)+","+fmt(p[1],1);}).join(" ")+'" fill="none" stroke="'+FIG_INK+'" stroke-width="2"/>';
+  pts.forEach(function(p){out+='<circle cx="'+fmt(p[0],1)+'" cy="'+fmt(p[1],1)+'" r="2.4" fill="'+FIG_INK+'"/>';});
+  if(highlight){
+    var V=pts[0],bis=_vnorm(_vsub([cx,cy],V));
+    out+='<polygon points="'+fmt(V[0],1)+","+fmt(V[1],1)+" "+fmt(V[0]+bis[0]*34-(bis[1])*11,1)+","+fmt(V[1]+bis[1]*34+(bis[0])*11,1)+" "+fmt(V[0]+bis[0]*34+(bis[1])*11,1)+","+fmt(V[1]+bis[1]*34-(bis[0])*11,1)+'" fill="'+FIG_SHADE+'"/>';
+    out+=_txt(V[0]+bis[0]*44,V[1]+bis[1]*44,"?",13,false);
+  }
+  return out+'</svg>';
+}
+function normSVG(o){
+  var mu=o.mu,sd=o.sd,W=350,H=178,base=140,pad=18;
+  var sdMax=o.curve2?Math.max(sd,o.curve2.sd):sd;
+  var lo=mu-3.4*sdMax,hi=mu+3.4*sdMax;
+  function X(v){return pad+(v-lo)/(hi-lo)*(W-2*pad);}
+  function pdf(x,s){var z=(x-mu)/s;return Math.exp(-z*z/2)/(s*2.5066283);}
+  var peak=pdf(mu,Math.min(sd,o.curve2?o.curve2.sd:sd));
+  function Y(p){return base-p/peak*(base-26);}
+  function curvePath(s){
+    var d="",i,x;for(i=0;i<=72;i++){x=lo+(hi-lo)*i/72;d+=(i?"L":"M")+fmt(X(x),1)+" "+fmt(Y(pdf(x,s)),1);}
+    return d;
+  }
+  var out='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Normal distribution curve">';
+  if(o.lo!==undefined&&o.hi!==undefined){
+    var slo=Math.max(o.lo,lo),shi=Math.min(o.hi,hi),d="M"+fmt(X(slo),1)+" "+base,i,x;
+    for(i=0;i<=40;i++){x=slo+(shi-slo)*i/40;d+="L"+fmt(X(x),1)+" "+fmt(Y(pdf(x,sd)),1);}
+    d+="L"+fmt(X(shi),1)+" "+base+"Z";
+    out+='<path class="nshade" d="'+d+'" fill="'+FIG_SHADE+'"/>';
+  }
+  out+='<path class="ncurve" d="'+curvePath(sd)+'" fill="none" stroke="'+FIG_INK+'" stroke-width="2"/>';
+  if(o.curve2){
+    out+='<path class="ncurve2" d="'+curvePath(o.curve2.sd)+'" fill="none" stroke="'+FIG_ALT+'" stroke-width="2"/>';
+    out+='<line x1="'+pad+'" y1="14" x2="'+(pad+16)+'" y2="14" stroke="'+FIG_INK+'" stroke-width="2"/><line x1="'+pad+'" y1="32" x2="'+(pad+16)+'" y2="32" stroke="'+FIG_ALT+'" stroke-width="2"/>';
+    out+='<text x="'+(pad+22)+'" y="18" font-size="12" fill="'+FIG_INK+'" text-anchor="start">'+(o.curve2.tagA||"")+'</text>';
+    out+='<text x="'+(pad+22)+'" y="36" font-size="12" fill="'+FIG_ALT+'" text-anchor="start">'+(o.curve2.tagB||"")+'</text>';
+  }
+  out+='<line x1="'+pad+'" y1="'+base+'" x2="'+(W-pad)+'" y2="'+base+'" stroke="'+FIG_INK+'" stroke-width="1.4"/>';
+  for(var k=-2;k<=2;k++){
+    var v=mu+k*sd,tx=X(v);
+    out+='<line x1="'+fmt(tx,1)+'" y1="'+base+'" x2="'+fmt(tx,1)+'" y2="'+(base+5)+'" stroke="'+FIG_INK+'" stroke-width="1.2"/>';
+    out+=_txt(tx,base+18,fmt(v),11,false);
+  }
+  if(o.cuts)o.cuts.forEach(function(ct){
+    var tx=X(ct.v);
+    out+='<line x1="'+fmt(tx,1)+'" y1="30" x2="'+fmt(tx,1)+'" y2="'+base+'" stroke="'+FIG_ACC+'" stroke-width="1.6"/>';
+    out+=_txt(tx,20,ct.label,12,false);
+  });
+  return out+'</svg>';
+}
+
+/* ============ curriculum map (codes verified against the Math 3208 Curriculum Guide) ============ */
+var UNITS={
+ 1:"Pre-Calculus",2:"Limits and Continuity",3:"Rational Functions",4:"Derivatives",
+ 5:"Applications of Derivatives",6:"Calculus of Trigonometry",7:"Calculus of Exponential, Logarithmic, and Hyperbolic Trigonometric Functions",8:"Antidifferentiation and Integration"};
+var INDICATORS={
+ "1.1":"Write a function h (x) as the sum, difference, product or quotient of two or more functions",
+ "1.2":"Sketch the graph of a function that is the sum, difference, product or quotient of two functions, given their graphs",
+ "1.3":"Determine the domain and range of a function that is the sum, difference, product or quotient of two functions",
+ "1.4":"Determine the value of the composition of functions when evaluated at a point, including: f (f (a)), f (g (a)), g (f (a))",
+ "1.5":"Determine the equation of the composite function given the equations of two functions f (x) and g (x): f (f (x)), f (g (x)), g (f (x))",
+ "1.6":"Sketch the graph of the composite function given the equations of two functions f (x) and g (x) and determine the domain and range",
+ "1.7":"Determine the original functions from a composition",
+ "1.8":"Explain the behaviour of the graph of a rational function for values of the variable near a non-permissible value",
+ "1.9":"Determine if the graph of a rational function will have an asymptote or a hole for a non-permissible value",
+ "1.10":"Sketch the graph of a rational function",
+ "1.11":"Graph and analyze exponential and logarithmic functions y = e x and y = ln x",
+ "1.12":"Explain the relationship between the trigonometric functions and their inverses",
+ "1.13":"Explain why trigonometric functions must have their domains restricted to create inverse trigonometric functions",
+ "1.14":"Sketch the graph of an inverse trigonometric function",
+ "1.15":"Determine the exact value of an expression involving an inverse trigonometric function",
+ "2.1":"Using informal methods, explore the concept of a limit including one-sided limits",
+ "2.2":"Using informal methods, establish that the limit of x1 as x approaches infinity is zero",
+ "2.3":"Explore the concept of limit and the notation used in expressing the limit of a function (one-sided limits from the left and right, and the two-sided limit)",
+ "2.4":"Determine the value of the limit of a function as the variable approaches a real number by using a provided graph, including piecewise functions, and by using a table of values",
+ "2.5":"Evaluate one-sided limits using a graph",
+ "2.6":"Apply the properties of limits, including the Sum, Difference, Product, Constant Multiple, Quotient, and Power Rules, to solve problems",
+ "2.7":"Determine the value of the limit of a function as the variable approaches a real number by substitution and by algebraic manipulation",
+ "2.8":"Determine limits that result in infinity (infinite limits)",
+ "2.9":"Investigate the behaviour of the function at a vertical asymptote using limits",
+ "2.10":"Evaluate limits of functions as x approaches infinity (limits at infinity)",
+ "2.11":"Investigate the end behaviour of the function using limits to identify possible horizontal asymptotes",
+ "2.12":"Investigate the end behaviour of the function using limits to identify possible oblique asymptotes",
+ "2.13":"Distinguish between the concepts of continuity and discontinuity of a function informally",
+ "2.14":"Identify examples of discontinuous functions and the types of discontinuities they illustrate, such as removable, infinite, jump, and oscillating discontinuities",
+ "2.15":"Determine whether a function is continuous at a point from its graph",
+ "2.16":"Determine whether a function is continuous at a point using the definition of continuity",
+ "2.17":"Determine whether a function is continuous on a closed interval",
+ "2.18":"Rewrite removable discontinuities by extending or modifying a function",
+ "2.19":"Establish the trigonometric limits as x approaches 0 (sin x, cos x, sin x / x, and (cos x - 1) / x) using informal methods",
+ "2.20":"Evaluate limits involving trigonometric expressions",
+ "2.21":"Establish the exponential limit (e^h - 1) / h as h approaches 0 using informal methods",
+ "3.1":"Describe geometrically a secant line and a tangent line for the graph of a function at x = a",
+ "3.2":"Determine the average rate of change of a function over an interval",
+ "3.3":"Identify the instantaneous rate of change of a function at a point as the limiting value of a sequence of average rates of change",
+ "3.4":"Define and evaluate the derivative at x = a using the limit definitions (the h form and the x form)",
+ "3.5":"Determine the equation of the tangent line and normal line to a graph of a relation at a given point",
+ "3.6":"Define and determine the derivative of a function using the limit definition (limited to polynomials and functions with linear terms)",
+ "3.7":"Use alternate notation interchangeably to express derivatives (i.e., f \u2032 (x),   dx , y\u2032,   etc.)",
+ "3.8":"Determine whether a function is differentiable at a given point",
+ "3.9":"Explain why a function is not differentiable at a given point, and distinguish between corners, cusps, discontinuities, and vertical tangents",
+ "3.10":"Determine all values for which a function is differentiable, given the graph",
+ "3.11":"Sketch a graph of the derivative of a function, given the graph of a function",
+ "3.12":"Sketch a graph of the function, given the graph of the derivative of a function",
+ "3.13":"Derive the Constant, Constant Multiple, Sum, Difference, Product, and Quotient Rules for determining derivatives",
+ "3.14":"Determine derivatives of functions, using the Constant, Constant Multiple, Power, Sum, Difference, Product and Quotient Rules",
+ "3.15":"Determine second and higher-order derivatives of functions",
+ "3.16":"Determine derivatives of functions using the Chain Rule",
+ "3.17":"Solve problems involving derivatives drawn from a variety of applications, limited to tangent and normal lines, straight line motion and rates of change",
+ "3.18":"Determine the derivative of an implicit relation",
+ "3.19":"Determine the equation of the tangent and normal line to the graph of a relation at a given point",
+ "3.20":"Determine the second derivative of a relation, using implicit differentiation",
+ "3.21":"For a polynomial function, use f \u2032 (x) to identify the critical numbers, relative and absolute extrema, and intervals of increase and decrease",
+ "3.22":"For a polynomial function, use f \u2032\u2032 (x) to identify the hypercritical numbers, points of inflection and intervals of concavity",
+ "3.23":"For a polynomial function, sketch the graph of f (x) using information obtained from the function and its derivatives",
+ "3.24":"For a polynomial function, use the given function f (x) to determine its features such as intercepts and the domain",
+ "3.25":"For a rational function, use f \u2032 (x) to identify the critical numbers, relative and absolute extrema, and intervals of increase and decrease",
+ "3.26":"For a rational function, use f \u2032\u2032 (x) to identify the hypercritical numbers, points of inflection and intervals of concavity",
+ "3.27":"For a rational function, sketch the graph of f (x) using information obtained from the function and its derivatives",
+ "3.28":"For a rational function, use the given function f (x) to determine its features such as intercepts, asymptotes, points of discontinuity and the domain",
+ "3.29":"Solve a problem involving related rates drawn from a variety of applications",
+ "3.30":"Interpret the solution to a related rates problem",
+ "3.31":"Determine the equation of the function to be optimized in an optimization problem",
+ "3.32":"Determine the equations of any parameters necessary in an optimization problem",
+ "3.33":"Solve an optimization problem drawn from a variety of applications, using calculus techniques",
+ "3.34":"Interpret the solution(s) to an optimization problem",
+ "3.35":"Derive the derivatives of sine, cosine, tangent, cotangent, secant and cosecant",
+ "3.36":"Determine the derivative of expressions involving trigonometric functions",
+ "3.37":"Solve problems involving the derivative of a trigonometric function",
+ "3.38":"Derive the inverse trigonometric derivatives",
+ "3.39":"Determine the derivative of an inverse trigonometric function",
+ "3.40":"Solve problems involving the derivative of an inverse trigonometric function",
+ "3.41":"Derive the derivatives of the exponential functions e x and a x , and the logarithmic functions ln x and log a x",
+ "3.42":"Determine the derivative of an exponential function",
+ "3.43":"Solve problems involving the derivative of an exponential or a logarithmic function",
+ "3.44":"Determine the derivative of a logarithmic function",
+ "3.45":"Determine the derivative of a function using logarithmic differentiation",
+ "3.46":"Define and characterize the hyperbolic trigonometric functions sinh x and cosh x in terms of the exponential function",
+ "3.47":"Define tanh x, csch x, coth x, and sech x in terms of sinh x and cosh x",
+ "3.48":"Determine the derivative of a hyperbolic trigonometric function",
+ "4.1":"Explain the meaning of the phrase \u201cF (x) is an antiderivative of f (x)\u201d",
+ "4.2":"Determine the general antiderivative of functions",
+ "4.3":"Use antiderivative notation appropriately (i.e., \u222b f (x) dx for the antiderivative of f (x))",
+ "4.4":"Identify the properties of antidifferentiation",
+ "4.5":"Determine the indefinite integral of a function given extra conditions",
+ "4.6":"Use antidifferentiation to solve problems about motion of a particle along a line: computing displacement given initial position and velocity as a function of time, and computing velocity and/or displacement given initial conditions and acceleration as a function of time",
+ "4.7":"Estimate an area using a finite sum",
+ "4.8":"Determine the area using the infinite Riemann sum",
+ "4.9":"Convert a Riemann sum to a definite integral",
+ "4.10":"Using definite integrals, determine the area under a polynomial function from x = a to x = b",
+ "4.11":"Calculate the definite integral of a function over an interval [a, b]",
+ "4.12":"Determine the area between two polynomial functions"
+};
+var UNIT_IND={
+ 1:["1.1","1.2","1.3","1.4","1.5","1.6","1.7"],
+ 2:["2.1","2.2","2.3","2.4","2.5","2.6","2.7","2.8","2.9","2.10","2.11","2.12","2.13","2.14","2.15","2.16","2.17","2.18"],
+ 3:["1.8","1.9","1.10"],
+ 4:["3.1","3.2","3.3","3.4","3.5","3.6","3.7","3.8","3.9","3.10","3.11","3.12","3.13","3.14","3.15","3.16","3.17","3.18","3.19","3.20"],
+ 5:["3.21","3.22","3.23","3.24","3.25","3.26","3.27","3.28","3.29","3.30","3.31","3.32","3.33","3.34"],
+ 6:["1.12","1.13","1.14","1.15","2.19","2.20","3.35","3.36","3.37","3.38","3.39","3.40"],
+ 7:["1.11","2.21","3.41","3.42","3.43","3.44","3.45","3.46","3.47","3.48"],
+ 8:["4.1","4.2","4.3","4.4","4.5","4.6","4.7","4.8","4.9","4.10","4.11","4.12"]};
+</script>
+
+<script>
+/* ============ THE BANK ============ */
+/* Math 3208 Review bank. Built November 2026 on the chassis of the Math 2200
+   Review app (itself derived from the Math 3200, 3201 and 2201 Review apps),
+   including the print formats (worksheet and practice exam modes) and the
+   option-order standard from the adopted item-writing guide: numeric options
+   ascending, other options alphabetical. Entry sources, in the order Jason
+   set: the curriculum guide is king; the Mauger practice-set harvest (32 sets,
+   327 problems, type-level only) is a standing lead source; the MUN Calculus
+   Placement Test sample paper and the Mauger/Sharpe CPT practice H5P (types
+   harvested November 2026) shape the calculus items, since the CPT is written
+   for Math 3208 graduates; the Drive archive holds no 3208 material. No
+   scenario or values from any source are used verbatim. Level mixes for both
+   presets come from the published 2026-2027 tables of specifications
+   (selected response 10/15/2 and constructed response 0/15/8 by level, which
+   combine to 20/60/20 for both the mid-course and end-of-course exams; the
+   mid-course exam weights Limits and Continuity and Derivatives heaviest).
+   Admission rule (as in the other banks): a "gen" entry must produce at least
+   50 unique canonical questions in 2,000 test draws, or be a "var" set of at
+   least 3 genuinely different static questions, and every multiple-choice
+   question must have exactly 4 options. Every instance is solvable by hand or
+   with a scientific calculator, with numbers kept clean enough for hand
+   solution in line with CPT practice; no item needs a graphing calculator.
+   Contexts and their parameters are paired sensibly (a context only draws
+   values that fit it). Worked solutions use the centred aligned display
+   standard, and any LaTeX fragment interpolated into a string sits inside
+   math delimiters. verify-bank.js and harness.js must pass before any push
+   that adds entries. Entry source is maintained in bank-src.js and spliced
+   in by inject_bank.py between the BANK-SRC markers. CR_MARKS lives at the
+   end of bank-src.js: an entry earns constructed-response marks only if the
+   question still works with the choices removed. */
+var BANK=[];
+function E(id,unit,indicators,level,kind,gen){BANK.push({id:id,unit:unit,indicators:indicators,level:level,kind:kind,gen:gen});}
+/* BANK-SRC-BEGIN */
+/* Math 3208 Review bank source. Entries are added by tranche; CR_MARKS stays
+   at the end of this file and must be carried over verbatim at every assembly. */
+var CR_MARKS={};
+/* BANK-SRC-END */
+</script>
+
+<script>
+/* ============ selection engine ============ */
+/* Mid-course scope (PEP memo, September 29, 2026): the mid-course exam covers
+   Units 1 to 4 whole; no unit is sampled partway, so no entry carries a postMid
+   flag in this course and the Mid preset never caps the pool. The cap plumbing
+   is retained from the 2201 chassis in case a future blueprint splits a unit. */
+function poolFor(units,inds,cap,pred){
+  return BANK.filter(function(e){
+    if(cap&&e.postMid)return false;
+    if(pred&&!pred(e))return false;
+    if(units.indexOf(e.unit)<0)return false;
+    if(inds&&inds.length){return e.indicators.some(function(c){return inds.indexOf(c)>=0;});}
+    return true;
+  });
+}
+function levelTargets(n,mix){
+  var tot=mix[0]+mix[1]+mix[2];if(tot<=0)mix=[20,60,20],tot=100;
+  var raw=mix.map(function(p){return n*p/tot;});
+  var base=raw.map(Math.floor);var left=n-sum(base);
+  var order=[0,1,2].sort(function(a,b){return (raw[b]-base[b])-(raw[a]-base[a]);});
+  for(var i=0;i<left;i++)base[order[i%3]]++;
+  return base;
+}
+function canonQ(q){ // canonical form of a generated question: normalized prompt + correct answer
+  function norm(s){return String(s).replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();}
+  var a;
+  if(q.type==="mc")a="MC:"+norm(q.options[q.correct]);
+  else if(q.type==="num")a="NUM:"+(Math.round(q.answer*10000)/10000);
+  else a="TXT:"+q.answers.slice().sort().join("|");
+  return norm(q.prompt)+" || "+a;
+}
+function drawSet(units,inds,n,mix,orderMode,cap,pred){
+  var pool=poolFor(units,inds,cap,pred);if(!pool.length||n<1)return{items:[],short:0,pool:0,thin:false};
+  var targets=levelTargets(n,mix);var chosen=[],used={};
+  function take(level,count){
+    var cands=shuffle(pool.filter(function(e){return e.level===level&&!used[e.id];}));
+    var i=0;while(count>0&&i<cands.length){chosen.push(cands[i]);used[cands[i].id]=1;i++;count--;}
+    return count;
+  }
+  var missing=0;
+  for(var L=1;L<=3;L++){missing+=take(L,targets[L-1]);}
+  var short=0;
+  while(missing>0){ // first, reuse generators at levels still short of target (fresh numbers every draw)
+    var gens=pool.filter(function(e){return e.kind==="gen";});
+    if(!gens.length)break;
+    var counts={1:0,2:0,3:0};chosen.forEach(function(e){counts[e.level]++;});
+    var shortLevels=[1,2,3].filter(function(L){return counts[L]<targets[L-1];});
+    var pref=shortLevels.length?gens.filter(function(e){return shortLevels.indexOf(e.level)>=0;}):[];
+    if(shortLevels.length&&!pref.length)break; // no generator can serve the short levels; fall through to other entries
+    var src=pref.length?pref:gens;
+    var ec={};chosen.forEach(function(e){ec[e.id]=(ec[e.id]||0)+1;});
+    var minUse=Math.min.apply(null,src.map(function(e){return ec[e.id]||0;}));
+    chosen.push(pick(src.filter(function(e){return (ec[e.id]||0)===minUse;})));missing--;short++;
+  }
+  if(missing>0){ // next, fill from any remaining entries at other levels
+    var rest=shuffle(pool.filter(function(e){return !used[e.id];}));
+    var j=0;while(missing>0&&j<rest.length){chosen.push(rest[j]);used[rest[j].id]=1;j++;missing--;}
+  }
+  while(missing>0){ // last resort: reuse any entries (generators preferred) so the set still reaches the requested count
+    var src=pool.filter(function(e){return e.kind==="gen";});
+    if(!src.length)src=pool.slice(); // no generators in the pool: reuse variant sets (the dedupe guard below prefers unused statics)
+    if(!src.length)break;
+    var ec2={};chosen.forEach(function(e){ec2[e.id]=(ec2[e.id]||0)+1;});
+    var minUse2=Math.min.apply(null,src.map(function(e){return ec2[e.id]||0;}));
+    chosen.push(pick(src.filter(function(e){return (ec2[e.id]||0)===minUse2;})));missing--;short++;
+  }
+  // generate the questions, with a dedupe guard: a reused entry is redrawn (bounded
+  // retries) until its canonical question differs from every question already in the set
+  var items=[],seenC={};
+  chosen.forEach(function(e){
+    var q=e.gen(),c=canonQ(q),tries=0;
+    while(seenC[c]&&tries<25){q=e.gen();c=canonQ(q);tries++;}
+    seenC[c]=1;q._entry=e;items.push(q);
+  });
+  if(orderMode==="unit"){items.sort(function(a,b){return a._entry.unit-b._entry.unit;});}
+  else{items=shuffle(items);
+    // keep repeats of the same question shape from landing side by side:
+    // place the most-repeated remaining shape first whenever it can go in
+    var spread=[],rest=items.slice();
+    while(rest.length){
+      var lastE=spread.length?spread[spread.length-1]._entry.id:null;
+      var rc={};rest.forEach(function(q){rc[q._entry.id]=(rc[q._entry.id]||0)+1;});
+      var ix=-1,best=-1;
+      rest.forEach(function(q,i){if(q._entry.id!==lastE&&rc[q._entry.id]>best){best=rc[q._entry.id];ix=i;}});
+      if(ix<0)ix=0;
+      spread.push(rest.splice(ix,1)[0]);
+    }
+    items=spread;}
+  var dup=false,seen2={};
+  items.forEach(function(q){var c=canonQ(q);if(seen2[c])dup=true;seen2[c]=1;});
+  return {items:items,reused:short,pool:pool.length,thin:(dup||items.length<n||short>0)};
+}
+/* ============ UI ============ */
+var $=function(id){return document.getElementById(id);};
+/* Typeset TeX segments \( ... \) in generated content with KaTeX (self-hosted
+   under katex/). Existing plain-Unicode strings pass through untouched. If
+   KaTeX failed to load, strip the delimiters so the TeX source still reads
+   as plain text instead of showing raw delimiters. */
+function typesetMath(el){
+  if(!el)return;
+  if(window.renderMathInElement){
+    try{renderMathInElement(el,{delimiters:[{left:"\\(",right:"\\)",display:false},{left:"\\[",right:"\\]",display:true}],throwOnError:false});}catch(e){}
+  }else if(el.querySelectorAll){
+    var walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
+    var nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+    nodes.forEach(function(n){if(n.nodeValue.indexOf("\\(")>=0||n.nodeValue.indexOf("\\[")>=0)n.nodeValue=n.nodeValue.replace(/\\\(|\\\)|\\\[|\\\]/g,"");});
+  }
+}
+/* Plain-text version of a TeX string, for copying sheets into Docs/Word
+   where the KaTeX stylesheet does not travel. */
+function cleanTex(t){
+  var prev;
+  do{prev=t;
+    t=t.replace(/\\sqrt\[3\]\{([^{}]*)\}/g,"∛$1");
+    t=t.replace(/\\sqrt\[(\d+)\]\{([^{}]*)\}/g,"root$1($2)");
+    t=t.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g,"($1)/($2)");
+    t=t.replace(/\\sqrt\{([^{}]*)\}/g,"√$1");
+  }while(t!==prev);
+  return t.replace(/\\([a-zA-Z]+)/g,"$1").replace(/[{}]/g,"");
+}
+function detexClone(node){
+  var c=node.cloneNode(true);
+  Array.prototype.forEach.call(c.querySelectorAll(".katex"),function(k){
+    var a=k.querySelector("annotation");
+    k.replaceWith(document.createTextNode(a?cleanTex(a.textContent):""));
+  });
+  return c;
+}
+var state={units:[],inds:[],midCap:false};
+/* Report-a-problem: one Google Form, "Math Review Apps: Report a Problem", serves
+   every review app. The app name, the unit and indicators, and the full report text
+   are pre-filled through the entry IDs below, which are the form's pre-filled-link
+   IDs. If url is ever emptied, the panel falls back to copying the report text for
+   the teacher. */
+var REPORT_FORM={url:"https://docs.google.com/forms/d/e/1FAIpQLSetn4AeZSWxcO_3zawHsAPNqZPLsQzu_bCCw6Li-J3PAy9knw/viewform",appEntry:"entry.2102073803",appName:"Math 3208 Review",unitEntry:"entry.1142563169",detailsEntry:"entry.1416174508"};
+function unitCheckboxes(){
+  $("unitGrid").innerHTML=Object.keys(UNITS).map(function(u){
+    return '<label class="chk"><input type="checkbox" class="unitChk" value="'+u+'"'+(state.units.indexOf(+u)>=0?" checked":"")+'> Unit '+u+": "+UNITS[u]+"</label>";
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll(".unitChk"),function(cb){
+    cb.addEventListener("change",function(){state.midCap=false;readUnits();renderIndicators();updatePoolInfo();});
+  });
+}
+function readUnits(){
+  state.units=Array.prototype.map.call(document.querySelectorAll(".unitChk:checked"),function(cb){return +cb.value;});
+}
+function renderIndicators(){
+  var codes=[];state.units.forEach(function(u){(UNIT_IND[u]||[]).forEach(function(c){if(codes.indexOf(c)<0)codes.push(c);});});
+  $("indBox").innerHTML=codes.length?codes.map(function(c){
+    return '<label><input type="checkbox" class="indChk" value="'+c+'"'+(state.inds.indexOf(c)>=0?" checked":"")+"> <b>"+c+"</b> ,  "+esc(INDICATORS[c]||"")+"</label>";
+  }).join(""):'<span class="hint">Pick at least one unit above.</span>';
+  Array.prototype.forEach.call(document.querySelectorAll(".indChk"),function(cb){
+    cb.addEventListener("change",function(){state.midCap=false;readInds();updatePoolInfo();});
+  });
+}
+function readInds(){
+  state.inds=Array.prototype.map.call(document.querySelectorAll(".indChk:checked"),function(cb){return cb.value;});
+}
+function updatePoolInfo(){
+  var p=poolFor(state.units,state.inds,state.midCap);
+  var byL={1:0,2:0,3:0};p.forEach(function(e){byL[e.level]++;});
+  $("poolInfo").textContent=p.length?"Question bank for this selection: "+p.length+" question templates (Level 1: "+byL[1]+", Level 2: "+byL[2]+", Level 3: "+byL[3]+"). Generators make a fresh question every draw.":
+   "No questions match that selection yet ,  try adding a unit or clearing the indicator filter.";
+}
+function settings(){
+  readUnits();readInds();
+  return {units:state.units.slice(),inds:state.inds.slice(),midCap:state.midCap,
+    count:Math.max(1,Math.min(60,+$("countIn").value||10)),
+    order:$("orderIn").value,
+    ws:($("wsIn")?parseFloat($("wsIn").value):1),
+    chk:($("chkIn")?$("chkIn").value:"each"),
+    mix:[+$("lv1").value||0,+$("lv2").value||0,+$("lv3").value||0]};
+}
+function tags(q){
+  var e=q._entry;
+  return '<span class="tag">Unit '+e.unit+'</span> <span class="tag ind">'+e.indicators.join(", ")+'</span> <span class="tag lvl">Level '+e.level+'</span>';
+}
+var current=null,checkedCount=0,correctCount=0,checkMode="each",endGraded=false;
+function startOnline(){
+  var s=settings();var res=drawSet(s.units,s.inds,s.count,s.mix,s.order,s.midCap);
+  current=res.items;checkedCount=0;correctCount=0;checkMode=(s.chk==="end")?"end":"each";endGraded=false;
+  var box=$("session");
+  if(!current.length){box.innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above ,  or use the Mid-course review or Final review button ,  then start again.")+'</p></div>';return;}
+  var html='<div class="card'+(checkMode==="end"?" endmode":"")+'"><h2>Online practice</h2>'+(res.thin?'<p class="thinNote">Heads up: the question bank is still thin for this selection, so this set repeats practice on the same question shape (with new numbers) because there are not yet enough different questions to fill it.</p>':"")+'<p class="scoreline" id="score"></p>';
+  current.forEach(function(q,i){
+    html+='<div class="q" id="q'+i+'"><div class="qhead"><b>Question '+(i+1)+'</b> '+tags(q)+'</div><div class="prompt">'+stepHTML(q.prompt)+'</div>';
+    if(q.figure)html+='<div class="fig">'+q.figure+'</div>';
+    if(q.type==="mc"){
+      html+='<div class="opts">'+q.options.map(function(o,j){return '<label><input type="radio" name="opt'+i+'" value="'+j+'"> <span>'+o+'</span></label>';}).join("")+'</div>';
+    }else{
+      html+='<p>Your answer: <input type="text" class="ans" id="ans'+i+'" autocomplete="off"></p>';
+    }
+    html+='<p><button type="button" data-check="'+i+'">Check</button> <button type="button" class="alt" data-sol="'+i+'">Show worked solution</button></p><div class="fb" id="fb'+i+'"></div><div class="sol" id="sol'+i+'"><b>Worked solution:</b> '+stepHTML(q.solution)+'</div>'
+      +'<p class="reprow"><button type="button" class="alt repbtn" data-rep="'+i+'">Report a problem</button></p>'
+      +'<div class="rep" id="rep'+i+'"><label>What is the problem?<select id="reptype'+i+'"><option>The question looks wrong or unclear</option><option>The worked solution doesn\'t work out</option><option>My answer was marked wrong but should be right</option><option>Something else is out of place</option></select></label>'
+      +'<label>Anything you noticed (optional)<textarea id="repnote'+i+'" rows="3"></textarea></label>'
+      +(REPORT_FORM.url?'<p><button type="button" data-repsend="'+i+'">Send report</button> <button type="button" class="alt" data-repcopy="'+i+'">Copy report text instead</button></p>':'<p><button type="button" data-repcopy="'+i+'">Copy report text</button></p>')
+      +'<div class="repstat" id="repstat'+i+'"></div></div></div>';
+  });
+  html+='<p>'+(checkMode==="end"?'<button type="button" id="gradeBtn">Check all my answers</button> ':"")+'<button type="button" id="againBtn">New set of questions</button></p></div>';
+  box.innerHTML=html;updateScore();typesetMath(box);
+  Array.prototype.forEach.call(box.querySelectorAll("[data-check]"),function(b){b.addEventListener("click",function(){checkQ(+b.getAttribute("data-check"));});});
+  Array.prototype.forEach.call(box.querySelectorAll("[data-sol]"),function(b){b.addEventListener("click",function(){$("sol"+b.getAttribute("data-sol")).classList.toggle("show");});});
+  Array.prototype.forEach.call(box.querySelectorAll("[data-rep]"),function(b){b.addEventListener("click",function(){$("rep"+b.getAttribute("data-rep")).classList.toggle("show");});});
+  Array.prototype.forEach.call(box.querySelectorAll("[data-repsend]"),function(b){b.addEventListener("click",function(){openReport(+b.getAttribute("data-repsend"));});});
+  Array.prototype.forEach.call(box.querySelectorAll("[data-repcopy]"),function(b){b.addEventListener("click",function(){copyReport(+b.getAttribute("data-repcopy"));});});
+  $("againBtn").addEventListener("click",startOnline);
+  if($("gradeBtn"))$("gradeBtn").addEventListener("click",gradeAll);
+  box.scrollIntoView({behavior:"smooth"});
+}
+function stepHTML(h){
+  var out="",i=0,inTex=false;
+  while(i<h.length){
+    if(h.startsWith("\\(",i)){inTex=true;out+="\\(";i+=2;continue;}
+    if(h.startsWith("\\)",i)){inTex=false;out+="\\)";i+=2;continue;}
+    if(!inTex&&h[i]==="<"){var j=h.indexOf(">",i);if(j<0){out+=h.slice(i);break;}out+=h.slice(i,j+1);i=j+1;continue;}
+    if(!inTex&&(h[i]==="."||h[i]==="?"||h[i]==="!")&&h[i+1]===" "){
+      var n=h[i+2]||"";
+      if(/[A-Z0-9]/.test(n)||h.startsWith("\\(",i+2)||h.startsWith("<b>",i+2)){out+=h[i]+"<br>";i+=2;continue;}
+    }
+    if(!inTex&&h[i]===";"&&h[i+1]===" "){out+=";<br>";i+=2;continue;}
+    out+=h[i];i++;
+  }
+  return out;
+}
+function plainText(h){var d=document.createElement("div");d.innerHTML=String(h).replace(/<br\s*\/?>/gi,"\n");return (d.textContent||"").replace(/[ \t]+/g," ").replace(/\s*\n\s*/g,"\n").trim();}
+function reportText(q,reason){
+  var e=q._entry,lines=[];
+  lines.push("Math 3208 Review - problem report");
+  lines.push("Entry: "+e.id+" | Unit "+e.unit+" ("+UNITS[e.unit]+") | Indicators: "+e.indicators.join(", ")+" | Level "+e.level);
+  lines.push("Problem type: "+reason);
+  lines.push("Question: "+plainText(q.prompt));
+  if(q.figure)lines.push("Diagram: this question is shown with a diagram in the app; its labels match the values in the question.");
+  if(q.type==="mc"){lines.push("Options:");q.options.forEach(function(o,j){lines.push("  - "+plainText(o)+(j===q.correct?"  [marked as the correct answer]":""));});}
+  else if(q.type==="num"){lines.push("Stated answer: "+q.answer);}
+  else{lines.push("Accepted answer(s): "+q.answers.join(" / "));}
+  lines.push("Worked solution: "+plainText(q.solution));
+  return lines.join("\n");
+}
+function openReport(i){
+  var q=current[i],e=q._entry,reason=$("reptype"+i).value,note=$("repnote"+i).value.trim();
+  var details=reportText(q,reason)+(note?("\nReporter note: "+note):"");
+  var unit="Unit "+e.unit+" ("+UNITS[e.unit]+") | Indicators: "+e.indicators.join(", ");
+  var u=REPORT_FORM.url+"?usp=pp_url&"+REPORT_FORM.appEntry+"="+encodeURIComponent(REPORT_FORM.appName)+"&"+REPORT_FORM.unitEntry+"="+encodeURIComponent(unit)+"&"+REPORT_FORM.detailsEntry+"="+encodeURIComponent(details);
+  window.open(u,"_blank");
+  $("repstat"+i).textContent="The report form opened in a new tab with everything filled in - just press Submit there. Thank you for flagging it.";
+}
+function copyReport(i){
+  var q=current[i],note=$("repnote"+i).value.trim();
+  var txt=reportText(q,$("reptype"+i).value)+(note?("\nReporter note: "+note):"");
+  function done(){$("repstat"+i).textContent="Report copied - paste it to your teacher. Thank you for flagging it.";}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,done);}
+  else{var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(err){}document.body.removeChild(ta);done();}
+}
+function updateScore(){
+  if(checkMode==="end"){
+    $("score").textContent=endGraded?("You scored "+correctCount+" of "+current.length+" ,  "+Math.round(100*correctCount/current.length)+"%. The worked solutions are open below so you can review each question."):"Answer all the questions, then check them all at the end.";
+    return;
+  }
+  $("score").textContent=checkedCount?("Score so far: "+correctCount+" of "+checkedCount+" checked."):"Check each question as you go ,  the worked solution is there when you want it.";
+}
+function checkQ(i){
+  var q=current[i],ok=false,given=null;
+  if(q.type==="mc"){var sel=document.querySelector('input[name="opt'+i+'"]:checked');if(!sel){$("fb"+i).innerHTML='<span class="notyet">Pick an option first.</span>';$("fb"+i).classList.add("show");return;}given=+sel.value;ok=(given===q.correct);}
+  else if(q.type==="num"){var v=parseFloat(($("ans"+i).value||"").replace(/[$,%\u00B0]/g,""));if(isNaN(v)){$("fb"+i).innerHTML='<span class="notyet">Type a number first.</span>';$("fb"+i).classList.add("show");return;}ok=Math.abs(v-q.answer)<=q.tol;}
+  else{var t=($("ans"+i).value||"").trim().toLowerCase().replace(/\s+/g," ");ok=q.answers.some(function(a){return t===a.replace(/\s+/g," ");});}
+  var fb=$("fb"+i);fb.classList.add("show");
+  if(!fb.dataset.done){checkedCount++;if(ok)correctCount++;fb.dataset.done="1";updateScore();}
+  fb.innerHTML=ok?'<span class="ok">Correct.</span> Nice work.':(checkMode==="end"?'<span class="notyet">Not quite.</span> The worked solution is open below.':'<span class="notyet">Not quite.</span> Try again, or open the worked solution.');
+  if(ok)$("sol"+i).classList.remove("show");
+}
+function gradeAll(){
+  if(endGraded||!current)return;
+  endGraded=true;
+  for(var i=0;i<current.length;i++){
+    var q=current[i],fb=$("fb"+i);
+    if(fb.dataset.done)continue;
+    var answered=false;
+    if(q.type==="mc")answered=!!document.querySelector('input[name="opt'+i+'"]:checked');
+    else if(q.type==="num")answered=!isNaN(parseFloat(($("ans"+i).value||"").replace(/[$,%\u00B0]/g,"")));
+    else answered=(($("ans"+i).value||"").trim()!=="");
+    if(!answered){
+      fb.classList.add("show");fb.dataset.done="1";checkedCount++;
+      fb.innerHTML='<span class="notyet">No answer given.</span> The worked solution is open below.';
+    }else checkQ(i);
+  }
+  for(var j=0;j<current.length;j++)$("sol"+j).classList.add("show");
+  updateScore();
+  var b=$("gradeBtn");if(b){b.disabled=true;b.textContent="Answers checked";}
+  $("score").scrollIntoView({behavior:"smooth",block:"center"});
+}
+var _probeCache={};
+function probeType(e){if(_probeCache[e.id])return _probeCache[e.id];var t="mc";try{var q=e.gen();if(q&&q.type)t=q.type;}catch(err){}_probeCache[e.id]=t;return t;}
+function worksheetPred(e){return (typeof CR_MARKS!=="undefined"&&CR_MARKS[e.id]!==undefined)||probeType(e)==="num"||probeType(e)==="txt";}
+function subsetSumMarks(entries,target){
+  var arr=shuffle(entries.slice());var dp={0:[]};
+  for(var i=0;i<arr.length;i++){var m=arr[i].marks;var keys=Object.keys(dp).map(Number).sort(function(a,b){return b-a;});
+    for(var k=0;k<keys.length;k++){var s2=keys[k]+m;if(s2<=target&&!dp[s2]){dp[s2]=dp[keys[k]].concat([arr[i]]);if(s2===target)return dp[s2];}}}
+  return dp[target]||null;
+}
+function composeExam(units,inds){
+  var single=units.length===1;
+  var srT=single?[4,6,1]:[10,15,2];
+  var crTotal=single?14:23;
+  var pool=poolFor(units,inds,false);
+  if(!pool.length)return null;
+  var seen={};
+  function genFrom(e){var q=e.gen();q._entry=e;return q;}
+  var srItems=[];
+  function takeSR(level,count){
+    var cands=pool.filter(function(e){return e.level===level&&probeType(e)==="mc";});
+    var guard=0;
+    while(count>0&&guard++<500&&cands.length){
+      var q=genFrom(pick(cands));var c=canonQ(q);
+      if(q.type!=="mc"||seen[c])continue;seen[c]=1;srItems.push({q:q,marks:1});count--;
+    }
+    return count;
+  }
+  var miss=0;for(var L=1;L<=3;L++){miss+=takeSR(L,srT[L-1]);}
+  var crPool=pool.filter(function(e){return typeof CR_MARKS!=="undefined"&&CR_MARKS[e.id]!==undefined&&CR_MARKS[e.id]>=2&&e.level>=2;}).map(function(e){return{e:e,marks:CR_MARKS[e.id]};});
+  var l3=crPool.filter(function(x){return x.e.level===3;}),l2=crPool.filter(function(x){return x.e.level===2;});
+  var l3pick=null,l3sum=0;var t3=single?[5,4,6]:[8,9,7];
+  for(var t=0;t<t3.length&&!l3pick;t++){l3pick=subsetSumMarks(l3,t3[t]);if(l3pick)l3sum=t3[t];}
+  var crItems=[],crMarks=0,short=miss>0;
+  if(l3pick){
+    var l2pick=subsetSumMarks(l2,crTotal-l3sum);
+    if(l2pick){
+      var seenC={};
+      l3pick.concat(l2pick).forEach(function(x){var q=null,c=null,tries=0;do{q=genFrom(x.e);c=canonQ(q);tries++;}while(seenC[c]&&tries<25);seenC[c]=1;crItems.push({q:q,marks:x.marks});});
+      crItems.sort(function(a,b){return a.q._entry.unit-b.q._entry.unit||a.q._entry.level-b.q._entry.level;});
+      crMarks=crTotal;
+    } else short=true;
+  } else short=true;
+  return {srItems:srItems,crItems:crItems,srMarks:srItems.length,crMarks:crMarks,l3Marks:l3sum,total:srItems.length+crMarks,single:single,short:short};
+}
+function recGrid(items,withKey){
+  var n=items.length,cols=n<=11?2:3,per=Math.ceil(n/cols);
+  var h='<table class="recGrid"><tbody>';
+  for(var r=0;r<per;r++){h+='<tr>';
+    for(var c=0;c<cols;c++){var ix=c*per+r;
+      if(ix>=n){h+='<td></td>';continue;}
+      var cell='<b>'+(ix+1)+'.</b> ';
+      for(var L=0;L<4;L++){var isK=withKey&&items[ix].q.correct===L;cell+='<span class="lt'+(isK?' rk':'')+'">'+"ABCD"[L]+ '</span>';}
+      h+='<td>'+cell+'</td>';}
+    h+='</tr>';}
+  return h+'</tbody></table>';
+}
+function startExam(){
+  var s=settings();
+  var ex=composeExam(s.units,s.inds);
+  if(!ex||(!ex.srItems.length&&!ex.crItems.length)){$("session").innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above, or use the Mid-course review or Final review button, then start again.")+'</p></div>';return;}
+  var single=s.units.length===1;
+  var wsf=(typeof s.ws==="number"&&!isNaN(s.ws))?s.ws:1;
+  var scope=single?("Unit "+s.units[0]+" \u00B7 "+UNITS[s.units[0]]):s.units.map(function(u){return "Unit "+u;}).join(", ");
+  var title=single?"Math 3208: Practice Unit Test":"Math 3208: Practice Exam";
+  var paper='<div class="nameline"><div>Name:<span></span></div><div>Date:<span></span></div></div>';
+  paper+='<h1 style="font-size:1.3rem;">'+title+'</h1><p>'+scope+' \u00B7 Total marks: '+ex.total+'</p>';
+  paper+='<p style="font-size:.92rem;">Answer all questions. In Section A, choose the best answer for each question and record it on the answer record at the end of Section A. In Section B, show all workings in the space provided; marks are shown beside each question.</p>';
+  var n=0;
+  paper+='<h2 style="font-size:1.05rem;">Section A: Selected Response ('+ex.srMarks+' marks)</h2>';
+  ex.srItems.forEach(function(it){n++;var q=it.q;
+    paper+='<div class="pq"><p><b>'+n+'.</b></p><div class="prompt">'+stepHTML(q.prompt)+'</div>';
+    if(q.figure)paper+='<div class="fig">'+q.figure+'</div>';
+    if(q.type==="mc")paper+='<div class="opts">'+q.options.map(function(o,oi){return '<label style="display:block;margin:4px 0;"><b>'+"ABCD"[oi]+'.</b> '+o+'</label>';}).join("")+'</div>';
+    paper+='</div>';});
+  paper+='<h2 style="font-size:1.05rem;">Answer record</h2><p style="font-size:.92rem;">Circle one letter for each Section A question.</p>'+recGrid(ex.srItems,false);
+  paper+='<h2 style="font-size:1.05rem;">Section B: Constructed Response ('+ex.crMarks+' marks)</h2>';
+  if(!ex.crItems.length)paper+='<p>No constructed-response questions are available for this selection yet.</p>';
+  ex.crItems.forEach(function(it){n++;var q=it.q;
+    paper+='<div class="pq"><p><b>'+n+'.</b> <span style="font-size:.85rem;color:#555;">('+it.marks+' marks)</span></p><div class="prompt">'+stepHTML(q.prompt)+'</div>';
+    if(q.figure)paper+='<div class="fig">'+q.figure+'</div>';
+    var h=Math.max(80,Math.round(it.marks*62*wsf));if(wsf>0)paper+='<div class="ws" style="height:'+h+'px"></div>';
+    paper+='</div>';});
+  paper+='<p style="font-size:.85rem;color:#555;">Built to the 2026-2027 tables of specifications as closely as the question bank allows: selected response '+ex.srMarks+' marks, constructed response '+ex.crMarks+' marks, of which Level 3 carries '+ex.l3Marks+' marks.</p>';
+  var key='<h1 style="font-size:1.3rem;">'+title+': Answer Key</h1><p>'+scope+' \u00B7 Total marks: '+ex.total+'</p>';
+  key+='<h2 style="font-size:1.05rem;">Section A answers</h2><p style="font-size:.92rem;">The correct letter for each question, in the same layout as the answer record on the student paper.</p>';
+  key+=recGrid(ex.srItems,true);
+  key+='<h2 style="font-size:1.05rem;">Section B: worked solutions</h2>';
+  var m=ex.srItems.length;
+  ex.crItems.forEach(function(it){m++;var q=it.q;var ans=q.type==="mc"?esc(q.options[q.correct]):(q.type==="num"?fmt(q.answer):esc(q.answers[0]));
+    key+='<div class="solp"><p><b>'+m+'.</b> Answer: <b>'+ans+'</b> ('+it.marks+' marks)</p><div style="line-height:1.5;font-size:.92rem;">'+stepHTML(q.solution)+'</div></div>';});
+  key+='<h2 style="font-size:1.05rem;">Appendix: Section A worked solutions</h2><div class="solAppendix">';
+  ex.srItems.forEach(function(it,ix){var q=it.q;key+='<div class="solp"><p><b>'+(ix+1)+'.</b> <b>('+"ABCD"[q.correct]+')</b></p><div>'+stepHTML(q.solution)+'</div></div>';});
+  key+='</div>';
+  $("printArea").innerHTML=paper;
+  $("session").innerHTML='<div class="card"><p>Your '+(single?"practice unit test":"practice exam")+' is ready: '+ex.srItems.length+' selected-response questions and '+ex.crItems.length+' constructed-response questions, '+ex.total+' marks in total. The exam paper and the answer key print separately.</p>'
+    +(ex.short?'<p class="thinNote">Heads up: the bank could not fill every exam slot for this selection yet, so this paper runs short of the full blueprint.</p>':"")
+    +'<div class="row"><button type="button" id="printPaperBtn">Print the exam paper</button><button type="button" id="printKeyBtn" class="sec">Print the answer key</button></div>'
+    +'<div class="sheetPrev" id="sheetPrev">'+paper+'<div class="keybreak">'+key+'</div></div></div>';
+  typesetMath($("sheetPrev"));typesetMath($("printArea"));
+  $("printPaperBtn").addEventListener("click",function(){$("printArea").innerHTML=paper;typesetMath($("printArea"));window.print();});
+  $("printKeyBtn").addEventListener("click",function(){$("printArea").innerHTML=key;typesetMath($("printArea"));window.print();});
+}
+var SHEET_MODE="sheet";
+function startSheet(){SHEET_MODE="sheet";startSheetMode();}
+function startWorksheet(){SHEET_MODE="worksheet";startSheetMode();}
+function startSheetMode(){
+  var s=settings();var res=drawSet(s.units,s.inds,s.count,s.mix,s.order,s.midCap,SHEET_MODE==="worksheet"?worksheetPred:null);
+  if(!res.items.length){$("session").innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above ,  or use the Mid-course review or Final review button ,  then start again.")+'</p></div>';return;}
+  var unitNames=s.units.map(function(u){return "Unit "+u;}).join(", ");
+  var html='<div class="nameline"><div>Name:<span></span></div><div>Date:<span></span></div></div>';
+  var wsf=(typeof s.ws==="number"&&!isNaN(s.ws))?s.ws:1;
+  html+='<h1 style="font-size:1.3rem;">'+(SHEET_MODE==="worksheet"?"Math 3208: Worksheet":"Math 3208: Practice Sheet")+'</h1><p>'+unitNames+(s.inds.length?(" \u00B7 Indicators: "+s.inds.join(", ")):"")+' \u00B7 '+res.items.length+' questions \u00B7 '+(wsf>0?'Show all workings in the space provided.':'Show all workings on your own paper.')+'</p>';
+  res.items.forEach(function(q,i){
+    var h=Math.round((q._entry.level===3?170:((q.type==="mc"&&SHEET_MODE!=="worksheet")?120:150))*wsf);
+    html+='<div class="pq"><p><b>'+(i+1)+'.</b> <span style="font-size:.8rem;color:#555;">(Unit '+q._entry.unit+' \u00B7 '+q._entry.indicators.join(", ")+' \u00B7 Level '+q._entry.level+')</span></p><div class="prompt">'+stepHTML(q.prompt)+'</div>';
+    if(q.figure)html+='<div class="fig">'+q.figure+'</div>';
+    if(q.type==="mc"&&SHEET_MODE!=="worksheet"){html+='<div class="opts">'+q.options.map(function(o){return '<label style="display:block;margin:4px 0;">\u25CB '+o+'</label>';}).join("")+'</div>';}
+    if(h>0)html+='<div class="ws" style="height:'+h+'px"></div>';
+    html+='</div>';
+  });
+  html+='<p style="font-size:.85rem;color:#555;">Spotted a problem with a question on this sheet? Write down its unit and question number and let your teacher know.</p>';
+  html+='<div class="keybreak"><h1 style="font-size:1.3rem;">Answer Key, with worked solutions</h1>';
+  res.items.forEach(function(q,i){
+    var ans=q.type==="mc"?esc(q.options[q.correct]):(q.type==="num"?fmt(q.answer):esc(q.answers[0]));
+    html+='<div class="solp"><p><b>'+(i+1)+'.</b> Answer: <b>'+ans+'</b></p><div style="line-height:1.5;font-size:.92rem;">'+stepHTML(q.solution)+'</div></div>';
+  });
+  html+='</div>';
+  $("printArea").innerHTML=html;
+  $("session").innerHTML='<div class="card"><p>Your '+(SHEET_MODE==="worksheet"?"worksheet":"practice sheet")+' is ready ('+res.items.length+' questions, with the answer key on its own pages at the end). It is shown below, exactly as it will print.</p>'
+    +(res.thin?'<p class="thinNote">Heads up: the question bank is still thin for this selection, so this sheet repeats practice on the same question shape (with new numbers) because there are not yet enough different questions to fill it.</p>':"")
+    +'<div class="row"><button type="button" id="editBtn">Edit the sheet</button><button type="button" id="copyBtn" class="sec">Copy for Google Docs / Word</button><button type="button" id="printBtn" class="sec">Print / save the sheet</button></div>'
+    +'<p class="hint" id="editHint" hidden>Editing is on: click any text in the sheet below and type to change it, or delete a question you do not want. What you see is what prints. Most math is regular text and can be changed directly; typeset expressions are rendered, so if you need different numbers in one of those, regenerate the sheet instead.</p>'
+    +'<p class="hint" id="copyStatus" role="status"></p>'
+    +'<div class="sheetPrev" id="sheetPrev">'+html+'</div></div>';
+  typesetMath($("sheetPrev"));typesetMath($("printArea"));
+  $("editBtn").addEventListener("click",function(){
+    var prev=$("sheetPrev"),on=prev.getAttribute("contenteditable")==="true";
+    if(on){prev.removeAttribute("contenteditable");prev.classList.remove("editing");$("editBtn").textContent="Edit the sheet";$("editHint").hidden=true;}
+    else{prev.setAttribute("contenteditable","true");prev.classList.add("editing");$("editBtn").textContent="Done editing";$("editHint").hidden=false;prev.focus();}
+  });
+  $("copyBtn").addEventListener("click",copySheet);
+  $("printBtn").addEventListener("click",function(){$("printArea").innerHTML=$("sheetPrev").innerHTML;window.print();});
+}
+function copySheet(){
+  var node=$("sheetPrev"),status=$("copyStatus");if(!node)return;
+  function done(ok){status.textContent=ok?"Copied. Open a Google Doc or a Word document and paste (Ctrl+V): the whole sheet lands there as editable text. Edit it there, then print from there.":"Copy did not work in this browser. You can still edit the sheet right here and print it.";}
+  function fallback(){try{var r=document.createRange();r.selectNodeContents(node);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);var ok=document.execCommand("copy");sel.removeAllRanges();done(ok);}catch(e){done(false);}}
+  if(navigator.clipboard&&window.ClipboardItem){
+    try{
+      var clean=detexClone(node);
+      var item=new ClipboardItem({"text/html":new Blob([clean.innerHTML],{type:"text/html"}),"text/plain":new Blob([clean.innerText||clean.textContent||""],{type:"text/plain"})});
+      navigator.clipboard.write([item]).then(function(){done(true);},function(){fallback();});
+    }catch(e){fallback();}
+  } else fallback();
+}
+function settingsToURL(){
+  var s=settings();var p=new URLSearchParams();
+  if(s.units.join()==="1,2,3,4")p.set("preset","mid");
+  else if(s.units.slice().sort().join()==="5,6,7,8,9")p.set("preset","final");
+  else if(s.units.length)p.set("unit",s.units.join(","));
+  if(s.inds.length)p.set("indicator",s.inds.join(","));
+  p.set("count",s.count);p.set("order",s.order);
+  if(s.ws!==1)p.set("ws",s.ws);
+  if(s.chk==="end")p.set("chk","end");
+  if(s.mix.join()!=="20,60,20")p.set("levels",s.mix.join(","));
+  return location.pathname+"?"+p.toString();
+}
+function applyURL(){
+  var p=new URLSearchParams(location.search);var touched=false;
+  if(p.get("preset")==="mid"){state.units=[1,2,3,4];touched=true;}
+  else if(p.get("preset")==="final"){state.units=[5,6,7,8,9];$("lv1").value=20;$("lv2").value=60;$("lv3").value=20;touched=true;}
+  else if(p.get("unit")){state.units=p.get("unit").split(",").map(Number).filter(function(u){return UNITS[u];});touched=true;}
+  if(p.get("indicator")){state.inds=p.get("indicator").split(",").map(function(x){return x.trim();});touched=true;}
+  if(p.get("count"))$("countIn").value=p.get("count");
+  if(p.get("order"))$("orderIn").value=p.get("order");
+  if(p.get("ws")!==null&&$("wsIn"))$("wsIn").value=p.get("ws");
+  if(p.get("chk")==="end"&&$("chkIn"))$("chkIn").value="end";
+  if(p.get("levels")){var lv=p.get("levels").split(",").map(Number);if(lv.length===3){$("lv1").value=lv[0];$("lv2").value=lv[1];$("lv3").value=lv[2];$("advBox").open=true;}}
+  return touched;
+}
+function setPreset(units,cap,mix){state.units=units;state.inds=[];state.midCap=!!cap;if(mix){$("lv1").value=mix[0];$("lv2").value=mix[1];$("lv3").value=mix[2];}unitCheckboxes();renderIndicators();updatePoolInfo();}
+$("presetMid").addEventListener("click",function(){setPreset([1,2,3,4],false,[20,60,20]);});
+$("presetFinal").addEventListener("click",function(){setPreset([5,6,7,8],false,[20,60,20]);});
+$("presetAll").addEventListener("click",function(){setPreset([1,2,3,4,5,6,7,8,9]);});
+$("goOnline").addEventListener("click",startOnline);
+$("goSheet").addEventListener("click",startSheet);
+$("goWorksheet").addEventListener("click",startWorksheet);
+$("goExam").addEventListener("click",startExam);
+$("copyLink").addEventListener("click",function(){
+  var url=location.origin+settingsToURL();
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url);}
+  $("poolInfo").textContent="Link copied (or copy it from the address bar): "+url;
+  history.replaceState(null,"",settingsToURL());
+});
+var urlTouched=applyURL();
+unitCheckboxes();renderIndicators();updatePoolInfo();
+if(urlTouched&&(new URLSearchParams(location.search).get("unit")||new URLSearchParams(location.search).get("preset")||new URLSearchParams(location.search).get("indicator"))){
+  var _m=(new URLSearchParams(location.search).get("mode"));if(_m==="sheet"){startSheet();}else if(_m==="worksheet"){startWorksheet();}else if(_m==="exam"){startExam();}else{startOnline();}
+}
+</script>
+</body>
+</html>
