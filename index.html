@@ -152,7 +152,7 @@
     </details>
     <div class="adv">
       <label>Multiple choice
-        <input type="number" id="mcCountIn" min="0" max="60" value="5">
+        <input type="number" id="mcCountIn" min="0" max="60" value="10">
       </label>
       <label>No choices
         <input type="number" id="ncCountIn" min="0" max="60" value="5">
@@ -4945,7 +4945,7 @@ function settingsToURL(){
   else if(s.units.length)p.set("unit",s.units.join(","));
   if(s.inds.length)p.set("indicator",s.inds.join(","));
   p.set("count",s.count);p.set("order",s.order);
-  if(s.mcCount!==5)p.set("mc",s.mcCount);
+  if(s.mcCount!==10)p.set("mc",s.mcCount);
   if(s.ncCount!==5)p.set("nc",s.ncCount);
   if(!s.wantKey)p.set("key","0");
   if(s.ws!==1)p.set("ws",s.ws);
