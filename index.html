@@ -149,9 +149,18 @@
           <input type="number" id="ncCountIn" min="0" max="60" value="5">
         </label>
         <label><input type="checkbox" id="keyChk" checked> Include answer key</label>
-        <label>Working space on print sheets
-          <select id="wsIn">
+        <label>Working space for multiple choice
+          <select id="wsMcIn">
             <option value="2.3">Extra space</option>
+            <option value="1">Full space</option>
+            <option value="0.5">Half space</option>
+            <option value="0.25">A little space</option>
+            <option value="0" selected>None: use your own paper</option>
+          </select>
+        </label>
+        <label>Working space for constructed response
+          <select id="wsCrIn">
+            <option value="2.3" selected>Extra space</option>
             <option value="1">Full space</option>
             <option value="0.5">Half space</option>
             <option value="0.25">A little space</option>
@@ -4547,7 +4556,8 @@ function settings(){
     ncCount:Math.max(0,Math.min(60,+$("ncCountIn").value||0)),
     wantKey:!($("keyChk")&&$("keyChk").checked===false),
     order:$("orderIn").value,
-    ws:($("wsIn")?parseFloat($("wsIn").value):1),
+    wsMc:($("wsMcIn")?parseFloat($("wsMcIn").value):0),
+    wsCr:($("wsCrIn")?parseFloat($("wsCrIn").value):2.3),
     chk:($("chkIn")?$("chkIn").value:"each"),
     mix:[+$("lv1").value||0,+$("lv2").value||0,+$("lv3").value||0]};
 }
@@ -4762,7 +4772,7 @@ function startExam(){
   var ex=composeExam(s.units,s.inds);
   if(!ex||(!ex.srItems.length&&!ex.crItems.length)){$("session").innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above, or use the Mid-course review or Final review button, then start again.")+'</p></div>';return;}
   var single=s.units.length===1;
-  var wsf=(typeof s.ws==="number"&&!isNaN(s.ws))?s.ws:1;
+  var wsCrF=(typeof s.wsCr==="number"&&!isNaN(s.wsCr))?s.wsCr:2.3;
   var scope=single?("Unit "+s.units[0]+" \u00B7 "+UNITS[s.units[0]]):s.units.map(function(u){return "Unit "+u;}).join(", ");
   var title=single?"Math 3208: Practice Unit Test":"Math 3208: Practice Exam";
   wordName=single?"Math 3208 Practice Unit Test.docx":"Math 3208 Practice Exam.docx";
@@ -4782,7 +4792,7 @@ function startExam(){
   ex.crItems.forEach(function(it){n++;var q=it.q;
     paper+='<div class="pq"><p><b>'+n+'.</b> <span style="font-size:.85rem;color:#555;">('+it.marks+' marks)</span></p><div class="prompt">'+stepHTML(q.prompt)+'</div>';
     if(q.figure)paper+='<div class="fig">'+q.figure+'</div>';
-    var h=Math.max(80,Math.round(it.marks*62*wsf));if(wsf>0)paper+=wsBox(h);
+    var h=Math.max(80,Math.round(it.marks*62*wsCrF));if(wsCrF>0)paper+=wsBox(h);
     paper+='</div>';});
   paper+='<p style="font-size:.85rem;color:#555;">Built to the 2026-2027 tables of specifications as closely as the question bank allows: selected response '+ex.srMarks+' marks, constructed response '+ex.crMarks+' marks, of which Level 3 carries '+ex.l3Marks+' marks.</p>';
   var key='<h1 style="font-size:1.3rem;">'+title+': Answer Key</h1><p>'+scope+' \u00B7 Total marks: '+ex.total+'</p>';
@@ -4821,10 +4831,11 @@ function startSheet(){
   var unitNames=s.units.map(function(u){return "Unit "+u;}).join(", ");
   wordName="Math 3208 Practice Sheet.docx";
   var html='<div class="nameline"><div>Name:<span></span></div><div>Date:<span></span></div></div>';
-  var wsf=(typeof s.ws==="number"&&!isNaN(s.ws))?s.ws:1;
-  html+='<h1 style="font-size:1.3rem;">'+"Math 3208: Practice Sheet"+'</h1><p>'+unitNames+(s.inds.length?(" \u00B7 Indicators: "+s.inds.join(", ")):"")+' \u00B7 '+res.items.length+' questions \u00B7 '+(wsf>0?'Show all workings in the space provided.':'Show all workings on your own paper.')+'</p>';
+  var wsMcF=(typeof s.wsMc==="number"&&!isNaN(s.wsMc))?s.wsMc:0;
+  var wsCrF=(typeof s.wsCr==="number"&&!isNaN(s.wsCr))?s.wsCr:2.3;
+  html+='<h1 style="font-size:1.3rem;">'+"Math 3208: Practice Sheet"+'</h1><p>'+unitNames+(s.inds.length?(" \u00B7 Indicators: "+s.inds.join(", ")):"")+' \u00B7 '+res.items.length+' questions \u00B7 '+((wsMcF>0||wsCrF>0)?'Show all workings in the space provided.':'Show all workings on your own paper.')+'</p>';
   res.items.forEach(function(q,i){
-    var h=Math.round((q._entry.level===3?170:(q.type==="mc"?120:150))*wsf);
+    var h=Math.round((q._entry.level===3?170:(q.type==="mc"?120:150))*((q.type==="mc")?wsMcF:wsCrF));
     html+='<div class="pq"><p><b>'+(i+1)+'.</b> <span style="font-size:.8rem;color:#555;">(Unit '+q._entry.unit+' \u00B7 '+q._entry.indicators.join(", ")+' \u00B7 Level '+q._entry.level+')</span></p><div class="prompt">'+stepHTML(q.prompt)+'</div>';
     if(q.figure)html+='<div class="fig">'+q.figure+'</div>';
     if(q.type==="mc"){html+='<div class="opts">'+q.options.map(function(o){return '<label style="display:block;margin:4px 0;">\u25CB '+o+'</label>';}).join("")+'</div>';}
@@ -5378,7 +5389,8 @@ function settingsToURL(){
   if(s.mcCount!==10)p.set("mc",s.mcCount);
   if(s.ncCount!==5)p.set("nc",s.ncCount);
   if(!s.wantKey)p.set("key","0");
-  if(s.ws!==1)p.set("ws",s.ws);
+  if(s.wsMc!==0)p.set("wsmc",s.wsMc);
+  if(s.wsCr!==2.3)p.set("wscr",s.wsCr);
   if(s.chk==="end")p.set("chk","end");
   if(s.mix.join()!=="20,60,20")p.set("levels",s.mix.join(","));
   return location.pathname+"?"+p.toString();
@@ -5394,7 +5406,10 @@ function applyURL(){
   if(p.get("nc")!==null)$("ncCountIn").value=p.get("nc");
   if(p.get("key")==="0")$("keyChk").checked=false;
   if(p.get("order"))$("orderIn").value=p.get("order");
-  if(p.get("ws")!==null&&$("wsIn"))$("wsIn").value=p.get("ws");
+  if(p.get("wsmc")!==null&&$("wsMcIn"))$("wsMcIn").value=p.get("wsmc");
+  else if(p.get("ws")!==null&&$("wsMcIn"))$("wsMcIn").value=p.get("ws");
+  if(p.get("wscr")!==null&&$("wsCrIn"))$("wsCrIn").value=p.get("wscr");
+  else if(p.get("ws")!==null&&$("wsCrIn"))$("wsCrIn").value=p.get("ws");
   if(p.get("chk")==="end"&&$("chkIn"))$("chkIn").value="end";
   if(p.get("levels")){var lv=p.get("levels").split(",").map(Number);if(lv.length===3){$("lv1").value=lv[0];$("lv2").value=lv[1];$("lv3").value=lv[2];$("advBox").open=true;}}
   return touched;
