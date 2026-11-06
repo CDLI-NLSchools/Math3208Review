@@ -4712,9 +4712,21 @@ function composeExam(units,inds){
     var l2pick=subsetSumMarks(l2,crTotal-l3sum);
     if(l2pick){
       var seenC={};srItems.forEach(function(it){seenC[canonQ(it.q)]=1;});
-      l3pick.concat(l2pick).forEach(function(x){var q=null,c=null,tries=0;do{q=genFrom(x.e);c=canonQ(q);tries++;}while(seenC[c]&&tries<25);seenC[c]=1;crItems.push({q:q,marks:x.marks});});
+      var bShort=false;
+      function drawCR(x){
+        var q=null,c=null,tries=0;
+        do{q=genFrom(x.e);c=canonQ(q);tries++;}while(seenC[c]&&tries<25);
+        if(seenC[c]){ // the picked entry has no question left that Section A did not use: try same-level, same-marks substitutes
+          var subs=crPool.filter(function(y){return y.e.level===x.e.level&&y.marks===x.marks&&y.e!==x.e;});
+          for(var si=0;si<subs.length&&seenC[c];si++){var q2=null,c2=null,t2=0;do{q2=genFrom(subs[si].e);c2=canonQ(q2);t2++;}while(seenC[c2]&&t2<25);if(!seenC[c2]){q=q2;c=c2;}}
+        }
+        if(seenC[c])return false; // nothing fresh available: leave Section B short rather than repeat a Section A question
+        seenC[c]=1;crItems.push({q:q,marks:x.marks});return true;
+      }
+      l3pick.concat(l2pick).forEach(function(x){if(!drawCR(x))bShort=true;});
       crItems.sort(function(a,b){return a.q._entry.unit-b.q._entry.unit||a.q._entry.level-b.q._entry.level;});
-      crMarks=crTotal;
+      if(bShort){short=true;crMarks=crItems.reduce(function(a,it){return a+it.marks;},0);l3sum=crItems.filter(function(it){return it.q._entry.level===3;}).reduce(function(a,it){return a+it.marks;},0);}
+      else crMarks=crTotal;
     } else short=true;
   } else short=true;
   return {srItems:srItems,crItems:crItems,srMarks:srItems.length,crMarks:crMarks,l3Marks:l3sum,total:srItems.length+crMarks,single:single,short:short};
