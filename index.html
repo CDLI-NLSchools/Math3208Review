@@ -92,6 +92,15 @@
     .wshandle{display:none !important;}
   }
   .katex{font-size:1.07em;}
+  .refpanel{margin:0 0 12px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:#f4f6f5;}
+  .refpanel summary{cursor:pointer;font-weight:bold;}
+  .refbody{margin-top:8px;line-height:1.55;font-size:.95rem;}
+  .exbox{margin:8px 0;padding:10px 12px;border:1px solid #b7c9a8;background:#f6faf2;border-radius:8px;line-height:1.5;}
+  .exbox .opts label{display:block;margin:3px 0;}
+  .timerbar{font-weight:bold;background:#eef4ff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:10px;}
+  .summarybox{margin-top:14px;border-top:2px solid var(--line);padding-top:10px;}
+  details#builderBox{margin-bottom:14px;}
+  details#builderBox>summary{cursor:pointer;font-size:1.15rem;font-weight:bold;padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:10px;}
 </style>
 <link rel="stylesheet" href="katex/katex.min.css">
 <script src="katex/katex.min.js"></script>
@@ -104,6 +113,16 @@
   Most questions are generated new every time, so you can practise the same skill again and get a different question.
   Work online, print a practice sheet, or build a practice exam.</p>
 
+  <div class="card" id="faceCard">
+    <h2 style="margin-top:0;">Mathematics 3208 Review</h2>
+    <p id="faceScope" style="font-size:1.08rem;font-weight:bold;"></p>
+    <p id="faceDesc"></p>
+    <div class="modebar"><button type="button" id="faceStart" style="font-size:1.15rem;padding:14px 30px;">Start practising</button></div>
+    <p class="hint">Want different units, a printed sheet or a practice exam? Open "Build your own practice" below.</p>
+  </div>
+
+  <details id="builderBox">
+  <summary>Build your own practice</summary>
   <div class="card">
     <h2>1. What do you want to practise?</h2>
     <div class="presetrow">
@@ -121,6 +140,16 @@
           <option value="random">Random order</option>
         </select>
       </label>
+    </div>
+    <div class="group">
+      <h3>Same problems for everyone</h3>
+      <div class="adv">
+        <label>Seed word or phrase (optional)
+          <input type="text" id="seedIn" placeholder="e.g. Period 3 Tuesday">
+        </label>
+        <button type="button" id="seedGen" class="alt">Make one up</button>
+      </div>
+      <p class="hint">Set a seed, then use Copy link below: every student who opens the link gets the exact same questions in the same order. Leave it blank and each student gets a fresh set.</p>
     </div>
     <div class="group">
       <h3>Practice online</h3>
@@ -183,6 +212,7 @@
         <label>Level 1 %<input type="number" id="lv1" min="0" max="100" value="20"></label>
         <label>Level 2 %<input type="number" id="lv2" min="0" max="100" value="60"></label>
         <label>Level 3 %<input type="number" id="lv3" min="0" max="100" value="20"></label>
+        <label><input type="checkbox" id="timerChk"> Show the exam timer on practice exams (it counts up; it is a guide only and never locks you out)</label>
       </div>
     </details>
     <div class="modebar">
@@ -190,6 +220,7 @@
     </div>
     <p class="hint" id="poolInfo"></p>
   </div>
+  </details>
 
   <div id="session"></div>
 </div>
@@ -203,6 +234,17 @@ function ri(a,b){return a+Math.floor(Math.random()*(b-a+1));}
 function rf(a,b){return a+Math.random()*(b-a);}
 function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+/* ===== Seeded randomness =====
+   withSeed(seed, fn) swaps Math.random for a mulberry32 PRNG seeded from a
+   hash of the seed string for the duration of one synchronous draw, so a
+   teacher seed reproduces the identical set (entries, values, order) for
+   every student. With no seed, Math.random is left untouched and behaviour
+   is the usual random draw. */
+function hashSeedStr(str){var h1=0xdeadbeef,h2=0x41c6ce57;for(var i=0;i<str.length;i++){var ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return (h2>>>0)*4294967296+(h1>>>0);}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function withSeed(seed,fn){if(!seed)return fn();var orig=Math.random;Math.random=mulberry32(hashSeedStr(String(seed))%4294967296);try{return fn();}finally{Math.random=orig;}}
+var sessionSeed="";var _suppressSeedOnce=false;
+function activeSeed(s){if(_suppressSeedOnce){_suppressSeedOnce=false;return "";}return (s&&s.seed)?s.seed:"";}
 function sum(a){return a.reduce(function(s,n){return s+n;},0);}
 function mean(a){return sum(a)/a.length;}
 function sorted(a){return a.slice().sort(function(x,y){return x-y;});}
@@ -4542,7 +4584,7 @@ function renderIndicators(){
 function readInds(){
   state.inds=Array.prototype.map.call(document.querySelectorAll(".indChk:checked"),function(cb){return cb.value;});
 }
-function updatePoolInfo(){
+function updatePoolInfo(){refreshFace();
   var p=poolFor(state.units,state.inds,state.midCap);
   var byL={1:0,2:0,3:0};p.forEach(function(e){byL[e.level]++;});
   $("poolInfo").textContent=p.length?"Question bank for this selection: "+p.length+" question templates (Level 1: "+byL[1]+", Level 2: "+byL[2]+", Level 3: "+byL[3]+"). Generators make a fresh question every draw.":
@@ -4559,6 +4601,8 @@ function settings(){
     wsMc:($("wsMcIn")?parseFloat($("wsMcIn").value):0),
     wsCr:($("wsCrIn")?parseFloat($("wsCrIn").value):2.3),
     chk:($("chkIn")?$("chkIn").value:"each"),
+    timer:($("timerChk")?$("timerChk").checked:false),
+    seed:($("seedIn")?$("seedIn").value.trim():""),
     mix:[+$("lv1").value||0,+$("lv2").value||0,+$("lv3").value||0]};
 }
 function tags(q){
@@ -4566,12 +4610,107 @@ function tags(q){
   return '<span class="tag">Unit '+e.unit+'</span> <span class="tag ind">'+e.indicators.join(", ")+'</span> <span class="tag lvl">Level '+e.level+'</span>';
 }
 var current=null,checkedCount=0,correctCount=0,checkMode="each",endGraded=false;
+/* ===== Senior scaffolding features (ported from the Math 9 app) ===== */
+var setResults={};
+var REF_HTML={
+1:"<b>Operations:</b> \\((f+g)(x)=f(x)+g(x)\\), \\((f-g)(x)=f(x)-g(x)\\), \\((fg)(x)=f(x)\\cdot g(x)\\), and \\((f/g)(x)=\\frac{f(x)}{g(x)}\\) wherever \\(g(x)\\ne 0\\).<br><b>Composition:</b> \\((f\\circ g)(x)=f(g(x))\\): work from the inside out. In general \\(f\\circ g\\ne g\\circ f\\).<br><b>Domains:</b> exclude every value that makes a denominator zero or the expression under an even root negative. The domain of a composite also excludes inputs whose inside value falls outside the domain of the outside function.<br><b>Decomposing:</b> to split a composite, name the inside expression first: if \\(h(x)=f(g(x))\\), then \\(g\\) is the function applied to \\(x\\) first.",
+2:"<b>Limit laws:</b> the limit of a sum, difference, product, constant multiple, quotient (denominator limit not zero) or power is the same operation applied to the separate limits.<br><b>Existence:</b> \\(\\lim_{x\\to a}f(x)\\) exists only when the left-hand and right-hand limits are equal.<br><b>Techniques:</b> try direct substitution first. If it gives \\(\\frac{0}{0}\\), factor and cancel, or multiply by the conjugate. As \\(x\\to\\infty\\), \\(\\frac{1}{x}\\to 0\\); for rational functions, compare the degrees of the numerator and denominator.<br><b>Continuity at \\(a\\):</b> \\(f(a)\\) is defined, the limit exists, and the limit equals \\(f(a)\\). Breaks are removable (a hole), a jump, or infinite (a vertical asymptote).",
+3:"<b>Non-permissible values</b> are the zeros of the denominator. A factor that cancels leaves a <b>hole</b> at that \\(x\\) value, with the \\(y\\) value taken from the simplified function; a factor that remains gives a <b>vertical asymptote</b>.<br><b>Horizontal asymptote:</b> if the numerator degree is less than the denominator degree, \\(y=0\\); if the degrees are equal, \\(y\\) is the ratio of the leading coefficients; if the numerator degree is greater, there is no horizontal asymptote (an oblique asymptote is possible when the numerator degree is exactly one more).<br><b>Near a non-permissible value:</b> use a sign analysis on each side to say whether the graph rises to \\(+\\infty\\) or falls to \\(-\\infty\\).",
+4:"<b>Definition:</b> \\(f'(a)=\\lim_{h\\to 0}\\frac{f(a+h)-f(a)}{h}\\) and \\(f'(x)=\\lim_{h\\to 0}\\frac{f(x+h)-f(x)}{h}\\).<br><b>Rules:</b> \\(\\frac{d}{dx}x^{n}=nx^{n-1}\\); constant multiple and sum rules apply term by term; product rule \\((fg)'=f'g+fg'\\); quotient rule \\(\\left(\\frac{f}{g}\\right)'=\\frac{f'g-fg'}{g^{2}}\\); chain rule \\(\\frac{d}{dx}f(g(x))=f'(g(x))\\cdot g'(x)\\).<br><b>Tangent and normal:</b> the tangent at \\(a\\) is \\(y-f(a)=f'(a)(x-a)\\); the normal has the negative reciprocal slope.<br><b>Rates:</b> average rate of change is \\(\\frac{f(b)-f(a)}{b-a}\\); the instantaneous rate is the derivative. For position \\(s(t)\\), velocity is \\(s'(t)\\) and acceleration is \\(s''(t)\\). A function is not differentiable at a corner, a cusp, a vertical tangent or a discontinuity.",
+5:"<b>Critical numbers</b> are values in the domain where \\(f'(x)=0\\) or \\(f'(x)\\) does not exist.<br><b>First derivative test:</b> \\(f'\\) changing from positive to negative gives a local maximum; negative to positive gives a local minimum.<br><b>Concavity:</b> \\(f''>0\\) means concave up and \\(f''<0\\) means concave down; an inflection point is where the concavity changes.<br><b>Absolute extrema</b> on a closed interval: evaluate the function at the critical numbers and at both endpoints.<br><b>Related rates:</b> write the relation between the quantities, differentiate every term with respect to time \\(t\\), then substitute the known values.<br><b>Optimization:</b> build one equation for the quantity to optimize using the constraint, then check critical numbers and endpoints.",
+6:"<b>Standard limits</b> (angles in radians): \\(\\lim_{x\\to 0}\\frac{\\sin x}{x}=1\\) and \\(\\lim_{x\\to 0}\\frac{1-\\cos x}{x}=0\\).<br><b>Derivatives:</b> \\(\\frac{d}{dx}\\sin x=\\cos x\\); \\(\\frac{d}{dx}\\cos x=-\\sin x\\); \\(\\frac{d}{dx}\\tan x=\\sec^{2}x\\). With the chain rule, \\(\\frac{d}{dx}\\sin u=\\cos u\\cdot u'\\).<br><b>Inverse trigonometric derivatives:</b> \\(\\frac{d}{dx}\\arcsin x=\\frac{1}{\\sqrt{1-x^{2}}}\\); \\(\\frac{d}{dx}\\arccos x=-\\frac{1}{\\sqrt{1-x^{2}}}\\); \\(\\frac{d}{dx}\\arctan x=\\frac{1}{1+x^{2}}\\).<br><b>Inverse function rule:</b> the derivative of an inverse at a point is the reciprocal of the derivative of the original function at the corresponding point.",
+7:"<b>Derivatives:</b> \\(\\frac{d}{dx}e^{x}=e^{x}\\); \\(\\frac{d}{dx}a^{x}=a^{x}\\ln a\\); \\(\\frac{d}{dx}\\ln x=\\frac{1}{x}\\); \\(\\frac{d}{dx}\\log_{a}x=\\frac{1}{x\\ln a}\\). Chain rule forms: \\(\\frac{d}{dx}e^{u}=e^{u}u'\\) and \\(\\frac{d}{dx}\\ln u=\\frac{u'}{u}\\).<br><b>Logarithm laws:</b> \\(\\ln(ab)=\\ln a+\\ln b\\); \\(\\ln\\frac{a}{b}=\\ln a-\\ln b\\); \\(\\ln a^{n}=n\\ln a\\); and \\(e^{\\ln x}=x\\), \\(\\ln e^{x}=x\\).<br><b>Logarithmic differentiation:</b> take \\(\\ln\\) of both sides first when the expression is a product, quotient or power that is hard to differentiate directly.<br><b>Hyperbolic functions:</b> \\(\\sinh x=\\frac{e^{x}-e^{-x}}{2}\\) and \\(\\cosh x=\\frac{e^{x}+e^{-x}}{2}\\), with \\(\\cosh^{2}x-\\sinh^{2}x=1\\), \\(\\frac{d}{dx}\\sinh x=\\cosh x\\) and \\(\\frac{d}{dx}\\cosh x=\\sinh x\\).<br><b>Growth and decay:</b> \\(A=A_{0}e^{kt}\\), with \\(k>0\\) for growth and \\(k<0\\) for decay.",
+8:"<b>Antiderivatives:</b> \\(F\\) is an antiderivative of \\(f\\) when \\(F'=f\\); the general antiderivative adds a constant \\(C\\).<br><b>Basic integrals:</b> \\(\\int x^{n}\\,dx=\\frac{x^{n+1}}{n+1}+C\\) for \\(n\\ne -1\\); \\(\\int\\frac{1}{x}\\,dx=\\ln|x|+C\\); \\(\\int e^{x}\\,dx=e^{x}+C\\); \\(\\int\\sin x\\,dx=-\\cos x+C\\); \\(\\int\\cos x\\,dx=\\sin x+C\\).<br><b>Particular solution:</b> substitute the given condition to solve for \\(C\\).<br><b>Definite integrals:</b> \\(\\int_{a}^{b}f(x)\\,dx=F(b)-F(a)\\). The definite integral gives the signed area under the curve; the area between two curves is \\(\\int_{a}^{b}(\\text{top}-\\text{bottom})\\,dx\\).<br><b>Motion:</b> integrating acceleration gives velocity, and integrating velocity gives position (displacement over an interval)."
+};
+function refPanelsHtml(units){var h="";units.forEach(function(u){if(REF_HTML[u])h+='<details class="refpanel"><summary>Formulas and facts for Unit '+u+": "+UNITS[u]+'</summary><div class="refbody">'+REF_HTML[u]+"</div></details>";});return h;}
+function stopExamTimer(){try{if(window._examTimerInt){clearInterval(window._examTimerInt);window._examTimerInt=null;}}catch(e){}}
+function refreshFace(){
+  var fs=$("faceScope");if(!fs)return;
+  var u=state.units.slice().sort(function(a,b){return a-b;});
+  var scope;
+  if(!u.length)scope="No units chosen yet";
+  else if(u.join(",")==="1,2,3,4")scope="Mid-course review: Units 1 to 4";
+  else if(u.join(",")==="5,6,7,8")scope="End-of-course review: Units 5 to 8";
+  else scope=u.map(function(x){return "Unit "+x+": "+UNITS[x];}).join("; ");
+  if(state.inds.length)scope+=" (indicators: "+state.inds.join(", ")+")";
+  fs.textContent=scope;
+  var n=parseInt($("countIn").value,10)||10;
+  var chk=$("chkIn").value==="each"?"checked as you go":"checked all at the end";
+  var d="You will get "+n+" practice questions, "+chk+", with a worked example and a full worked solution on every question.";
+  if($("seedIn")&&$("seedIn").value.trim())d+=" Your teacher picked these problems, so everyone gets the same set.";
+  $("faceDesc").textContent=d;
+}
+function dealExample(i,n,prev){
+  var q=current[i];if(!q||!q._entry)return null;
+  var e=q._entry;
+  var sd=sessionSeed?(sessionSeed+"|example|"+e.id+"|"+n):"";
+  return withSeed(sd,function(){var c=canonQ(q),pc=prev?canonQ(prev):null,t=null;
+    for(var k=0;k<12;k++){var cand=e.gen();cand._entry=e;t=cand;var cc=canonQ(cand);if(cc!==c&&cc!==pc)break;}
+    return t;});
+}
+function renderExample(i,exq){
+  var box=$("ex"+i);if(!box)return;
+  box._exq=exq;
+  var h='<b>Worked example</b> (same skill, different numbers; not scored)<div class="prompt">'+stepHTML(exq.prompt)+"</div>";
+  if(exq.figure)h+='<div class="fig">'+exq.figure+"</div>";
+  if(exq.type==="mc"){h+='<div class="opts">'+exq.options.map(function(o,j){return "<label>\u25CB "+o+(j===exq.correct?" <b>\u2713 correct</b>":"")+"</label>";}).join("")+"</div>";}
+  else if(exq.type==="num"){h+="<p>Answer: <b>"+fmt(exq.answer)+"</b></p>";}
+  else{h+="<p>Answer: <b>"+esc(exq.answers[0])+"</b></p>";}
+  h+='<div class="sol show"><b>Worked Example Solution:</b> '+stepHTML(exq.solution)+"</div>";
+  h+='<p><button type="button" class="alt" data-exanother="'+i+'">Show another example</button></p>';
+  box.innerHTML=h;box.hidden=false;typesetMath(box);
+  Array.prototype.forEach.call(box.querySelectorAll("[data-exanother]"),function(b){b.addEventListener("click",function(){anotherExample(i);});});
+}
+function setExLabel(i,open){var b=document.querySelector('[data-ex="'+i+'"]');if(b)b.textContent=open?"Hide worked example":"See a worked example";}
+function toggleExample(i){
+  var q=current[i];if(!q||!q._entry)return;
+  var box=$("ex"+i);if(!box)return;
+  if(!box.hidden){box.hidden=true;setExLabel(i,false);return;}
+  if(box._exq){box.hidden=false;setExLabel(i,true);return;}
+  box.dataset.exn="0";
+  var exq=dealExample(i,0,null);
+  if(!exq)return;
+  renderExample(i,exq);setExLabel(i,true);
+}
+function anotherExample(i){
+  var box=$("ex"+i);if(!box||!box._exq)return;
+  var n=(+(box.dataset.exn||0))+1;box.dataset.exn=String(n);
+  var exq=dealExample(i,n,box._exq);
+  if(!exq)return;
+  renderExample(i,exq);setExLabel(i,true);
+}
+function maybeSummary(){
+  var box=$("setSummary");if(!box||!current)return;
+  if(Object.keys(setResults).length<current.length)return;
+  var missed=[];
+  Object.keys(setResults).forEach(function(k){if(!setResults[k].ok)setResults[k].inds.forEach(function(c){if(missed.indexOf(c)<0)missed.push(c);});});
+  var h='<div class="summarybox"><h3>Set complete</h3><p>You scored '+correctCount+" of "+current.length+" on first checks.</p>";
+  if(missed.length){
+    h+="<p><b>Indicators to practise more:</b></p><ul>"+missed.map(function(c){return "<li>"+c+": "+(INDICATORS[c]||"")+"</li>";}).join("")+'</ul><p><button type="button" id="retryMissedBtn">Practice what I missed</button></p>';
+  }else{
+    h+="<p>Every indicator in this set was answered correctly on its first check. Nice work.</p>";
+  }
+  h+="</div>";box.innerHTML=h;
+  var b=$("retryMissedBtn");if(b)b.addEventListener("click",retryMissed);
+}
+function retryMissed(){
+  var missed=[];
+  Object.keys(setResults).forEach(function(k){if(!setResults[k].ok)setResults[k].inds.forEach(function(c){if(missed.indexOf(c)<0)missed.push(c);});});
+  if(!missed.length)return;
+  state.inds=missed;
+  $("countIn").value=Math.min(15,Math.max(5,missed.length*2));
+  _suppressSeedOnce=true;
+  renderIndicators();updatePoolInfo();startOnline();
+}
+
 function startOnline(){
-  var s=settings();var res=drawSet(s.units,s.inds,s.count,s.mix,s.order,s.midCap);
-  current=res.items;checkedCount=0;correctCount=0;checkMode=(s.chk==="end")?"end":"each";endGraded=false;
+  stopExamTimer();
+  var s=settings();var _sd=activeSeed(s);sessionSeed=_sd;
+  var res=withSeed(_sd,function(){return drawSet(s.units,s.inds,s.count,s.mix,s.order,s.midCap);});
+  current=res.items;checkedCount=0;correctCount=0;checkMode=(s.chk==="end")?"end":"each";endGraded=false;setResults={};
   var box=$("session");
   if(!current.length){box.innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above ,  or use the Mid-course review or Final review button ,  then start again.")+'</p></div>';return;}
-  var html='<div class="card'+(checkMode==="end"?" endmode":"")+'"><h2>Online practice</h2>'+(res.thin?'<p class="thinNote">Heads up: the question bank is still thin for this selection, so this set repeats practice on the same question shape (with new numbers) because there are not yet enough different questions to fill it.</p>':"")+'<p class="scoreline" id="score"></p>';
+  var html='<div class="card'+(checkMode==="end"?" endmode":"")+'"><h2>Online practice</h2>'+refPanelsHtml(s.units)+(res.thin?'<p class="thinNote">Heads up: the question bank is still thin for this selection, so this set repeats practice on the same question shape (with new numbers) because there are not yet enough different questions to fill it.</p>':"")+'<p class="scoreline" id="score"></p>';
   current.forEach(function(q,i){
     html+='<div class="q" id="q'+i+'"><div class="qhead"><b>Question '+(i+1)+'</b> '+tags(q)+'</div><div class="prompt">'+stepHTML(q.prompt)+'</div>';
     if(q.figure)html+='<div class="fig">'+q.figure+'</div>';
@@ -4580,21 +4719,24 @@ function startOnline(){
     }else{
       html+='<p>Your answer: <input type="text" class="ans" id="ans'+i+'" autocomplete="off"></p>';
     }
-    html+='<p><button type="button" data-check="'+i+'">Check</button> <button type="button" class="alt" data-sol="'+i+'">Show worked solution</button></p><div class="fb" id="fb'+i+'"></div><div class="sol" id="sol'+i+'"><b>Worked solution:</b> '+stepHTML(q.solution)+'</div>'
+    html+='<p><button type="button" data-check="'+i+'">Check</button> <button type="button" class="alt" data-ex="'+i+'">See a worked example</button> <button type="button" class="alt" data-sol="'+i+'">Show worked solution</button></p><div class="fb" id="fb'+i+'"></div><div class="exbox" id="ex'+i+'" hidden></div><div class="sol" id="sol'+i+'"><b>Worked solution:</b> '+stepHTML(q.solution)+'</div>'
       +'<p class="reprow"><button type="button" class="alt repbtn" data-rep="'+i+'">Report a problem</button></p>'
       +'<div class="rep" id="rep'+i+'"><label>What is the problem?<select id="reptype'+i+'"><option>The question looks wrong or unclear</option><option>The worked solution doesn\'t work out</option><option>My answer was marked wrong but should be right</option><option>Something else is out of place</option></select></label>'
       +'<label>Anything you noticed (optional)<textarea id="repnote'+i+'" rows="3"></textarea></label>'
       +(REPORT_FORM.url?'<p><button type="button" data-repsend="'+i+'">Send report</button> <button type="button" class="alt" data-repcopy="'+i+'">Copy report text instead</button></p>':'<p><button type="button" data-repcopy="'+i+'">Copy report text</button></p>')
       +'<div class="repstat" id="repstat'+i+'"></div></div></div>';
   });
-  html+='<p>'+(checkMode==="end"?'<button type="button" id="gradeBtn">Check all my answers</button> ':"")+'<button type="button" id="againBtn">New set of questions</button></p></div>';
+  html+='<p>'+(checkMode==="end"?'<button type="button" id="gradeBtn">Check all my answers</button> ':"")+'<button type="button" id="againBtn">New set of questions</button></p><p><button type="button" class="alt" data-kahoot="1">Download for Kahoot</button> <button type="button" class="alt" data-blooket="1">Download for Blooket</button></p><p class="hint" id="gameStatus"></p><div id="setSummary"></div></div>';
   box.innerHTML=html;updateScore();typesetMath(box);
   Array.prototype.forEach.call(box.querySelectorAll("[data-check]"),function(b){b.addEventListener("click",function(){checkQ(+b.getAttribute("data-check"));});});
   Array.prototype.forEach.call(box.querySelectorAll("[data-sol]"),function(b){b.addEventListener("click",function(){$("sol"+b.getAttribute("data-sol")).classList.toggle("show");});});
+  Array.prototype.forEach.call(box.querySelectorAll("[data-ex]"),function(b){b.addEventListener("click",function(){toggleExample(+b.getAttribute("data-ex"));});});
   Array.prototype.forEach.call(box.querySelectorAll("[data-rep]"),function(b){b.addEventListener("click",function(){$("rep"+b.getAttribute("data-rep")).classList.toggle("show");});});
   Array.prototype.forEach.call(box.querySelectorAll("[data-repsend]"),function(b){b.addEventListener("click",function(){openReport(+b.getAttribute("data-repsend"));});});
   Array.prototype.forEach.call(box.querySelectorAll("[data-repcopy]"),function(b){b.addEventListener("click",function(){copyReport(+b.getAttribute("data-repcopy"));});});
   $("againBtn").addEventListener("click",startOnline);
+  Array.prototype.forEach.call(box.querySelectorAll("[data-kahoot]"),function(b){b.addEventListener("click",function(){exportGame("kahoot",current,$("gameStatus"));});});
+  Array.prototype.forEach.call(box.querySelectorAll("[data-blooket]"),function(b){b.addEventListener("click",function(){exportGame("blooket",current,$("gameStatus"));});});
   if($("gradeBtn"))$("gradeBtn").addEventListener("click",gradeAll);
   box.scrollIntoView({behavior:"smooth"});
 }
@@ -4655,7 +4797,7 @@ function checkQ(i){
   else if(q.type==="num"){var v=parseFloat(($("ans"+i).value||"").replace(/[$,%\u00B0]/g,""));if(isNaN(v)){$("fb"+i).innerHTML='<span class="notyet">Type a number first.</span>';$("fb"+i).classList.add("show");return;}ok=Math.abs(v-q.answer)<=q.tol;}
   else{var t=($("ans"+i).value||"").trim().toLowerCase().replace(/\s+/g," ");ok=q.answers.some(function(a){return t===a.replace(/\s+/g," ");});}
   var fb=$("fb"+i);fb.classList.add("show");
-  if(!fb.dataset.done){checkedCount++;if(ok)correctCount++;fb.dataset.done="1";updateScore();}
+  if(!fb.dataset.done){checkedCount++;if(ok)correctCount++;fb.dataset.done="1";setResults[i]={ok:ok,inds:(q._entry?q._entry.indicators.slice():[])};updateScore();maybeSummary();}
   fb.innerHTML=ok?'<span class="ok">Correct.</span> Nice work.':(checkMode==="end"?'<span class="notyet">Not quite.</span> The worked solution is open below.':'<span class="notyet">Not quite.</span> Try again, or open the worked solution.');
   if(ok)$("sol"+i).classList.remove("show");
 }
@@ -4670,11 +4812,12 @@ function gradeAll(){
     else if(q.type==="num")answered=!isNaN(parseFloat(($("ans"+i).value||"").replace(/[$,%\u00B0]/g,"")));
     else answered=(($("ans"+i).value||"").trim()!=="");
     if(!answered){
-      fb.classList.add("show");fb.dataset.done="1";checkedCount++;
+      fb.classList.add("show");fb.dataset.done="1";checkedCount++;setResults[i]={ok:false,inds:(q._entry?q._entry.indicators.slice():[])};
       fb.innerHTML='<span class="notyet">No answer given.</span> The worked solution is open below.';
     }else checkQ(i);
   }
   for(var j=0;j<current.length;j++)$("sol"+j).classList.add("show");
+  maybeSummary();
   updateScore();
   var b=$("gradeBtn");if(b){b.disabled=true;b.textContent="Answers checked";}
   $("score").scrollIntoView({behavior:"smooth",block:"center"});
@@ -4768,8 +4911,9 @@ function recGrid(items,withKey){
   return h+'</tbody></table>';
 }
 function startExam(){
-  var s=settings();
-  var ex=composeExam(s.units,s.inds);
+  stopExamTimer();
+  var s=settings();var _sd=activeSeed(s);sessionSeed=_sd;
+  var ex=withSeed(_sd,function(){return composeExam(s.units,s.inds);});
   if(!ex||(!ex.srItems.length&&!ex.crItems.length)){$("session").innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above, or use the Mid-course review or Final review button, then start again.")+'</p></div>';return;}
   var single=s.units.length===1;
   var wsCrF=(typeof s.wsCr==="number"&&!isNaN(s.wsCr))?s.wsCr:2.3;
@@ -4813,6 +4957,7 @@ function startExam(){
     +'<p class="hint" id="copyStatus" role="status"></p>'
     +'<div class="sheetPrev" id="sheetPrev">'+paper+'<div class="keybreak">'+key+'</div></div></div>';
   typesetMath($("sheetPrev"));typesetMath($("printArea"));
+  if(s.timer){var tc=document.createElement("div");tc.className="timerbar";tc.id="examTimer";var _card=$("session").querySelector(".card");if(_card)_card.insertBefore(tc,_card.firstChild);var _t0=Date.now();var _tick=function(){var sec=Math.floor((Date.now()-_t0)/1000);var mm=Math.floor(sec/60),ss=sec%60;tc.textContent="Time so far: "+mm+":"+(ss<10?"0":"")+ss+"  \u00B7  This timer is just a guide.";};_tick();window._examTimerInt=setInterval(_tick,1000);}
   $("editExamBtn").addEventListener("click",function(){
     var prev=$("sheetPrev"),on=prev.getAttribute("contenteditable")==="true";
     if(on){prev.removeAttribute("contenteditable");prev.classList.remove("editing");$("editExamBtn").textContent="Edit the exam";$("editHint").hidden=true;}
@@ -4824,9 +4969,10 @@ function startExam(){
   $("printKeyBtn").addEventListener("click",function(){var pp=previewParts();if(pp){$("printArea").innerHTML=pp.key;}else{$("printArea").innerHTML=key;typesetMath($("printArea"));}window.print();});
 }
 function startSheet(){
-  var s=settings();
+  stopExamTimer();
+  var s=settings();var _sd=activeSeed(s);sessionSeed=_sd;
   if(s.mcCount+s.ncCount<1){$("session").innerHTML='<div class="card"><p>Set the Multiple choice and Constructed Response counts to at least one question in total, then make the sheet again.</p></div>';return;}
-  var res=drawSheetSet(s);
+  var res=withSeed(_sd,function(){return drawSheetSet(s);});
   if(!res.items.length){$("session").innerHTML='<div class="card"><p>'+(s.units.length?"No questions match that selection yet.":"Choose at least one unit above ,  or use the Mid-course review or Final review button ,  then start again.")+'</p></div>';return;}
   var unitNames=s.units.map(function(u){return "Unit "+u;}).join(", ");
   wordName="Math 3208 Practice Sheet.docx";
@@ -5363,6 +5509,183 @@ function makeWordDocx(rootEl,st){
   ]);
 }
 var wordName="Math 3208 Practice Sheet.docx";
+/* ===== Kahoot and Blooket exports =====
+   Formats verified November 7, 2026 against the platforms' own help
+   centers. Kahoot (support.kahoot.com, "How to import questions from a
+   spreadsheet to your kahoot", updated November 6, 2026; header text read
+   from the template screenshot in that article): .xlsx only; header row
+   "Question - 120 max length", "Answer 1 - 75 max length", "Answer 2 - 75
+   max length", "Answer 3 - 75 max length", "Answer 4 - 75 max length",
+   "Time limit (sec)", "Correct answer(s)"; questions limited to 120
+   characters, answers to 75; the time limit must be one of 5, 10, 20, 30,
+   60, 120; correct answers are listed by number. Blooket
+   (help.blooket.com, "How to Import Questions from a Spreadsheet into
+   Blooket"; header text read from the template screenshot in that
+   article): .csv; header row "Question #", "Question Text", "Answer 1",
+   "Answer 2", "Answer 3 (Optional)", "Answer 4 (Optional)", "Time Limit
+   (sec) (Max: 300 Seconds)", "Correct Answer(s) (Only Include Answer #)";
+   correct answers by number only; time limit up to 300 seconds.
+   Time limits by question level, the same on both platforms: Level 1 = 20
+   seconds, Level 2 = 30, Level 3 = 60 (all inside Kahoot's allowed set).
+   Only multiple choice questions export; constructed-response questions
+   are counted and reported in the status line, never sent. */
+var GAME_TIME={1:20,2:30,3:60};
+var SUPMAP={"0":"\u2070","1":"\u00B9","2":"\u00B2","3":"\u00B3","4":"\u2074","5":"\u2075","6":"\u2076","7":"\u2077","8":"\u2078","9":"\u2079","-":"\u207B","+":"\u207A","n":"\u207F","x":"\u02E3"};
+function texGroup(s,i){
+  var depth=0;
+  for(var j=i;j<s.length;j++){
+    if(s[j]==="{")depth++;
+    else if(s[j]==="}"){depth--;if(depth===0)return [s.slice(i+1,j),j+1];}
+  }
+  return [s.slice(i+1),s.length];
+}
+function texArg(s,i){
+  if(s[i]==="{")return texGroup(s,i);
+  var m=/^\\[a-zA-Z]+/.exec(s.slice(i));
+  if(m)return [m[0],i+m[0].length];
+  return [s[i]||"",i+1];
+}
+function texToPlain(s){
+  var out="",i=0;
+  while(i<s.length){
+    var ch=s[i];
+    if(ch==="\\"){
+      var m=/^\\([a-zA-Z]+)/.exec(s.slice(i));
+      if(m){
+        var cmd=m[1];i+=m[0].length;
+        if(cmd==="frac"||cmd==="dfrac"||cmd==="tfrac"){
+          var g1=texArg(s,i);i=g1[1];var g2=texArg(s,i);i=g2[1];
+          var num=texToPlain(g1[0]),den=texToPlain(g2[0]);
+          var simple=/^[0-9a-zA-Z.]+$/.test(num)&&/^[0-9a-zA-Z.]+$/.test(den);
+          out+=simple?(num+"/"+den):("("+num+")/("+den+")");
+          continue;
+        }
+        if(cmd==="sqrt"){var gs=texArg(s,i);i=gs[1];var inner=texToPlain(gs[0]);out+=(/^[0-9.]+$/.test(inner)?"\u221A"+inner:"\u221A("+inner+")");continue;}
+        if(cmd==="text"||cmd==="mathrm"||cmd==="operatorname"){var gt=texArg(s,i);i=gt[1];out+=gt[0];continue;}
+        if(cmd==="overline"){var go=texArg(s,i);i=go[1];out+=texToPlain(go[0])+"\u0305";continue;}
+        if(cmd==="begin"||cmd==="end"){var gb=texArg(s,i);i=gb[1];continue;}
+        var sym={"times":"\u00D7","div":"\u00F7","pi":"\u03C0","ne":"\u2260","neq":"\u2260","le":"\u2264","leq":"\u2264","ge":"\u2265","geq":"\u2265","cdot":"\u00B7","pm":"\u00B1","approx":"\u2248","infty":"\u221E","alpha":"\u03B1","beta":"\u03B2","theta":"\u03B8","Delta":"\u0394"}[cmd];
+        if(sym!==undefined){out+=sym;continue;}
+        continue;
+      }
+      var nx=s[i+1];
+      if(nx==="\\"){out+=" ";i+=2;continue;}
+      if(nx==="&"){out+="&";i+=2;continue;}
+      if(nx){out+=nx;i+=2;continue;}
+      i++;continue;
+    }
+    if(ch==="^"){
+      var sup;
+      if(s[i+1]==="{"){var gh=texGroup(s,i+1);sup=gh[0];i=gh[1];}
+      else{sup=s[i+1]||"";i+=2;}
+      var mapped="",okMap=sup.length>0;
+      for(var k=0;k<sup.length;k++){var sm=SUPMAP[sup[k]];if(!sm){okMap=false;break;}mapped+=sm;}
+      out+=okMap?mapped:("^("+texToPlain(sup)+")");
+      continue;
+    }
+    if(ch==="_"){
+      var sub;
+      if(s[i+1]==="{"){var gu=texGroup(s,i+1);sub=gu[0];i=gu[1];}
+      else{sub=s[i+1]||"";i+=2;}
+      out+=texToPlain(sub);
+      continue;
+    }
+    if(ch==="{"){var gc=texGroup(s,i);out+=texToPlain(gc[0]);i=gc[1];continue;}
+    if(ch==="}"){i++;continue;}
+    if(ch==="&"){i++;continue;}
+    if(ch==="~"){out+=" ";i++;continue;}
+    out+=ch;i++;
+  }
+  return out;
+}
+function exportText(h){
+  var s=String(h==null?"":h);
+  s=s.replace(/\\\[([\s\S]*?)\\\]/g,function(_,t){return " "+texToPlain(t)+" ";});
+  s=s.replace(/\\\(([\s\S]*?)\\\)/g,function(_,t){return " "+texToPlain(t)+" ";});
+  s=s.replace(/<br\s*\/?>/gi," ").replace(/<[^>]+>/g," ");
+  s=s.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,"\"").replace(/&#39;|&apos;/g,"'").replace(/&nbsp;/g," ");
+  return s.replace(/\s+/g," ").trim();
+}
+function gameRows(items){
+  var rows=[],leftOut=0;
+  items.forEach(function(q){
+    if(!q||q.type!=="mc"||!q.options||q.options.length!==4){leftOut++;return;}
+    rows.push({q:exportText(q.prompt),a:q.options.map(exportText),correct:q.correct+1,time:GAME_TIME[q._entry?q._entry.level:2]||30});
+  });
+  return {rows:rows,leftOut:leftOut};
+}
+function xmlEsc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function colName(n){var s="";n++;while(n>0){var r=(n-1)%26;s=String.fromCharCode(65+r)+s;n=Math.floor((n-1)/26);}return s;}
+function buildKahootXlsx(items){
+  var g=gameRows(items);
+  var head=["Question - 120 max length","Answer 1 - 75 max length","Answer 2 - 75 max length","Answer 3 - 75 max length","Answer 4 - 75 max length","Time limit (sec)","Correct answer(s)"];
+  var all=[head].concat(g.rows.map(function(r){return [r.q,r.a[0],r.a[1],r.a[2],r.a[3],r.time,r.correct];}));
+  var overQ=0,overA=0;
+  g.rows.forEach(function(r){if(r.q.length>120)overQ++;if(r.a.some(function(x){return x.length>75;}))overA++;});
+  var body="";
+  all.forEach(function(row,ri){
+    body+="<row r=\""+(ri+1)+"\">";
+    row.forEach(function(v,ci){
+      var ref=colName(ci)+(ri+1);
+      if(typeof v==="number")body+="<c r=\""+ref+"\"><v>"+v+"</v></c>";
+      else body+="<c r=\""+ref+"\" t=\"inlineStr\"><is><t xml:space=\"preserve\">"+xmlEsc(v)+"</t></is></c>";
+    });
+    body+="</row>";
+  });
+  var sheet="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData>"+body+"</sheetData></worksheet>";
+  var wb="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"><sheets><sheet name=\"Sheet1\" sheetId=\"1\" r:id=\"rId1\"/></sheets></workbook>";
+  var ct="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Override PartName=\"/xl/workbook.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml\"/><Override PartName=\"/xl/worksheets/sheet1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/></Types>";
+  var rels="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"xl/workbook.xml\"/></Relationships>";
+  var wbrels="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet1.xml\"/></Relationships>";
+  var enc=new TextEncoder();
+  var bytes=zipStore([
+    {name:"[Content_Types].xml",data:enc.encode(ct)},
+    {name:"_rels/.rels",data:enc.encode(rels)},
+    {name:"xl/workbook.xml",data:enc.encode(wb)},
+    {name:"xl/_rels/workbook.xml.rels",data:enc.encode(wbrels)},
+    {name:"xl/worksheets/sheet1.xml",data:enc.encode(sheet)}
+  ]);
+  return {bytes:bytes,count:g.rows.length,leftOut:g.leftOut,overQ:overQ,overA:overA};
+}
+function csvCell(v){var s=String(v);return /[",\n]/.test(s)?("\""+s.replace(/"/g,"\"\"")+"\""):s;}
+function buildBlooketCsv(items){
+  var g=gameRows(items);
+  var head=["Question #","Question Text","Answer 1","Answer 2","Answer 3 (Optional)","Answer 4 (Optional)","Time Limit (sec) (Max: 300 Seconds)","Correct Answer(s) (Only Include Answer #)"];
+  var lines=[head.map(csvCell).join(",")];
+  g.rows.forEach(function(r,i){lines.push([i+1,r.q,r.a[0],r.a[1],r.a[2],r.a[3],r.time,r.correct].map(csvCell).join(","));});
+  return {text:lines.join("\r\n")+"\r\n",count:g.rows.length,leftOut:g.leftOut};
+}
+function downloadBlob(name,blob){
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){if(a.parentNode)a.parentNode.removeChild(a);URL.revokeObjectURL(url);},400);
+}
+function exportGame(kind,items,statusEl,leftOutOverride){
+  try{
+    if(kind==="kahoot"){
+      var k=buildKahootXlsx(items);
+      if(!k.count){if(statusEl)statusEl.textContent="This set has no multiple choice questions to export.";return;}
+      downloadBlob("Math 3208 for Kahoot.xlsx",new Blob([k.bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+      var lo=(typeof leftOutOverride==="number")?leftOutOverride:k.leftOut;
+      var t="Kahoot file downloaded with "+k.count+" questions.";
+      if(lo)t+=" "+lo+" constructed-response question"+(lo===1?" was":"s were")+" left out, because Kahoot only takes multiple choice.";
+      var extra="";
+      if(k.overQ)extra+=k.overQ+" question"+(k.overQ===1?" is":"s are")+" longer than Kahoot's 120-character question limit; Kahoot will flag "+(k.overQ===1?"it":"them")+" at import, so shorten "+(k.overQ===1?"that row":"those rows")+" in the spreadsheet first.";
+      if(k.overA)extra+=(extra?" ":"")+k.overA+" question"+(k.overA===1?" has an answer":"s have answers")+" longer than Kahoot's 75-character answer limit; shorten "+(k.overA===1?"it":"them")+" in the spreadsheet first.";
+      if(extra)t+=" "+extra;
+      if(statusEl)statusEl.textContent=t;
+    }else{
+      var b=buildBlooketCsv(items);
+      if(!b.count){if(statusEl)statusEl.textContent="This set has no multiple choice questions to export.";return;}
+      downloadBlob("Math 3208 for Blooket.csv",new Blob(["\ufeff"+b.text],{type:"text/csv"}));
+      var lo2=(typeof leftOutOverride==="number")?leftOutOverride:b.leftOut;
+      var t2="Blooket file downloaded with "+b.count+" questions.";
+      if(lo2)t2+=" "+lo2+" constructed-response question"+(lo2===1?" was":"s were")+" left out, because Blooket only takes multiple choice.";
+      if(statusEl)statusEl.textContent=t2;
+    }
+  }catch(e){if(statusEl)statusEl.textContent="The export did not finish: "+e.message;}
+}
 function downloadWordFile(statusEl){
   var prev=$("sheetPrev");
   if(!prev)return;
@@ -5392,6 +5715,8 @@ function settingsToURL(){
   if(s.wsMc!==0)p.set("wsmc",s.wsMc);
   if(s.wsCr!==2.3)p.set("wscr",s.wsCr);
   if(s.chk==="end")p.set("chk","end");
+  if(s.timer)p.set("tm","1");
+  if(s.seed)p.set("seed",s.seed);
   if(s.mix.join()!=="20,60,20")p.set("levels",s.mix.join(","));
   return location.pathname+"?"+p.toString();
 }
@@ -5411,6 +5736,8 @@ function applyURL(){
   if(p.get("wscr")!==null&&$("wsCrIn"))$("wsCrIn").value=p.get("wscr");
   else if(p.get("ws")!==null&&$("wsCrIn"))$("wsCrIn").value=p.get("ws");
   if(p.get("chk")==="end"&&$("chkIn"))$("chkIn").value="end";
+  if(p.get("tm")==="1"&&$("timerChk"))$("timerChk").checked=true;
+  if(p.get("seed")&&$("seedIn"))$("seedIn").value=p.get("seed");
   if(p.get("levels")){var lv=p.get("levels").split(",").map(Number);if(lv.length===3){$("lv1").value=lv[0];$("lv2").value=lv[1];$("lv3").value=lv[2];$("advBox").open=true;}}
   return touched;
 }
@@ -5418,6 +5745,11 @@ function setPreset(units,cap,mix){state.units=units;state.inds=[];state.midCap=!
 $("presetMid").addEventListener("click",function(){setPreset([1,2,3,4],false,[20,60,20]);});
 $("presetFinal").addEventListener("click",function(){setPreset([5,6,7,8],false,[20,60,20]);});
 $("presetAll").addEventListener("click",function(){setPreset([1,2,3,4,5,6,7,8,9]);});
+$("faceStart").addEventListener("click",function(){if(!settings().units.length){var bb=$("builderBox");bb.open=true;bb.scrollIntoView({behavior:"smooth"});return;}startOnline();});
+$("seedGen").addEventListener("click",function(){var words=["otter","maple","harbour","compass","lantern","meadow","pebble","willow","falcon","juniper","birch","cove"];$("seedIn").value=pick(words)+"-"+ri(10,99);refreshFace();});
+$("seedIn").addEventListener("input",refreshFace);
+$("countIn").addEventListener("input",refreshFace);
+$("chkIn").addEventListener("change",refreshFace);
 $("goOnline").addEventListener("click",startOnline);
 $("goSheet").addEventListener("click",startSheet);
 $("goExam").addEventListener("click",startExam);
