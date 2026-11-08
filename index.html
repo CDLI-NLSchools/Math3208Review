@@ -4617,7 +4617,11 @@ var REF_HTML={
 6:"<b>Pythagorean Identities:</b> \\(\\sin^{2}\\theta+\\cos^{2}\\theta=1\\); \\(\\cot^{2}\\theta+1=\\csc^{2}\\theta\\); \\(1+\\tan^{2}\\theta=\\sec^{2}\\theta\\).",
 8:"<b>Summation Formulae:</b> \\(\\sum_{i=1}^{n}i=\\dfrac{n(n+1)}{2}\\); \\(\\sum_{i=1}^{n}i^{2}=\\dfrac{n(n+1)(2n+1)}{6}\\); \\(\\sum_{i=1}^{n}i^{3}=\\left[\\dfrac{n(n+1)}{2}\\right]^{2}\\)."
 };
-function refPanelsHtml(units){var h="";units.forEach(function(u){if(REF_HTML[u])h+='<details class="refpanel"><summary>Formulas and facts for Unit '+u+": "+UNITS[u]+'</summary><div class="refbody">'+REF_HTML[u]+"</div></details>";});return h;}
+/* Always-on reference panels: shown regardless of unit selection (Jason, November 8, 2026). These carry the Math 3208 formula sheet items that belong to no single unit (pre-calculus material): the quadratic formula, the sine and cosine laws, and the double angle formulae, each as printed on the official sheet. Same pattern as the Quadratic Formula panels in the 3200 and 3201 apps. */
+var REF_ALWAYS='<details class="refpanel"><summary>Quadratic Formula</summary><div class="refbody">\\(x=\\dfrac{-b\\pm\\sqrt{b^{2}-4ac}}{2a}\\)</div></details>'
++'<details class="refpanel"><summary>Trigonometry</summary><div class="refbody"><b>Sine law:</b> \\(\\dfrac{\\sin A}{a}=\\dfrac{\\sin B}{b}=\\dfrac{\\sin C}{c}\\); <b>Cosine law:</b> \\(a^{2}=b^{2}+c^{2}-2bc\\cos A\\).</div></details>'
++'<details class="refpanel"><summary>Double Angle Formulae</summary><div class="refbody">\\(\\sin 2x=2\\sin x\\cos x\\); \\(\\cos 2x=\\cos^{2}x-\\sin^{2}x\\); \\(\\cos 2x=2\\cos^{2}x-1\\); \\(\\cos 2x=1-2\\sin^{2}x\\); \\(\\tan 2x=\\dfrac{2\\tan x}{1-\\tan^{2}x}\\).</div></details>';
+function refPanelsHtml(units){var h=REF_ALWAYS;units.forEach(function(u){if(REF_HTML[u])h+='<details class="refpanel"><summary>Formulas and facts for Unit '+u+": "+UNITS[u]+'</summary><div class="refbody">'+REF_HTML[u]+"</div></details>";});return h;}
 function stopExamTimer(){try{if(window._examTimerInt){clearInterval(window._examTimerInt);window._examTimerInt=null;}}catch(e){}}
 function refreshFace(){
   var fs=$("faceScope");if(!fs)return;
