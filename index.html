@@ -1000,7 +1000,7 @@ E("u1-compose-domain-range",1,["1.6"],2,"gen",function(){
       "All real numbers \\(x\\) with \\(x \\le "+r1+"\\) or \\(x \\ge "+r2+"\\)",
       ["All real numbers \\(x\\) with \\("+r1+" \\le x \\le "+r2+"\\)",
        "All real numbers \\(x\\) with \\(x \\ge "+r1+"\\)",
-       "All real numbers \\(x\\), with no restriction"],
+       "All real numbers \\(x\\), with no restriction of any kind"],
       "The composite is \\((f \\circ g)(x) = \\sqrt{"+gq+"}\\), so the inside of the root must be non-negative. The quadratic \\("+gq+"\\) is an upward parabola with zeros \\("+r1+"\\) and \\("+r2+"\\); it is non-negative outside those zeros, not between them. The domain is <b>all real numbers \\(x\\) with \\(x \\le "+r1+"\\) or \\(x \\ge "+r2+"\\)</b>.",
       {r1:r1,r2:r2,shape:shape});
   }
@@ -1556,9 +1556,9 @@ E("u2-continuity-interval",2,["2.17"],3,"gen",function(){
   var piece="\\(f(x) = \\begin{cases} "+u2qPoly([1,0,p])+", & x \\le "+a+" \\\\ \\frac{"+q+"}{"+u2qDen(c)+"}, & "+a+" < x < "+b+" \\\\ "+u2qLin(m,n)+", & x \\ge "+b+" \\end{cases}\\)";
   var key="\\(f\\) is continuous at \\(x = "+a+"\\), has an infinite discontinuity at \\(x = "+c+"\\), and a jump discontinuity at \\(x = "+b+"\\)";
   var ds=[
-    "\\(f\\) is continuous at \\(x = "+a+"\\) and at \\(x = "+b+"\\), and has an infinite discontinuity at \\(x = "+c+"\\)",
-    "\\(f\\) has a discontinuity at each of \\(x = "+a+"\\), \\(x = "+c+"\\), and \\(x = "+b+"\\)",
-    "\\(f\\) is continuous at \\(x = "+a+"\\) and at \\(x = "+b+"\\), and has a removable discontinuity at \\(x = "+c+"\\)"];
+    "\\(f\\) is continuous at \\(x = "+a+"\\) and at \\(x = "+b+"\\), and has an infinite discontinuity at \\(x = "+c+"\\) as its only break",
+    "\\(f\\) has a discontinuity at each of the three points \\(x = "+a+"\\), \\(x = "+c+"\\), and \\(x = "+b+"\\) on the interval",
+    "\\(f\\) is continuous at \\(x = "+a+"\\) and at \\(x = "+b+"\\), and has a removable discontinuity at \\(x = "+c+"\\) as its only break"];
   return mcq("Let "+piece+". Which statement about the continuity of \\(f\\) is correct?",
     key,ds,
     "Check each special point with the definition of continuity. At \\(x = "+a+"\\): the value is \\(f("+a+") = "+V+"\\), and the limit from the right is \\(\\frac{"+q+"}{"+a+" - "+c+"} = "+V+"\\), matching the value from the left branch, so \\(f\\) is continuous there. At \\(x = "+c+"\\): the middle branch has denominator \\(0\\) with numerator \\("+q+"\\), so the values blow up: an infinite discontinuity. At \\(x = "+b+"\\): the limit from the left is \\("+u2qFracRaw(q,b-c)+"\\) but \\(f("+b+") = "+W+"\\), so the graph jumps. Away from these points each branch is continuous on its own interval. The correct statement is the one naming <b>continuity at \\("+a+"\\), an infinite discontinuity at \\("+c+"\\), and a jump at \\("+b+"\\)</b>.",
@@ -1630,30 +1630,30 @@ E("u2-limit-absvalue",2,["2.7","2.8"],3,"gen",function(){
 E("u2-limit-error-analysis",2,["2.7","2.16"],3,"var",varset([
   function(){return mcq("A student is asked for \\(\\lim_{x \\to 2} \\frac{x^2 - 4}{x - 2}\\). The student substitutes \\(x = 2\\), gets \\(\\frac{0}{0}\\), and writes: the limit does not exist, because the expression is undefined at \\(x = 2\\) and \\(\\frac{0}{0}\\) has no value. Which statement best describes the student's work?",
     "The conclusion is wrong: \\(\\frac{0}{0}\\) is an indeterminate form, and factoring the numerator first shows the limit is 4",
-    ["The work is correct: a limit cannot exist at a point where the function itself is undefined",
-     "The only error is arithmetic: substituting \\(x = 2\\) actually gives \\(\\frac{0}{4}\\), which equals 0",
-     "The method is the problem: limits must be read from a graph or a table, never found algebraically"],
+    ["The work is correct: a limit cannot exist at a point where the function itself is undefined, just as it is here",
+     "The only error is arithmetic: substituting \\(x = 2\\) actually gives \\(\\frac{0}{4}\\), which equals 0, so the limit is 0",
+     "The method is the problem: limits must be read from a graph or a table, never found algebraically in this way"],
     "Getting \\(\\frac{0}{0}\\) means the method has stalled, not that the limit fails to exist. Factoring, \\(x^2 - 4 = (x - 2)(x + 2)\\), and cancelling gives \\(x + 2\\), whose limit is \\(4\\). The first statement is the accurate one: <b>the conclusion is wrong, and the limit is 4</b>.",
     {v:1});},
   function(){return mcq("A student checks whether \\(f(x) = \\frac{x^2 - 1}{x - 1}\\) is continuous at \\(x = 1\\). The student factors, cancels, computes the limit \\(2\\), and writes: the limit exists, so the function is continuous at \\(x = 1\\). Which statement best describes the student's work?",
     "Finding the limit is not enough: \\(f(1)\\) does not exist, so \\(f\\) cannot be continuous at \\(x = 1\\) (the discontinuity is removable)",
-    ["The work is correct: the limit exists and equals 2, and that is all continuity at a point requires",
-     "The only error is the limit value: factoring gives \\(x - 1\\), so the limit is 0, not 2",
-     "The error is in the factoring step: \\(x^2 - 1\\) cannot be factored, so the limit does not exist"],
+    ["The work is correct: the limit exists and equals 2, and that is all continuity at a point requires, so nothing more needs checking",
+     "The only error is the limit value: factoring gives \\(x - 1\\) after cancelling, so the limit is 0, not 2",
+     "The error is in the factoring step: \\(x^2 - 1\\) cannot be factored as the student did, so the limit does not exist"],
     "Continuity at a point needs three things: the limit exists, the function value exists, and the two agree. Here \\(f(1)\\) is undefined because the denominator vanishes, so continuity fails no matter what the limit is. The first statement is the accurate one: <b>the limit alone is not enough, and \\(f(1)\\) does not exist</b>.",
     {v:2});},
   function(){return mcq("A student is asked for \\(\\lim_{x \\to \\infty} \\frac{3x^2 + 1}{x^2 - 5}\\). The student keeps only the constant terms and writes: the limit is \\(-\\frac{1}{5}\\). Which statement best describes the student's work?",
     "The wrong terms were kept: as \\(x \\to \\infty\\) the lower terms become negligible, and the leading terms give a limit of 3",
-    ["The work is correct: in a limit at infinity only the constant terms survive, so \\(-\\frac{1}{5}\\) is right",
-     "The only error is the sign: keeping the constant terms gives \\(\\frac{1}{5}\\), not \\(-\\frac{1}{5}\\)",
+    ["The work is correct: in a limit at infinity only the constant terms survive, so \\(-\\frac{1}{5}\\) is right in the end",
+     "The only error is the sign: keeping the constant terms gives \\(\\frac{1}{5}\\), not \\(-\\frac{1}{5}\\), and nothing else is wrong",
      "The method is the problem: a limit at infinity must be found by substituting larger and larger numbers"],
     "In a limit at infinity the highest-degree terms dominate; the constants are the terms that matter least, not the ones that survive. The leading terms give \\(\\frac{3x^2}{x^2} = 3\\). The first statement is the accurate one: <b>the wrong terms were kept, and the limit is 3</b>.",
     {v:3});},
   function(){return mcq("A student writes: since \\(\\frac{1}{0.001} = 1000\\) is large and positive, \\(\\lim_{x \\to 0} \\frac{1}{x} = \\infty\\). Which statement best describes the student's work?",
     "Only the right side was considered: from the left the values are large and negative, so the two-sided limit does not exist",
-    ["The work is correct: the values grow without bound near 0, so the limit is \\(\\infty\\) from both sides",
-     "The only error is arithmetic: \\(\\frac{1}{0.001}\\) equals 100, not 1000, so the reasoning collapses",
-     "The error is using a decimal: limits at a point must be checked with fractions, not decimals"],
+    ["The work is correct: the values grow without bound near 0, so the limit is \\(\\infty\\) from both sides of 0, exactly as the student found",
+     "The only error is arithmetic: \\(\\frac{1}{0.001}\\) equals 100, not 1000, so the reasoning collapses completely",
+     "The error is using a decimal: limits at a point must be checked with fractions, never with a decimal value like this one"],
     "The number \\(0.001\\) tests only the right side of \\(0\\). From the left, values such as \\(\\frac{1}{-0.001} = -1000\\) are large and negative, so the two sides disagree completely. The first statement is the accurate one: <b>only the right side was considered, and the two-sided limit does not exist</b>.",
     {v:4});}
 ]));
@@ -1742,10 +1742,10 @@ E("u3-hole-or-asymptote",3,["1.9"],1,"gen",function(){
   var hole=Math.random()<0.5, k=pick([1,1,2,3]);
   var denS=u3FacS(a)+u3FacS(c);
   var numS=(k>1?""+k:"")+(hole?u3FacS(a)+u3FacS(b):u3FacS(b)+u3FacS(w));
-  var holeOpt="A hole: the factor "+u3FacS(a)+" cancels, so the discontinuity is removable";
+  var holeOpt="A hole: the factor "+u3FacS(a)+" cancels, so the discontinuity is removable there";
   var asymOpt="A vertical asymptote: the denominator is \\(0\\) at that value while the numerator is not";
   var noneOpt="No break at all: the function is defined and continuous at that value";
-  var intOpt="An \\(x\\)-intercept: the graph crosses the horizontal axis at that value";
+  var intOpt="An \\(x\\)-intercept: the graph crosses the horizontal axis at that value, as at every intercept";
   var key, dis, sol;
   if(hole){
     key=holeOpt; dis=[asymOpt, noneOpt, intOpt];
@@ -1948,7 +1948,7 @@ E("u4-secant-tangent",4,["3.1"],1,"var",varset([
     "It touches the graph at \\( (a, f(a)) \\) and has slope equal to the derivative of \\( f \\) at \\( a \\)",
     ["It joins \\( (a, f(a)) \\) to a second point on the graph and has slope equal to an average rate of change",
      "It touches the graph at \\( (a, f(a)) \\) and runs perpendicular to the secant line through that point",
-     "It crosses the graph at exactly two points and has slope equal to the derivative of \\( f \\) at \\( a \\)"],
+     "It crosses the graph at two points and has slope equal to the derivative of \\( f \\) at \\( a \\)"],
     "The tangent line touches the graph at the single point \\( (a, f(a)) \\) and points in the direction of the curve there, so its slope is the instantaneous rate of change \\( f'(a) \\). A line joining two points of the graph is a secant line. The tangent line is <b>the line touching the graph at \\( (a, f(a)) \\) with slope \\( f'(a) \\)</b>.",{});},
   function(){return mcq("The slope of the secant line through \\( (a, f(a)) \\) and \\( (a + h, f(a + h)) \\) is",
     "\\( \\frac{f(a + h) - f(a)}{h} \\)",
@@ -1958,9 +1958,9 @@ E("u4-secant-tangent",4,["3.1"],1,"var",varset([
     "Slope is rise over run. The rise is the change in function values, \\( f(a + h) - f(a) \\), and the run is the change in \\( x \\), from \\( a \\) to \\( a + h \\), which is \\( h \\). The slope of the secant line is <b>\\( \\frac{f(a + h) - f(a)}{h} \\)</b>.",{});},
   function(){return mcq("As \\( h \\) shrinks toward 0, the secant lines through \\( (a, f(a)) \\) and \\( (a + h, f(a + h)) \\) approach",
     "the tangent line at \\( x = a \\), whose slope is \\( f'(a) \\)",
-    ["the normal line at \\( x = a \\), whose slope is the negative reciprocal of \\( f'(a) \\)",
-     "a vertical line through \\( (a, f(a)) \\), whose slope is undefined for every function",
-     "a horizontal line through \\( (a, f(a)) \\), whose slope is 0 for every function"],
+    ["the normal line at \\( x = a \\), whose slope is \\( -\\frac{1}{f'(a)} \\)",
+     "a vertical line, whose slope is undefined",
+     "a horizontal line through \\( (a, f(a)) \\), whose slope is 0"],
     "As \\( h \\) shrinks, the second point slides along the graph toward \\( (a, f(a)) \\) and the secant lines settle onto the line that just touches the curve there. That limiting line is the tangent line, and its slope is the derivative. The secants approach <b>the tangent line at \\( x = a \\), whose slope is \\( f'(a) \\)</b>.",{});}
 ]));
 
@@ -1986,6 +1986,25 @@ E("u4-average-rate",4,["3.2"],1,"gen",function(){
   return numq(prompt, avg, 0.011, sol, {mode:mode});
 });
 
+function balDp(keyStr,ds){
+  function dpOf(s){var m=/^-?\d+(?:\.(\d+))?$/.exec(s);if(!m)return null;return m[1]?m[1].length:0;}
+  function padTo(s,dp){var cur=dpOf(s);if(cur===null||dp<=cur)return s;if(s.indexOf(".")<0)return s+"."+Array(dp+1).join("0");return s+Array(dp-cur+1).join("0");}
+  var all=[keyStr].concat(ds),dps=all.map(dpOf);
+  if(dps.some(function(d){return d===null;}))return ds;
+  function ok(list){var c={};list.forEach(function(d){c[d]=(c[d]||0)+1;});return Object.keys(c).every(function(k){return c[k]!==1;});}
+  if(ok(dps))return ds;
+  var cap=Math.max.apply(null,dps)+2,best=null,bestCost=1e9;
+  for(var a=dps[1];a<=cap;a++)for(var b=dps[2];b<=cap;b++)for(var c2=dps[3];c2<=cap;c2++){
+    var cand=[dps[0],a,b,c2];
+    if(!ok(cand))continue;
+    var cost=(a-dps[1])+(b-dps[2])+(c2-dps[3]);
+    if(cost<bestCost){bestCost=cost;best=[a,b,c2];}
+  }
+  if(!best)return ds;
+  return ds.map(function(s,i){return padTo(s,best[i]);});
+}
+
+
 E("u4-instantaneous-concept",4,["3.3"],1,"gen",function(){
   var hs=pick([[1,0.1,0.01],[1,0.5,0.25],[2,1,0.5],[0.5,0.25,0.05]]);
   var a=ri(1,6), c=pick([-3,-2,-1,0,1,2,3,4]), L=2*a+c, formula=Math.random()<0.5;
@@ -1998,7 +2017,7 @@ E("u4-instantaneous-concept",4,["3.3"],1,"gen",function(){
     prompt="Average rates of change of a function \\( g \\) over intervals that start at \\( x = "+a+" \\) are computed for shrinking widths \\( h \\). When \\( h = "+hs[0]+" \\) the average rate is "+vals[0]+"; when \\( h = "+hs[1]+" \\) it is "+vals[1]+"; when \\( h = "+hs[2]+" \\) it is "+vals[2]+". What is the instantaneous rate of change of \\( g \\) at \\( x = "+a+" \\)?";
   }
   var sol="As the interval shrinks, the average rates of change settle closer and closer to one value: "+vals[0]+", then "+vals[1]+", then "+vals[2]+", closing in on "+L+". The instantaneous rate of change is that limiting value of the average rates. The instantaneous rate of change is <b>"+L+"</b>.";
-  return mcq(prompt, ""+L, [""+fmt(L+hs[2]), ""+fmt(L+hs[0]), ""+(L-1)], sol, {});
+  return mcq(prompt, ""+L, balDp(""+L,[""+fmt(L+hs[2]), ""+fmt(L+hs[0]), ""+(L-1)]), sol, {});
 });
 
 E("u4-notation",4,["3.7"],1,"var",varset([
@@ -2009,7 +2028,7 @@ E("u4-notation",4,["3.7"],1,"var",varset([
   function(){return mcq("For \\( f(x) = x^3 - 2x \\), the symbol \\( f'(2) \\) represents",
     "the value of the derivative of \\( f \\) when \\( x = 2 \\)",
     ["the value of the function \\( f \\) when \\( x = 2 \\), which is 4",
-     "the second derivative of the function \\( f \\) when \\( x = 2 \\)",
+     "the second derivative of \\( f \\) when \\( x = 2 \\)",
      "the value of the derivative of \\( f \\) when \\( x = 2 \\), which is 4"],
     "The prime marks the derivative function, and the 2 is the input at which that derivative is evaluated: \\( f'(x) = 3x^2 - 2 \\), so \\( f'(2) = 10 \\). The value 4 is \\( f(2) \\), the function's own value, not its derivative. The symbol represents <b>the value of the derivative of \\( f \\) when \\( x = 2 \\)</b>.",{});},
   function(){return mcq("Which notation means the same as \\( \\frac{d}{dx}\\left[ g(x) \\right] \\)?",
@@ -2266,14 +2285,14 @@ E("u4-motion",4,["3.17"],2,"gen",function(){
 E("u4-differentiability-why",4,["3.8","3.9"],2,"var",varset([
   function(){return mcq("Consider \\( f(x) = |x - 2| \\). Why is \\( f \\) not differentiable at \\( x = 2 \\)?",
     "The graph has a corner there: the slope from the left is \\( -1 \\) and the slope from the right is \\( 1 \\), so no single tangent slope exists",
-    ["The graph has a cusp there: the slopes from the two sides grow without bound in opposite directions",
-     "The function is not continuous there, and a function must be continuous at a point to be differentiable there",
-     "The tangent line there is vertical: the slope grows without bound, so the derivative is not a finite number"],
+    ["The graph has a cusp there: the slopes from the two sides grow without bound in opposite directions at that point",
+     "The function is not continuous there, and a function must be continuous at a point to be differentiable there, so this alone rules out a derivative",
+     "The tangent line there is vertical: the slope grows without bound, so the derivative is not a finite number at that point"],
     "The graph of \\( |x - 2| \\) is a V with its vertex at \\( x = 2 \\). The function is continuous there, but the left-hand slope is \\( -1 \\) while the right-hand slope is \\( 1 \\); the two one-sided derivatives disagree, which is a corner. The function is not differentiable at \\( x = 2 \\) because <b>the graph has a corner there, with different slopes from the left and from the right</b>.",{});},
   function(){return mcq("Consider \\( f(x) = x^{2/3} \\). Why is \\( f \\) not differentiable at \\( x = 0 \\)?",
     "The graph has a cusp there: the slopes from the two sides grow without bound in opposite directions",
     ["The graph has a corner there: the slope from the left and the slope from the right are two different finite numbers",
-     "The function is not continuous there, and a function must be continuous at a point to be differentiable there",
+     "The function is not continuous there, and a function must be continuous to be differentiable there",
      "The tangent line there is vertical: the slope grows without bound in the same direction from both sides"],
     "The derivative \\( f'(x) = \\frac{2}{3}x^{-1/3} \\) blows up as \\( x \\to 0 \\): it tends to \\( -\\infty \\) from the left and \\( +\\infty \\) from the right. The two branches of the graph meet in a sharp point with oppositely directed tangents, which is a cusp. The function is not differentiable at \\( x = 0 \\) because <b>the graph has a cusp there</b>.",{});},
   function(){return mcq("Consider \\( f(x) = \\begin{cases} x + 1, & x < 1 \\\\ x + 3, & x \\ge 1 \\end{cases} \\). Why is \\( f \\) not differentiable at \\( x = 1 \\)?",
@@ -2290,9 +2309,9 @@ E("u4-differentiability-why",4,["3.8","3.9"],2,"var",varset([
     "The derivative \\( f'(x) = \\frac{1}{3}x^{-2/3} \\) tends to \\( +\\infty \\) as \\( x \\to 0 \\) from both sides. The graph is continuous and smooth through the point, but its tangent line is the vertical line \\( x = 0 \\), which has no finite slope. The function is not differentiable at \\( x = 0 \\) because <b>the tangent line there is vertical</b>.",{});},
   function(){return mcq("Consider \\( f(x) = \\begin{cases} 2x, & x \\le 1 \\\\ x + 1, & x > 1 \\end{cases} \\). Why is \\( f \\) not differentiable at \\( x = 1 \\)?",
     "The graph has a corner there: the slope from the left is \\( 2 \\) and the slope from the right is \\( 1 \\), so no single tangent slope exists",
-    ["The function is not continuous there, and a function must be continuous at a point to be differentiable there",
-     "The graph has a cusp there: the slopes from the two sides grow without bound in opposite directions",
-     "The tangent line there is vertical: the slope grows without bound, so the derivative is not a finite number"],
+    ["The function is not continuous there, and a function must be continuous at a point to be differentiable there, so this alone rules out a derivative",
+     "The graph has a cusp there: the slopes from the two sides grow without bound in opposite directions at that point",
+     "The tangent line there is vertical: the slope grows without bound, so the derivative is not a finite number at that point"],
     "Both pieces give the value 2 at \\( x = 1 \\), so the function is continuous there. But the left piece has slope 2 and the right piece has slope 1, so the graph changes direction abruptly: a corner. The function is not differentiable at \\( x = 1 \\) because <b>the graph has a corner there, with different slopes from the left and from the right</b>.",{});}
 ]));
 
@@ -2685,7 +2704,7 @@ E("u5-rat-second",5,["3.26"],2,"gen",function(){
     var key="There is no point of inflection: the concavity changes across the asymptote \\( x = "+a1+" \\), where \\( f \\) is undefined";
     var prompt="Which statement about points of inflection of \\( f(x) = "+fstr+" \\) is correct?";
     var sol="The second derivative \\( f''(x) = \\frac{2}{("+denS+")^3} \\) is never zero; it only fails to exist at \\( x = "+a1+" \\), where the function itself is undefined and the graph has its vertical asymptote. Concavity does reverse there, from down to up, but a point of inflection must be a point on the graph. The correct statement is: <b>"+key+"</b>.";
-    return mcq(prompt, key, ["There is a point of inflection at \\( x = "+a1+" \\), where the concavity changes from down to up","There is a point of inflection at \\( x = "+h+" \\), the location of the local maximum of \\( f \\)","There is a point of inflection at \\( x = "+(h+2)+" \\), the location of the local minimum of \\( f \\)"], sol, {mode:"infl"});
+    return mcq(prompt, key, ["There is a point of inflection at \\( x = "+a1+" \\), where the concavity changes from down to up across the vertical asymptote","There is a point of inflection at \\( x = "+h+" \\), the location of the local maximum of \\( f \\) on its graph","There is a point of inflection at \\( x = "+(h+2)+" \\), the location of the local minimum of \\( f \\) on its graph"], sol, {mode:"infl"});
   }
   var k=pick([4,9,16,25,36]), r=Math.sqrt(k);
   var fstr="\\frac{x^2 + "+k+"}{x}";
@@ -2705,7 +2724,7 @@ E("u5-rat-second",5,["3.26"],2,"gen",function(){
   var key="There is no point of inflection: the concavity changes across the asymptote \\( x = 0 \\), where \\( f \\) is undefined";
   var prompt="Which statement about points of inflection of \\( f(x) = "+fstr+" \\) is correct?";
   var sol="The second derivative \\( f''(x) = \\frac{"+(2*k)+"}{x^3} \\) is never zero; it only fails to exist at \\( x = 0 \\), where the function itself is undefined and the graph has its vertical asymptote. Concavity does reverse there, from down to up, but a point of inflection must be a point on the graph. The correct statement is: <b>"+key+"</b>.";
-  return mcq(prompt, key, ["There is a point of inflection at \\( x = 0 \\), where the concavity changes from down to up","There is a point of inflection at \\( x = "+r+" \\), the location of the local minimum of \\( f \\)","There is a point of inflection at \\( x = "+(-r)+" \\), the location of the local maximum of \\( f \\)"], sol, {mode:"infl"});
+  return mcq(prompt, key, ["There is a point of inflection at \\( x = 0 \\), where the concavity changes from down to up across the vertical asymptote","There is a point of inflection at \\( x = "+r+" \\), the location of the local minimum of \\( f \\) on its graph","There is a point of inflection at \\( x = "+(-r)+" \\), the location of the local maximum of \\( f \\) on its graph"], sol, {mode:"infl"});
 });
 
 E("u5-rat-arc",5,["3.25","3.26","3.27","3.28"],3,"gen",function(){
@@ -2833,8 +2852,8 @@ E("u5-rr-interpret",5,["3.30"],2,"var",varset([
     "A rate of change carries a direction in its sign: \\( y \\) measures height, so a negative value of \\( \\frac{dy}{dt} \\) means the height is shrinking, at \\( 2.4 \\) m/s. The value \\( 1.8 \\) m/s belongs to the foot, and a height itself cannot be negative here. The negative sign means <b>the top of the ladder is moving down the wall at \\( 2.4 \\) m/s</b>.",{});},
   function(){return mcq("For the same ladder, the foot is pulled away from the wall at a constant rate. As the ladder slides, the value of \\( \\frac{dy}{dt} \\)",
     "changes as the ladder slides, because the ratio \\( x/y \\) in the rate relation changes",
-    ["stays constant, because \\( \\frac{dx}{dt} \\) is constant throughout the motion",
-     "becomes zero when the ladder reaches the ground, then turns positive",
+    ["stays constant, because \\( \\frac{dx}{dt} \\) is constant throughout the motion from start to finish",
+     "becomes zero when the ladder reaches the ground, then turns positive as it keeps sliding",
      "depends only on the length of the ladder and not on its position"],
     "The rate relation is \\( \\frac{dy}{dt} = -\\frac{x}{y} \\frac{dx}{dt} \\). Even with \\( \\frac{dx}{dt} \\) fixed, the factor \\( x/y \\) grows as the ladder flattens, so the top falls faster and faster. The value of \\( \\frac{dy}{dt} \\) <b>changes as the ladder slides, because the ratio \\( x/y \\) in the rate relation changes</b>.",{});},
   function(){return mcq("Water drains from a conical tank. A calculation gives \\( \\frac{dh}{dt} = -0.35 \\), with \\( h \\) in metres and \\( t \\) in minutes. The correct conclusion is",
@@ -2851,9 +2870,9 @@ E("u5-rr-interpret",5,["3.30"],2,"var",varset([
     "Similar triangles amplify the motion: the shadow lengthens as the person walks, and the lengthening adds to the walking speed, so the tip can outpace the person. There is no rule capping a derived rate at the given rate. The result is <b>reasonable: the tip of a shadow can move faster than the person casting it</b>.",{});},
   function(){return mcq("Air is pumped into a spherical balloon, and both \\( \\frac{dV}{dt} \\) and \\( \\frac{dr}{dt} \\) are positive. A classmate claims \\( \\frac{dS}{dt} \\), the rate for the surface area, must be negative because the same air spreads over a larger surface. The claim is",
     "incorrect: \\( S = 4\\pi r^2 \\) grows as \\( r \\) grows, so \\( \\frac{dS}{dt} \\) is positive as well",
-    ["correct: a growing radius always makes the surface area decrease",
-     "incorrect: \\( \\frac{dS}{dt} \\) is zero because the surface area stays constant",
-     "correct: \\( \\frac{dS}{dt} \\) has the opposite sign of \\( \\frac{dV}{dt} \\) for a sphere"],
+    ["correct: a growing radius makes the surface area decrease",
+     "incorrect: \\( \\frac{dS}{dt} \\) is zero because the surface area stays constant while the balloon inflates",
+     "correct: \\( \\frac{dS}{dt} \\) has the opposite sign of \\( \\frac{dV}{dt} \\) for a sphere, as the two rates trade off"],
     "Surface area is an increasing function of the radius, \\( S = 4\\pi r^2 \\), so \\( \\frac{dS}{dt} = 8\\pi r \\frac{dr}{dt} > 0 \\) whenever the radius grows. Spreading thinner describes thickness, not area. The claim is <b>incorrect: \\( S = 4\\pi r^2 \\) grows as \\( r \\) grows, so \\( \\frac{dS}{dt} \\) is positive as well</b>.",{});}
 ]));
 
@@ -3115,7 +3134,7 @@ E("u6-inv-relate",6,["1.12"],1,"var",varset([
     "The outer function \\( \\arcsin \\) can only return values in its range, the interval \\( \\left[ -\\frac{\\pi}{2}, \\frac{\\pi}{2} \\right] \\). Outside that interval the composition returns the equivalent angle inside the range instead. The equation holds exactly when <b>\\( x \\) lies in \\( \\left[ -\\frac{\\pi}{2}, \\frac{\\pi}{2} \\right] \\)</b>.",{});},
   function(){return mcq("For \\( -1 \\leq x \\leq 1 \\), the value of \\( \\arcsin x + \\arccos x \\) is",
     "\\( \\frac{\\pi}{2} \\)",
-    ["\\( 0 \\)","\\( \\pi \\)","\\( 2\\pi \\)"],
+    ["\\( 0 \\)","\\( \\pi \\)","\\( \\frac{3\\pi}{2} \\)"],
     "Let \\( \\theta = \\arcsin x \\). Then \\( \\arccos x \\) is the complementary angle \\( \\frac{\\pi}{2} - \\theta \\), since sine and cosine swap roles on complementary angles. The two terms therefore always add to the same constant. The value is <b>\\( \\frac{\\pi}{2} \\)</b>.",{});}
 ]));
 
@@ -3655,7 +3674,7 @@ E("u6-limit-param",6,["2.20"],3,"gen",function(){
     prompt="Find the positive value of \\( k \\) such that \\( \\lim_{x \\to 0} \\frac{1 - \\cos(kx)}{x^2} = "+rw[1]+" \\).";
     sol="The standard limits give \\( \\lim_{x \\to 0} \\frac{1 - \\cos(kx)}{x^2} = \\frac{k^2}{2} \\). Setting \\( \\frac{k^2}{2} = "+rw[1]+" \\) gives \\( k^2 = "+(k*k)+" \\), and the positive value is \\( k = "+k+" \\). The value is <b>"+k+"</b>.";
     key="\\( "+k+" \\)";
-    ds=opts(k, [[k*k/2, rw[1]],[2*k,""+(2*k)],[k+1,""+(k+1)],[k+2,""+(k+2)],[k-1,""+(k-1)]]);
+    ds=opts(k, [[k*k/2, rw[1]],[2*k, rw[1].indexOf(".")>=0 ? (2*k).toFixed(1) : ""+(2*k)],[k+1,""+(k+1)],[k+2,""+(k+2)],[k-1,""+(k-1)]]);
   } else {
     var b=ri(1,6), c=ri(b+2,b+8), a=c-b; prm.b=b; prm.a=a; prm.c=c; prm.ans=a;
     prompt="Find the value of \\( a \\) such that \\( \\lim_{x \\to 0} \\frac{\\sin(ax) + "+b+"x}{x} = "+c+" \\).";
@@ -3738,8 +3757,8 @@ E("u7-derivation-next-step",7,["3.41"],2,"var",varset([
   function(){return mcq("The derivative of \\( y = e^x \\) turns out to equal the function itself because, in the limit definition of the derivative, the factor that remains is",
     "the limit \\( \\lim_{h \\to 0} \\frac{e^h - 1}{h} \\), whose value is exactly 1",
     ["the limit \\( \\lim_{h \\to 0} \\frac{e^h - 1}{h} \\), whose value is exactly \\( e \\)",
-     "the factor \\( e^{xh} \\) in the numerator, whose limiting value is exactly \\( x \\)",
-     "the factor \\( e^h \\) in the numerator, whose limiting value is exactly 0"],
+     "the factor \\( e^{xh} \\), whose limiting value is \\( x \\)",
+     "the factor \\( e^h \\), whose limiting value is 0"],
     "Factoring \\( e^x \\) out of the difference quotient leaves \\( e^x \\) times the quotient \\( \\frac{e^h - 1}{h} \\). The number \\( e \\) is exactly the base for which that quotient approaches 1, so the derivative comes out as \\( e^x \\) itself. The remaining factor is <b>the limit of \\( \\frac{e^h - 1}{h} \\), whose value is exactly 1</b>.",{});}
 ]));
 
@@ -3945,41 +3964,41 @@ E("u7-hyperbolic-values",7,["3.46","3.47","3.48"],2,"gen",function(){
 E("u7-log-diff-error",7,["3.45"],3,"var",varset([
   function(){return mcq("A student differentiates \\( y = x^x \\) by logarithmic differentiation: \\[ \\ln y = x \\ln x \\] \\[ \\frac{y'}{y} = \\ln x \\] \\[ y' = x^x \\ln x \\] Which statement identifies the error in the student's work?",
     "The derivative of \\( x \\ln x \\) is \\( \\ln x + 1 \\) by the product rule, so the second line drops a term and the final answer is too small",
-    ["The first line is wrong, because \\( \\ln(x^x) \\) cannot be simplified with the power law for logarithms",
-     "The third line is wrong, because getting \\( y' \\) from \\( y'/y \\) requires dividing by \\( x^x \\), not multiplying by it",
-     "The method itself is wrong, because logarithmic differentiation only works when the base is a constant"],
+    ["The first line is wrong, because \\( \\ln(x^x) \\) cannot be simplified with the power law for logarithms at all",
+     "The third line is wrong, because getting \\( y' \\) from \\( y'/y \\) requires dividing by \\( x^x \\), not multiplying by it, as the student did",
+     "The method itself is wrong, because logarithmic differentiation only works when the base is a constant throughout"],
     "Taking logarithms is legitimate here, and so is the last step. The slip is in the middle line: \\( x \\ln x \\) is a product, and the product rule gives \\( \\ln x + x \\cdot \\frac{1}{x} = \\ln x + 1 \\). The correct derivative is \\( x^x (\\ln x + 1) \\). The error is <b>the dropped term in the derivative of \\( x \\ln x \\)</b>.",{});},
   function(){return mcq("A student differentiates \\( y = \\left( x^2 + 1 \\right)^x \\) by writing \\[ y' = x \\left( x^2 + 1 \\right)^{x - 1} \\cdot 2x \\] Which statement identifies the error in the student's work?",
     "The power rule applies only when the exponent is constant; here the exponent \\( x \\) varies, so logarithmic differentiation is needed",
-    ["The chain rule factor is wrong, because the derivative of \\( x^2 + 1 \\) is \\( 2 \\), not \\( 2x \\)",
-     "The exponent in the answer should be \\( x + 1 \\) rather than \\( x - 1 \\) when the power rule is applied this way",
-     "The work is correct as written, because the base \\( x^2 + 1 \\) is a polynomial and polynomials follow the power rule"],
+    ["The chain rule factor is wrong, because the derivative of \\( x^2 + 1 \\) is \\( 2 \\), not \\( 2x \\), so the answer comes out too large",
+     "The exponent in the answer should be \\( x + 1 \\) rather than \\( x - 1 \\) when the power rule is applied this way to the base",
+     "The work is correct as written, because the base \\( x^2 + 1 \\) is a polynomial and polynomials follow the power rule in every such case"],
     "The formula \\( n u^{n - 1} u' \\) treats the exponent as a fixed number \\( n \\). In \\( \\left( x^2 + 1 \\right)^x \\) both the base and the exponent change with \\( x \\), so no single power rule or exponential rule applies; taking \\( \\ln y = x \\ln(x^2 + 1) \\) and differentiating is the correct route. The error is <b>using the power rule on a varying exponent</b>.",{});},
   function(){return mcq("A student differentiates \\( y = (2x)^{3x} \\) by logarithmic differentiation: \\[ \\ln y = 3x \\ln(2x) \\] \\[ \\frac{y'}{y} = 3 \\ln(2x) + 3x \\cdot \\frac{1}{2x} = 3 \\ln(2x) + \\frac{3}{2} \\] Which statement identifies the error in the student's work?",
     "The derivative of \\( \\ln(2x) \\) is \\( \\frac{1}{x} \\), not \\( \\frac{1}{2x} \\), so the last term should be \\( 3 \\), not \\( \\frac{3}{2} \\)",
     ["The first line is wrong, because \\( \\ln \\left( (2x)^{3x} \\right) \\) simplifies to \\( 3x \\ln 2 + \\ln x \\) instead",
-     "The product rule was skipped: the derivative of \\( 3x \\ln(2x) \\) is just \\( 3 \\ln(2x) \\) with nothing added",
+     "The product rule was skipped: the derivative of \\( 3x \\ln(2x) \\) is just \\( 3 \\ln(2x) \\) with nothing added at all",
      "The arithmetic at the end is wrong, because \\( 3x \\cdot \\frac{1}{2x} \\) equals \\( \\frac{3}{4} \\), not \\( \\frac{3}{2} \\)"],
     "By the chain rule, \\( \\frac{d}{dx} \\ln(2x) = \\frac{2}{2x} = \\frac{1}{x} \\). So the product rule on \\( 3x \\ln(2x) \\) gives \\( 3 \\ln(2x) + 3x \\cdot \\frac{1}{x} = 3 \\ln(2x) + 3 \\). The error is <b>the derivative used for \\( \\ln(2x) \\)</b>.",{});},
   function(){return mcq("A student differentiates \\( y = x^2 (x + 1)^3 \\) by logarithmic differentiation: \\[ \\ln y = 2 \\ln x + 3 \\ln(x + 1) \\] \\[ \\frac{y'}{y} = \\frac{2}{x} + \\frac{3}{x + 1} \\] \\[ y' = \\frac{2}{x} + \\frac{3}{x + 1} \\] Which statement identifies the error in the student's work?",
     "The work is right until the last line: \\( y' \\) equals \\( y \\) times \\( y'/y \\), so the answer must be multiplied by \\( x^2 (x + 1)^3 \\)",
-    ["The first line is wrong, because the logarithm of a product must be written as a product of logarithms",
-     "The second line is wrong, because the derivative of \\( 3 \\ln(x + 1) \\) is \\( \\frac{3}{x} \\), not \\( \\frac{3}{x + 1} \\)",
-     "The last line is right, because \\( y \\) cancels when both sides of the equation are divided through by it"],
+    ["The first line is wrong, because the logarithm of a product must be written as a product of logarithms, not kept as one logarithm of the whole product",
+     "The second line is wrong, because the derivative of \\( 3 \\ln(x + 1) \\) is \\( \\frac{3}{x} \\), not \\( \\frac{3}{x + 1} \\) as written",
+     "The last line is right, because \\( y \\) cancels when both sides of the equation are divided through by it in the end"],
     "Logarithmic differentiation produces \\( \\frac{y'}{y} \\), and the final step is always to multiply by \\( y \\) itself. Here that multiplication never happens, so the stated \\( y' \\) is really only \\( \\frac{y'}{y} \\). The error is <b>the missing multiplication by \\( y \\) in the last line</b>.",{});}
 ]));
 
 E("u7-interpret-derivative",7,["3.43"],3,"var",varset([
   function(){return mcq("A town's population \\( t \\) years from now is modelled by \\( P(t) \\). Given that \\( P'(5) = 240 \\), interpret what this value says about the town's population.",
     "At \\( t = 5 \\), the population is increasing at a rate of 240 people per year",
-    ["Over the first 5 years, the population increased by a total of 240 people",
+    ["Over the first 5 years, the population increased by a total of 240 people altogether",
      "The average rate of growth over the first 5 years is 240 people per year",
-     "At \\( t = 5 \\), the population of the town is exactly 240 people"],
+     "At \\( t = 5 \\), the population of the town is exactly 240 people in total"],
     "A derivative is an instantaneous rate of change, measured at one moment, in units of people per year. It says nothing directly about the total change over the five years, the average rate, or the population size itself. The correct interpretation is <b>that at \\( t = 5 \\) the population is increasing at 240 people per year</b>.",{});},
   function(){return mcq("A drink cools so that its temperature \\( T(t) \\) after \\( t \\) minutes, in degrees Celsius, satisfies \\( T'(12) = -1.8 \\). Interpret what this value says about the drink's temperature.",
     "At the 12-minute mark, the temperature is dropping at a rate of 1.8 degrees Celsius per minute",
-    ["At the 12-minute mark, the temperature of the drink is exactly \\( -1.8 \\) degrees Celsius",
-     "During the first 12 minutes, the temperature dropped by a total of 1.8 degrees Celsius",
+    ["At the 12-minute mark, the temperature of the drink is exactly \\( -1.8 \\) degrees Celsius at that moment",
+     "During the first 12 minutes, the temperature dropped by a total of 1.8 degrees Celsius in all",
      "The average rate of cooling over the first 12 minutes is 1.8 degrees Celsius per minute"],
     "The negative sign shows the temperature is decreasing, and the size of the derivative gives the speed of that decrease at the single instant \\( t = 12 \\), in degrees per minute. It is not the temperature itself, nor a total or average over the interval. The correct interpretation is <b>that at 12 minutes the temperature is dropping at 1.8 degrees Celsius per minute</b>.",{});},
   function(){return mcq("The concentration of a medication in the blood is \\( C(t) \\) milligrams per litre, \\( t \\) hours after a dose. Given that \\( C'(3) = -0.4 \\), interpret what this value says about the concentration.",
