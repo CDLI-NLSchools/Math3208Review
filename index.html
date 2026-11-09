@@ -4476,6 +4476,200 @@ E("u8-area-between",8,["4.12"],3,"gen",function(){
   var sol="The curves meet where \\( f(x) = g(x) \\), that is, where \\( "+u8P(dCs)+" = 0 \\), giving \\( x = "+r1+" \\) and \\( x = "+r2+" \\). Between those points \\( f \\) lies above \\( g \\), so the area is the integral of the difference. \\[ \\begin{aligned} A &= \\int_{"+r1+"}^{"+r2+"} \\left( "+u8P(dCs)+" \\right) \\, dx \\\\ &= "+fmt(area)+" \\end{aligned} \\] The enclosed area is <b>"+fmt(area)+" square units</b>.";
   return numq(prompt, area, 0.011, sol, {fCs:fCs, gCs:gCs, r1:r1, r2:r2});
 });
+/* Unit test pool fix additions, November 9, 2026 (additions only).
+   Units 1 and 3 had no Level 3 layer at all.
+   Unit 1: one Level 3 MC generator; Level 3 CR at 3, 2 and 2 marks;
+   Level 2 CR at 3, 3 and 2 marks.
+   Unit 3: one Level 3 MC generator; Level 3 CR at 3, 2 and 2 marks. */
+
+/* U1 MC. Build the composite and judge its domain (1.5, 1.6, L3) */
+E("u1-compose-justify",1,["1.5","1.6"],3,"gen",function(){
+  var mode=ri(1,2);
+  if(mode===1){
+    var c=ri(-3,4),d=ri(-4,4); if(d===0)d=3;
+    var ex=c-d;
+    var key="\\((f \\circ g)(x) = "+FR(1,"x "+u1sgnT(-ex))+"\\), and \\(x = "+ex+"\\) is excluded from its domain";
+    var ds=["\\((f \\circ g)(x) = "+FR(1,"x "+u1sgnT(-c))+"\\), and \\(x = "+c+"\\) is excluded from its domain",
+      "\\((g \\circ f)(x) = "+FR(1,"x "+u1sgnT(-ex))+"\\), and \\(x = "+ex+"\\) is excluded from its domain",
+      "\\((f \\circ g)(x) = "+FR("x "+u1sgnT(d),"x "+u1sgnT(-c))+"\\), and no value is excluded from its domain"];
+    return mcq("Let \\(f(x) = "+FR(1,"x "+u1sgnT(-c))+"\\) and \\(g(x) = x "+u1sgnT(d)+"\\). Which statement about the composite function is correct?",
+      key,ds,
+      "Compose in the stated order: \\((f \\circ g)(x) = f(g(x)) = "+FR(1,"\\left(x "+u1sgnT(d)+"\\right) "+u1sgnT(-c))+" = "+FR(1,"x "+u1sgnT(-ex))+"\\). The denominator is zero when \\(x = "+ex+"\\), so that value is excluded. The correct statement is <b>"+key+"</b>.",
+      {mode:mode,c:c,d:d,ex:ex});
+  }
+  var p=ri(2,9),dd=u1nz(-5,5);
+  var key2="\\(x^2 "+u1sgnT(-p)+" "+u1sgnT(dd)+"\\)";
+  var ds2=["\\(x^2 + "+(2*dd)+"x + "+(dd*dd-p)+" \\)",
+    "\\(x^2 "+u1sgnT(-p)+" "+u1sgnT(-dd)+"\\)",
+    "\\(\\left(x "+u1sgnT(dd)+"\\right)^2 "+u1sgnT(-p)+"\\)"];
+  return mcq("Let \\(f(x) = x^2 "+u1sgnT(-p)+"\\) and \\(g(x) = x "+u1sgnT(dd)+"\\). What is \\((g \\circ f)(x)\\)?",
+    key2,ds2,
+    "In \\((g \\circ f)(x)\\) the outer function is \\(g\\), which adds "+dd+" to its input: \\((g \\circ f)(x) = f(x) "+u1sgnT(dd)+" = x^2 "+u1sgnT(-p)+" "+u1sgnT(dd)+"\\). The squared expansion belongs to \\((f \\circ g)(x)\\), the other order. The composite is <b>"+key2+"</b>.",
+    {mode:mode,p:p,dd:dd});
+});
+
+/* U1 CR3. Solve for the input of a composite (1.5, L3, CR 3) */
+E("u1-compose-solve-cr",1,["1.5"],3,"gen",function(){
+  var p=ri(-3,4),q=pick([2,3]),r=ri(-4,4),x0=pick([2,3,4,5,6]);
+  var V=q*x0*x0+q*p+r;
+  return numq("Let \\(f(x) = "+u1quad(1,0,p)+"\\) and \\(g(x) = "+u1lin(q,r)+"\\). Given that \\((g \\circ f)(x) = "+V+"\\), what is the positive value of \\(x\\)?",
+    x0,0.01,
+    "Build the composite first: \\((g \\circ f)(x) = "+q+"\\left(x^2 "+u1sgnT(p)+"\\right) "+u1sgnT(r)+" = "+q+"x^2 "+u1sgnT(q*p+r)+"\\). Set it equal to "+V+": \\[ "+q+"x^2 = "+(q*x0*x0)+" \\quad\\Rightarrow\\quad x^2 = "+(x0*x0)+" \\quad\\Rightarrow\\quad x = \\pm "+x0+" \\] The positive value is <b>"+x0+"</b>.",
+    {p:p,q:q,r:r,ans:x0});
+});
+
+/* U1 CR2a. Domain of a composite, counted or bounded (1.3, 1.6, L3, CR 2) */
+E("u1-domain-count-cr",1,["1.3","1.6"],3,"gen",function(){
+  var mode=ri(1,2);
+  if(mode===1){
+    var s=pick([2,3,4,5]);
+    return numq("Let \\(f(t) = "+FR(1,"t - "+(s*s))+"\\) and \\(g(x) = x^2\\). How many real numbers are excluded from the domain of \\((f \\circ g)(x)\\)?",
+      2,0.01,
+      "The composite is \\((f \\circ g)(x) = "+FR(1,"x^2 - "+(s*s))+"\\). It fails where the denominator is zero: \\(x^2 = "+(s*s)+"\\), which happens at \\(x = "+s+"\\) and \\(x = "+(-s)+"\\). That is <b>2</b> excluded numbers.",
+      {mode:mode,s:s,ans:2});
+  }
+  var c=ri(3,9),d=ri(-3,5),ans=c-d;
+  return numq("Let \\(f(t) = \\sqrt{t "+u1sgnT(-c)+"}\\) and \\(g(x) = x "+u1sgnT(d)+"\\). What is the smallest integer in the domain of \\((f \\circ g)(x)\\)?",
+    ans,0.01,
+    "The composite is \\((f \\circ g)(x) = \\sqrt{x "+u1sgnT(d)+" "+u1sgnT(-c)+"}\\). A square root needs its radicand to be at least zero: \\(x "+u1sgnT(d-c)+" \\geq 0\\), so \\(x \\geq "+ans+"\\). The smallest integer in the domain is <b>"+ans+"</b>.",
+    {mode:mode,c:c,d:d,ans:ans});
+});
+
+/* U1 CR2b. Recover the outer function of a decomposition (1.7, L3, CR 2) */
+E("u1-decompose-cr",1,["1.7"],3,"gen",function(){
+  var a=u1nz(-4,4),b=ri(-5,5),c0=ri(-6,6),mode=ri(1,2);
+  var gs=u1lin(a,b);
+  if(mode===1){
+    var v=pick([2,3,4,5,6]),ans=v*v+c0;
+    return numq("The function \\(h(x) = \\left("+gs+"\\right)^2 "+u1sgnT(c0)+"\\) can be written as \\(h(x) = f(g(x))\\) with \\(g(x) = "+gs+"\\). What is the value of \\(f("+v+")\\)?",
+      ans,0.01,
+      "The inner function is \\(g(x) = "+gs+"\\), so the outer function squares its input and then adds "+c0+": \\(f(t) = t^2 "+u1sgnT(c0)+"\\). Then \\(f("+v+") = "+v+"^2 "+u1sgnT(c0)+" = "+ans+"\\). The value is <b>"+ans+"</b>.",
+      {mode:mode,v:v,ans:ans});
+  }
+  var v2=pick([2,3,4]),ans2=v2*v2*v2-c0;
+  return numq("The function \\(h(x) = \\left("+gs+"\\right)^3 "+u1sgnT(-c0)+"\\) can be written as \\(h(x) = f(g(x))\\) with \\(g(x) = "+gs+"\\). What is the value of \\(f("+v2+")\\)?",
+    ans2,0.01,
+    "The inner function is \\(g(x) = "+gs+"\\), so the outer function cubes its input and then subtracts "+c0+": \\(f(t) = t^3 "+u1sgnT(-c0)+"\\). Then \\(f("+v2+") = "+v2+"^3 "+u1sgnT(-c0)+" = "+ans2+"\\). The value is <b>"+ans2+"</b>.",
+    {mode:mode,v:v2,ans:ans2});
+});
+
+/* U1 CR3b. Composition value with a rational outer function (1.4, L2, CR 3) */
+E("u1-compose-value-cr",1,["1.4"],2,"gen",function(){
+  var a=pick([2,3,4,5]),b=ri(1,6),w=a*a-b,m=pick([2,3,4]),k=1,tries=0;
+  do{k=ri(1,9);tries++;}while((w+k)%m!==0&&tries<90);
+  var ans=(w+k)/m;
+  return numq("Let \\(f(x) = "+u1quad(1,0,-b)+"\\) and \\(g(x) = "+FR("x + "+k,""+m)+"\\). Evaluate \\((g \\circ f)("+a+")\\).",
+    ans,0.01,
+    "Work from the inside out: \\[ f("+a+") = "+a+"^2 - "+b+" = "+w+" \\] \\[ g("+w+") = \\frac{"+w+" + "+k+"}{"+m+"} = \\frac{"+(w+k)+"}{"+m+"} = "+ans+" \\] So \\((g \\circ f)("+a+") = \\) <b>"+ans+"</b>.",
+    {a:a,b:b,k:k,m:m,ans:ans});
+});
+
+/* U1 CR3c. Value of a combined operation at a point (1.1, L2, CR 3) */
+E("u1-operation-value-cr",1,["1.1"],2,"gen",function(){
+  var mode=ri(1,2);
+  if(mode===1){
+    var a1=u1nz(-4,4),b1=ri(-6,6),a2=u1nz(-4,4),b2=ri(-6,6),x0=ri(-3,4);
+    var fv=a1*x0+b1,gv=a2*x0+b2,ans=fv*gv;
+    return numq("Let \\(f(x) = "+u1lin(a1,b1)+"\\) and \\(g(x) = "+u1lin(a2,b2)+"\\). Evaluate \\((fg)("+x0+")\\).",
+      ans,0.01,
+      "The product function multiplies the two values at the point: \\[ f("+x0+") = "+fv+" \\qquad g("+x0+") = "+gv+" \\] \\[ (fg)("+x0+") = "+fv+" \\times "+u1par(gv)+" = "+ans+" \\] So \\((fg)("+x0+") = \\) <b>"+ans+"</b>.",
+      {mode:mode,x0:x0,ans:ans});
+  }
+  var x1=ri(-3,4),a3=u1nz(-4,4),b3=ri(-6,6),gv2=a3*x1+b3,tries2=0;
+  if(gv2===0){b3+=1;gv2=a3*x1+b3;}
+  var t=pick([2,3,-2,-3,4]),p2=u1nz(-4,4),q2=gv2*t-p2*x1;
+  var fv2=p2*x1+q2,ans2=t;
+  return numq("Let \\(f(x) = "+u1lin(p2,q2)+"\\) and \\(g(x) = "+u1lin(a3,b3)+"\\). Evaluate \\(\\left(\\frac{f}{g}\\right)("+x1+")\\).",
+    ans2,0.01,
+    "The quotient function divides the two values at the point: \\[ f("+x1+") = "+fv2+" \\qquad g("+x1+") = "+gv2+" \\] \\[ \\left(\\frac{f}{g}\\right)("+x1+") = \\frac{"+fv2+"}{"+u1par(gv2)+"} = "+ans2+" \\] So the value is <b>"+ans2+"</b>.",
+    {mode:mode,x0:x1,ans:ans2});
+});
+
+/* U1 CR2c. The composite equation in a stated form (1.5, L2, CR 2) */
+E("u1-compose-equation-cr",1,["1.5"],2,"gen",function(){
+  var a=u1nz(-5,5),b=ri(-7,7),mode=ri(1,2);
+  if(mode===1){
+    var ans=a+b;
+    return numq("Let \\(f(x) = "+u1lin(a,b)+"\\) and \\(g(x) = x^2\\). The composite \\((f \\circ g)(x)\\) can be written in the form \\(px^2 + q\\). What is the value of \\(p + q\\)?",
+      ans,0.01,
+      "Substitute \\(g(x)\\) into \\(f\\): \\((f \\circ g)(x) = "+a+"\\left(x^2\\right) "+u1sgnT(b)+" = "+a+"x^2 "+u1sgnT(b)+"\\). So \\(p = "+a+"\\) and \\(q = "+b+"\\), giving \\(p + q = "+a+" + "+u1par(b)+" = "+ans+"\\). The value is <b>"+ans+"</b>.",
+      {mode:mode,ans:ans});
+  }
+  var c=ri(-5,5),ans2=a+a*c+b;
+  return numq("Let \\(f(x) = "+u1lin(a,b)+"\\) and \\(g(x) = "+u1quad(1,0,c)+"\\). The composite \\((f \\circ g)(x)\\) can be written in the form \\(px^2 + q\\). What is the value of \\(p + q\\)?",
+    ans2,0.01,
+    "Substitute \\(g(x)\\) into \\(f\\): \\((f \\circ g)(x) = "+a+"\\left(x^2 "+u1sgnT(c)+"\\right) "+u1sgnT(b)+" = "+a+"x^2 "+u1sgnT(a*c+b)+"\\). So \\(p = "+a+"\\) and \\(q = "+(a*c+b)+"\\), giving \\(p + q = "+ans2+"\\). The value is <b>"+ans2+"</b>.",
+    {mode:mode,ans:ans2});
+});
+
+/* U3 MC. Judge the hole and the asymptote of one rational function (1.8, 1.9, L3) */
+E("u3-rational-justify",3,["1.8","1.9"],3,"gen",function(){
+  var vs=u3Distinct(3,-5,5,false),h=vs[0],bb=vs[1],cc=vs[2];
+  var k=pick([1,2,3]),tries=0,Ln,Ld;
+  do{vs=u3Distinct(3,-5,5,false);h=vs[0];bb=vs[1];cc=vs[2];Ln=k*(h-bb);Ld=h-cc;tries++;}while((Ld===0||Ln===0||Math.abs(Ln)===Math.abs(Ld))&&tries<90);
+  var L=u3FracS(Ln,Ld),Lbad=u3FracS(Ld,Ln);
+  var numS=(k>1?""+k:"")+u3FacS(h)+u3FacS(bb),denS=u3FacS(h)+u3FacS(cc);
+  var key="A hole at \\(x = "+h+"\\) with \\(y = "+L+"\\), and a vertical asymptote at \\(x = "+cc+"\\)";
+  var ds=["A vertical asymptote at \\(x = "+h+"\\), and a hole at \\(x = "+cc+"\\) with \\(y = "+L+"\\)",
+    "A hole at \\(x = "+h+"\\) with \\(y = "+Lbad+"\\), and a vertical asymptote at \\(x = "+cc+"\\)",
+    "No hole: both \\(x = "+h+"\\) and \\(x = "+cc+"\\) are vertical asymptotes"];
+  return mcq("For the graph of \\(f(x) = "+FR(numS,denS)+"\\), which statement is correct?",
+    key,ds,
+    "The factor "+u3FacS(h)+" appears in both the numerator and the denominator, so \\(x = "+h+"\\) gives a hole, not an asymptote. Cancelling it, the reduced function at \\(x = "+h+"\\) is \\(\\frac{"+k+"("+h+" "+(bb<0?"+ "+(-bb):"- "+bb)+")}{"+h+" "+(cc<0?"+ "+(-cc):"- "+cc)+"} = "+L+"\\). The remaining denominator factor "+u3FacS(cc)+" gives the vertical asymptote at \\(x = "+cc+"\\). The correct statement is <b>"+key+"</b>.",
+    {h:h,bb:bb,cc:cc,k:k});
+});
+
+/* U3 CR3. The y-value of a hole (1.9, L3, CR 3) */
+E("u3-hole-value-cr",3,["1.9"],3,"gen",function(){
+  var vs=u3Distinct(3,-6,6,false),h=vs[0],bb=vs[1],cc=vs[2],k=pick([1,2,3]),tries=0,val;
+  do{vs=u3Distinct(3,-6,6,false);h=vs[0];bb=vs[1];cc=vs[2];val=k*(h-bb)/(h-cc);tries++;}while((!isFinite(val)||Math.abs(val*2-Math.round(val*2))>1e-9||val===0)&&tries<120);
+  var numS=(k>1?""+k:"")+u3FacS(h)+u3FacS(bb),denS=u3FacS(h)+u3FacS(cc);
+  return numq("The graph of \\(f(x) = "+FR(numS,denS)+"\\) has a hole at \\(x = "+h+"\\). What is the y-coordinate of the hole?",
+    val,0.01,
+    "The factor "+u3FacS(h)+" is common to the numerator and the denominator, which is why the hole sits at \\(x = "+h+"\\). Cancel it and evaluate the reduced function there: \\[ y = \\frac{"+k+"("+h+" "+(bb<0?"+ "+(-bb):"- "+bb)+")}{"+h+" "+(cc<0?"+ "+(-cc):"- "+cc)+"} = "+u3FracS(k*(h-bb),h-cc)+" \\] The y-coordinate of the hole is <b>"+u3FracS(k*(h-bb),h-cc)+"</b>.",
+    {h:h,bb:bb,cc:cc,k:k,ans:val});
+});
+
+/* U3 CR2a. A horizontal or oblique asymptote value (1.10, L3, CR 2) */
+E("u3-asymptote-value-cr",3,["1.10"],3,"gen",function(){
+  var mode=ri(1,2);
+  if(mode===1){
+    var q=pick([1,2]),mult=pick([1,2,3,-1,-2]),p=q*mult;
+    var b=ri(-6,6),c=ri(-6,6),d=ri(-5,5),e=ri(-6,6);
+    return numq("The graph of \\(f(x) = "+FR(u1quad(p,b,c),u1quad(q,d,e))+"\\) has a horizontal asymptote \\(y = k\\). What is the value of \\(k\\)?",
+      mult,0.01,
+      "The numerator and denominator have the same degree, so the horizontal asymptote comes from the ratio of the leading coefficients: \\[ k = \\frac{"+p+"}{"+q+"} = "+mult+" \\] The value is <b>"+mult+"</b>.",
+      {mode:mode,ans:mult});
+  }
+  var p2=pick([2,3,-2]),b2=ri(-6,6),c2=ri(-6,6),d2=ri(-5,5),e2=ri(-6,6);
+  var numS2=""+p2+"x^3"+(b2!==0?u1sgnT(b2)+"x^2":"")+(c2!==0?u1sgnT(c2)+"x":"");
+  return numq("The graph of \\(f(x) = "+FR(numS2,u1quad(1,d2,e2))+"\\) has an oblique asymptote with slope \\(m\\). What is the value of \\(m\\)?",
+    p2,0.01,
+    "The numerator has degree one more than the denominator, so the oblique asymptote comes from the ratio of the leading terms: \\[ m = \\frac{"+p2+"x^3}{x^2} \\text{ gives slope } "+p2+" \\] More precisely, dividing the leading coefficients, \\(m = "+p2+"\\). The slope is <b>"+p2+"</b>.",
+    {mode:mode,ans:p2});
+});
+
+/* U3 CR2b. Solve a rational equation, checking the non-permissible value (1.8, 1.9, L3, CR 2) */
+E("u3-rational-equation-cr",3,["1.8","1.9"],3,"gen",function(){
+  var mode=ri(1,2);
+  if(mode===1){
+    var a=ri(-5,5),p=ri(-6,6),kk=pick([2,3,4]),x,tries=0;
+    do{x=(kk*a+p)/(kk-1);tries++;}while((!Number.isInteger(x)||x===a)&&tries<90);
+    if(!Number.isInteger(x)){x=2*a+p;kk=2;}
+    return numq("Solve the equation \\("+FR("x + "+p,"x "+u1sgnT(-a))+" = "+kk+"\\). What is the solution?",
+      x,0.01,
+      "The non-permissible value is \\(x = "+a+"\\). Multiply both sides by the denominator: \\(x + "+p+" = "+kk+"\\left(x "+u1sgnT(-a)+"\\right)\\), so \\(x + "+p+" = "+kk+"x "+u1sgnT(-kk*a)+"\\). Collecting terms: \\("+(p+kk*a)+" = "+(kk-1)+"x\\), giving \\(x = "+x+"\\), which is not the non-permissible value, so it stands. The solution is <b>"+x+"</b>.",
+      {mode:mode,a:a,p:p,kk:kk,ans:x});
+  }
+  var vs=u3Distinct(2,-5,5,false),aa=vs[0],bb2=vs[1];
+  var extra=pick([true,false]);
+  var v=extra?aa-bb2:aa-bb2+pick([1,2,3]);
+  var cnt=extra?0:1;
+  return numq("How many solutions does the equation \\("+FR(u3FacS(aa)+u3FacS(bb2),u3FacS(aa))+" = "+v+"\\) have?",
+    cnt,0.01,
+    "The non-permissible value is \\(x = "+aa+"\\). Cancelling the common factor "+u3FacS(aa)+", the equation reduces to \\(x "+(bb2<0?"+ "+(-bb2):"- "+bb2)+" = "+v+"\\), giving \\(x = "+(v+bb2)+"\\). "+(extra?"That value is exactly the non-permissible value, so it must be rejected, and no solution remains. The equation has <b>0</b> solutions.":"That value is permitted, so the equation has <b>1</b> solution."),
+    {mode:mode,aa:aa,bb2:bb2,ans:cnt});
+});
 var CR_MARKS={
  "u1-compose-equation": 2,
  "u1-compose-value": 2,
@@ -4564,7 +4758,16 @@ var CR_MARKS={
  "u8-motion-acceleration": 3,
  "u8-motion-velocity": 2,
  "u8-particular-solution": 2,
- "u8-riemann-convert": 2
+ "u8-riemann-convert": 2,
+ "u1-compose-solve-cr": 3,
+ "u1-domain-count-cr": 2,
+ "u1-decompose-cr": 2,
+ "u1-compose-value-cr": 3,
+ "u1-operation-value-cr": 3,
+ "u1-compose-equation-cr": 2,
+ "u3-hole-value-cr": 3,
+ "u3-asymptote-value-cr": 2,
+ "u3-rational-equation-cr": 2
 };
 /* BANK-SRC-END */
 </script>
