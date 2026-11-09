@@ -1033,7 +1033,7 @@ E("u1-compose-domain-range",1,["1.6"],2,"gen",function(){
     "The composite is \\((f \\circ g)(x) = ("+u1lin(a2,b2)+")^2"+u1sgnT(c)+"\\). A square is never negative and reaches \\(0\\), and as \\(x\\) varies the inside takes every real value, so the smallest output is \\("+c+"\\) and every larger value occurs. The range is <b>all real numbers \\(y\\) with \\(y \\ge "+c+"\\)</b>.",
     {c:c,a2:a2,b2:b2,shape:shape});
 });
-E("u1-decompose",1,["1.7"],2,"var",varset([
+E("u1-decompose",1,["1.7"],1,"var",varset([
   function(){return mcq("The function \\(h(x) = \\sqrt{7 - 3x}\\) can be written as \\(h(x) = f(g(x))\\), where \\(f(x) = \\sqrt{x}\\). What is \\(g(x)\\)?",
     "\\(7 - 3x\\)",
     ["\\(3x - 7\\)","\\(7 + 3x\\)","\\((7 - 3x)^2\\)"],
@@ -1055,7 +1055,7 @@ E("u1-decompose",1,["1.7"],2,"var",varset([
     "The inner function \\(g(x) = x^2 - 6\\) is the quantity being raised to the fifth power, so the outer function just raises its input to the fifth power. Check: \\(f(g(x)) = (x^2 - 6)^5 = h(x)\\). So \\(f(x) = \\) <b>\\(x^5\\)</b>.",
     {v:4});}
 ]));
-E("u1-graph-operation",1,["1.2"],2,"gen",function(){
+E("u1-graph-operation",1,["1.2"],1,"gen",function(){
   var xs=[-2,-1,0,1,2],fv={},gv={},i;
   for(i=0;i<xs.length;i++){fv[xs[i]]=pick(xs);gv[xs[i]]=pick(xs);}
   function pts(map){return xs.map(function(xx){return "("+xx+", "+map[xx]+")";}).join(", ");}
@@ -1242,7 +1242,7 @@ E("u2-limit-graph",2,["2.1","2.4","2.5"],2,"gen",function(){
   return mcq("Let "+piece+". "+qtext,key,ds,sol,{a:a,m1:m1,b1:b1,m2:m2,b2:b2,Lv:Lv,Rv:Rv,favMode:favMode,q:q});
 });
 
-E("u2-reciprocal-limit",2,["2.2"],2,"gen",function(){
+E("u2-reciprocal-limit",2,["2.2"],1,"gen",function(){
   var mode=pick(["pos","neg","shiftpos","shiftneg"]);
   var DNE="\\(\\text{does not exist}\\)";
   if(mode==="pos"||mode==="neg"){
@@ -1362,7 +1362,7 @@ E("u2-limit-complex-fraction",2,["2.6","2.7"],2,"gen",function(){
     "Combine the fractions in the numerator over a common denominator, then cancel the factor of \\(x\\).\\[ \\begin{aligned} \\lim_{x \\to 0} \\frac{"+inner4+"}{x} &= \\lim_{x \\to 0} \\frac{\\frac{x}{"+a4+"\\left("+a4+" - x\\right)}}{x} \\\\ &= \\lim_{x \\to 0} \\frac{1}{"+a4+"\\left("+a4+" - x\\right)} \\\\ &= "+u2qFracRaw(1,a4*a4)+" \\end{aligned} \\] The limit is <b>"+u2qFrac(1,a4*a4)+"</b>.",
     {mode:mode,a:a4,key:u2qFracRaw(1,a4*a4)});
 });
-E("u2-limit-infinite",2,["2.8"],2,"gen",function(){
+E("u2-limit-infinite",2,["2.8"],1,"gen",function(){
   var form=pick(["pow","lin"]);
   var a=ri(-5,5),side=pick(["+","-"]);
   var DNE="\\(\\text{does not exist}\\)";
@@ -1443,7 +1443,7 @@ E("u2-limit-at-infinity",2,["2.10"],2,"gen",function(){
   return mcq("Evaluate \\(\\lim_{x \\to "+dir+"} \\frac{"+num+"}{"+den+"}\\).",
     key,ds,sol,{mode:mode,dir:dir});
 });
-E("u2-horizontal-asymptote",2,["2.11"],2,"gen",function(){
+E("u2-horizontal-asymptote",2,["2.11"],1,"gen",function(){
   var mode=pick(["less","equal","greater"]);
   var NONE="\\(\\text{no horizontal asymptote}\\)";
   var key,ds,num,den,sol;
@@ -1490,7 +1490,7 @@ E("u2-oblique-asymptote",2,["2.12"],2,"gen",function(){
     "Divide the numerator by the denominator.\\[ \\begin{aligned} "+numP+" &= \\left("+u2qDen(r)+"\\right)\\left("+u2qLin(A,q2)+"\\right) + "+rem+" \\end{aligned} \\] So \\(f(x) = "+u2qLin(A,q2)+" + "+FR(""+rem,u2qDen(r))+"\\), and the fraction term tends to \\(0\\) as \\(x\\) grows. The graph approaches the line given by the quotient. The oblique asymptote is <b>\\(y = "+u2qLin(A,q2)+"\\)</b>.",
     {A:A,B:B,C:C,r:r});
 });
-E("u2-discontinuity-type",2,["2.13","2.14"],2,"var",varset([
+E("u2-discontinuity-type",2,["2.13","2.14"],1,"var",varset([
   function(){return mcq("The graph of \\(f(x) = \\frac{x^2 - 16}{x - 4}\\) is a straight line with a single break at \\(x = 4\\), where the function is undefined; the graph approaches the same height from both sides of the break. What type of discontinuity occurs at \\(x = 4\\)?",
     "A removable discontinuity",["A jump discontinuity","An infinite discontinuity","An oscillating discontinuity"],
     "The two-sided limit at \\(x = 4\\) exists (it is \\(8\\)), but the function is not defined there. A missing point that could be filled by defining the value is a removable discontinuity. The type is <b>a removable discontinuity</b>.",
@@ -2282,7 +2282,7 @@ E("u4-motion",4,["3.17"],2,"gen",function(){
   return numq(prompt, ansA, 0.011, sol, {mode:"acc"});
 });
 
-E("u4-differentiability-why",4,["3.8","3.9"],2,"var",varset([
+E("u4-differentiability-why",4,["3.8","3.9"],1,"var",varset([
   function(){return mcq("Consider \\( f(x) = |x - 2| \\). Why is \\( f \\) not differentiable at \\( x = 2 \\)?",
     "The graph has a corner there: the slope from the left is \\( -1 \\) and the slope from the right is \\( 1 \\), so no single tangent slope exists",
     ["The graph has a cusp there: the slopes from the two sides grow without bound in opposite directions at that point",
@@ -2843,7 +2843,7 @@ E("u5-rr-tracking",5,["3.29"],3,"gen",function(){
   return numq(prompt, vh, 0.011, sol, {mode:"climb"});
 });
 
-E("u5-rr-interpret",5,["3.30"],2,"var",varset([
+E("u5-rr-interpret",5,["3.30"],1,"var",varset([
   function(){return mcq("A ladder slides down a wall, with \\( x \\) the distance from the wall to the foot and \\( y \\) the height of the top. A student finds \\( \\frac{dy}{dt} = -2.4 \\) m/s at an instant when \\( \\frac{dx}{dt} = 1.8 \\) m/s. The negative sign means",
     "the top of the ladder is moving down the wall at \\( 2.4 \\) m/s",
     ["the top of the ladder is moving down the wall at \\( 1.8 \\) m/s",
@@ -3165,7 +3165,7 @@ E("u6-std-limits",6,["2.19"],1,"var",varset([
     "Substitute \\( u = 5x \\). As \\( x \\to 0 \\), also \\( u \\to 0 \\), and the expression becomes the standard limit \\( \\lim_{u \\to 0} \\frac{\\sin u}{u} = 1 \\). The limit is <b>\\( 1 \\)</b>.",{});}
 ]));
 
-E("u6-inv-restrict",6,["1.13"],2,"var",varset([
+E("u6-inv-restrict",6,["1.13"],1,"var",varset([
   function(){return mcq("A trigonometric function must have its domain restricted before an inverse can be defined because, on its full domain, the function",
     "is not one-to-one, and only one-to-one functions have inverses",
     ["is not bounded, and only bounded functions have inverses",
@@ -3205,7 +3205,7 @@ var U6FNS=[
   {n:"\\arctan",dom:"all real numbers",rng:"\\( \\left( -\\frac{\\pi}{2}, \\frac{\\pi}{2} \\right) \\)",mono:"increasing",pt:"\\( (0, 0) \\)",pd:["\\( (1, 0) \\)","\\( \\left( 0, \\frac{\\pi}{4} \\right) \\)","\\( \\left( -1, \\frac{\\pi}{4} \\right) \\)"]}
 ];
 
-E("u6-inv-graph",6,["1.14"],2,"gen",function(){
+E("u6-inv-graph",6,["1.14"],1,"gen",function(){
   var fn=pick(U6FNS), mode=ri(0,9), F="\\( y = "+fn.n+" x \\)";
   var PTS={
     "\\arcsin":{t:["\\( \\left( -1, -\\frac{\\pi}{2} \\right) \\)","\\( (0, 0) \\)","\\( \\left( 1, \\frac{\\pi}{2} \\right) \\)"],f:["\\( \\left( -1, \\frac{\\pi}{2} \\right) \\)","\\( \\left( 0, \\frac{\\pi}{2} \\right) \\)","\\( (1, 0) \\)","\\( \\left( 1, -\\frac{\\pi}{2} \\right) \\)","\\( (-1, \\pi) \\)"],sym:"It is symmetric about the origin",pair:"\\( [-1, 1] \\) and \\( \\left[ -\\frac{\\pi}{2}, \\frac{\\pi}{2} \\right] \\)",yint:"\\( 0 \\)",xint:"\\( 0 \\)",hi:"\\( \\left( 1, \\frac{\\pi}{2} \\right) \\)",lo:"\\( \\left( -1, -\\frac{\\pi}{2} \\right) \\)"},
@@ -4334,7 +4334,7 @@ E("u8-motion-acceleration",8,["4.6"],2,"gen",function(){
 });
 
 /* ---------- 4.7: finite-sum area estimate (L2, gen, numq) ---------- */
-E("u8-area-estimate",8,["4.7"],2,"gen",function(){
+E("u8-area-estimate",8,["4.7"],1,"gen",function(){
   var quad, h, f, xs=[], vs=[], al, be, ga, okVals=false, guardV=0;
   while(!okVals && guardV<80){
     guardV++;
